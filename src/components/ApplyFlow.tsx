@@ -380,7 +380,9 @@ function Chat({
 /** "Bring eine Freundin mit": persönlicher Link, über den sich jemand als Duo bewirbt. */
 export function InviteBox({ t, lang, code }: { t: T["buddy"]; lang: string; code: string }) {
   const [copied, setCopied] = useState(false);
-  const url = `${window.location.origin}/${lang}/bewerben?mit=${code}`;
+  // Immer die offizielle Domain – auch wenn die Seite über eine Vercel-Vorschau aufgerufen wird
+  const origin = process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin;
+  const url = `${origin}/${lang}/bewerben?mit=${code}`;
 
   async function share() {
     if (navigator.share) {

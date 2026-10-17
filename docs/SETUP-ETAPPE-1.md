@@ -50,8 +50,9 @@ Empfehlung: **Twilio** (wird von Supabase direkt unterstützt und in Etappe 2 au
 
 1. Auf **vercel.com** mit dem GitHub-Account anmelden.
 2. **Add New → Project** → Repository `ben1-sketch/Tisch6` importieren.
-   - Falls die Arbeit noch auf dem Branch `claude/tisch6-komplett-aufbauen-pvhhx4` liegt: zuerst auf GitHub
-     den Pull Request nach `main` mergen (oder unter Settings → Git den Production Branch anpassen).
+   Vercel veröffentlicht automatisch den Standard-Branch des Repos (derzeit `claude/tisch6-komplett-aufbauen-pvhhx4`).
+   **Tipp:** Die Website selbst (Startseite, Rechtstexte) läuft schon ohne die Schlüssel aus Schritt 3 – so kannst du
+   sie sofort am Handy anschauen. Nur die Bewerbung braucht Supabase und die Claude-API.
 3. Vor dem ersten Deploy unter **Environment Variables** eintragen:
 
    | Name | Wert |
