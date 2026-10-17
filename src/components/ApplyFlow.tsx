@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { isSupabaseConfigured } from "@/lib/supabase/env";
 import type { Dictionary } from "@/i18n/get-dictionary";
 
 type T = Dictionary["apply"];
@@ -33,7 +34,7 @@ const buttonClass =
 
 export function ApplyFlow({ lang, t, invitedBy }: { lang: string; t: T; invitedBy?: string }) {
   const supabase = useRef<ReturnType<typeof createClient> | null>(null);
-  const configured = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+  const configured = isSupabaseConfigured;
   const [step, setStep] = useState<Step>(configured ? "loading" : "intro");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);

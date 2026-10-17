@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { isSupabaseConfigured } from "@/lib/supabase/env";
 import type { Dictionary } from "@/i18n/get-dictionary";
 import { InviteBox } from "./ApplyFlow";
 
@@ -10,7 +11,7 @@ type T = Dictionary["account"];
 
 export function Account({ lang, t, buddyT }: { lang: string; t: T; buddyT: Dictionary["apply"]["buddy"] }) {
   const [state, setState] = useState<"loading" | "loggedOut" | "loggedIn" | "deleted">(
-    process.env.NEXT_PUBLIC_SUPABASE_URL ? "loading" : "loggedOut",
+    isSupabaseConfigured ? "loading" : "loggedOut",
   );
   const [status, setStatus] = useState<keyof T["statuses"]>("none");
   const [phone, setPhone] = useState<string | null>(null);
@@ -19,7 +20,7 @@ export function Account({ lang, t, buddyT }: { lang: string; t: T; buddyT: Dicti
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL) return;
+    if (!isSupabaseConfigured) return;
     (async () => {
       const { data } = await createClient().auth.getUser();
       if (!data.user) return setState("loggedOut");

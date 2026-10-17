@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { defaultLocale, locales } from "@/i18n/config";
+import { isSupabaseConfigured, supabasePublishableKey, supabaseUrl } from "@/lib/supabase/env";
 
 function pickLocale(request: NextRequest) {
   const header = request.headers.get("accept-language") ?? "";
@@ -27,10 +28,10 @@ export async function proxy(request: NextRequest) {
 
   // Supabase-Session erneuern, damit Server-Code immer gültige Cookies sieht
   let response = NextResponse.next({ request });
-  if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+  if (isSupabaseConfigured) {
     const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      supabaseUrl,
+      supabasePublishableKey,
       {
         cookies: {
           getAll: () => request.cookies.getAll(),

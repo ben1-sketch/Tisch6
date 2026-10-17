@@ -15,10 +15,11 @@ Reihenfolge einhalten – jeder Schritt liefert Werte, die der nächste braucht.
    1. `supabase/migrations/0001_etappe1_bewerbungen.sql`
    2. `supabase/migrations/0002_bring_eine_freundin_mit.sql`
    3. `supabase/migrations/0003_foto_und_empfehlung.sql` (legt auch den privaten Fotospeicher `verification-photos` an)
-3. Links **Project Settings → API** (bzw. „API Keys“) und drei Werte notieren:
-   - `Project URL` → wird `NEXT_PUBLIC_SUPABASE_URL`
-   - `anon` / `publishable` key → wird `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-   - `service_role` / `secret` key → wird `SUPABASE_SERVICE_ROLE_KEY` (**geheim halten!**)
+3. Die Zugangsdaten überträgt am einfachsten die Supabase-Vercel-Integration (Schritt 4.5). Von Hand findest du sie
+   unter **Project Settings → Data API** bzw. **API Keys**:
+   - `Project URL` → `NEXT_PUBLIC_SUPABASE_URL`
+   - Publishable key (`sb_publishable_…`) → `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (der ältere „anon“-Key geht auch)
+   - Secret key (`sb_secret_…`) → `SUPABASE_SECRET_KEY` (**geheim halten!** – der ältere „service_role“-Key geht auch)
 4. **Authentication → Sign In / Providers → Phone** aktivieren.
    - **Zum Testen ohne SMS:** unter „Test Phone Numbers and OTPs“ `436601234567=123456` eintragen.
      Mit der Handynummer `0660 1234567` und dem Code `123456` kommst du dann ohne echte SMS durch die Bewerbung.
@@ -66,22 +67,28 @@ echte Zahlungen laufen (Etappe 2), brauchst du den Pro-Tarif (ca. 20 $ im Monat)
 
    | Name | Wert |
    |---|---|
-   | `NEXT_PUBLIC_SUPABASE_URL` | aus Schritt 1.3 |
-   | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | aus Schritt 1.3 |
-   | `SUPABASE_SERVICE_ROLE_KEY` | aus Schritt 1.3 |
    | `ANTHROPIC_API_KEY` | aus Schritt 3.2 |
+   | `PHOTO_ENCRYPTION_KEY` | eine Passphrase mit mind. 32 Zeichen (siehe unten) |
    | `NEXT_PUBLIC_SITE_URL` | `https://tisch6.at` – erst eintragen, wenn die Domain verbunden ist (Schritt 5) |
-   | `PHOTO_ENCRYPTION_KEY` | eine zufällige Passphrase mit mind. 32 Zeichen (siehe unten) |
 
    **Foto-Schlüssel:** Damit werden die Verifizierungsfotos verschlüsselt. Nimm einen langen Satz, den nur du kennst
    (mind. 32 Zeichen, gern mit Zahlen und Sonderzeichen), und speichere ihn in deiner Passwörter-App.
    **Ändere ihn nie** – ohne diesen Schlüssel sind die gespeicherten Fotos nicht mehr lesbar.
 
-   **Tipp am Handy:** Vercel erkennt es, wenn du mehrere Zeilen `NAME=Wert` auf einmal in das erste Feld einfügst –
-   du kannst die Werte also vorher in einer Notiz sammeln und gesammelt einfügen.
+   **Tipp am Handy:** Vercel erkennt es, wenn du mehrere Zeilen `NAME=Wert` auf einmal in das erste Feld einfügst.
 
 4. **Deploy** klicken. Nach ca. 1–2 Minuten ist die Seite unter `tisch6-xxx.vercel.app` erreichbar.
-5. Die Server-Region Frankfurt (`fra1`, nah an der EU-Datenbank) ist über `vercel.json` bereits voreingestellt.
+   Die Bewerbung meldet noch „nicht freigeschaltet“ – dafür fehlen die Supabase-Werte aus dem nächsten Schritt.
+5. **Supabase mit Vercel verbinden** (überträgt die Supabase-Werte automatisch, nichts abschreiben):
+   - In Supabase: **Project Settings → Integrations → Vercel** → verbinden, bei Vercel zustimmen und das
+     Vercel-Projekt `tisch6` auswählen.
+   - **Achtung:** Nicht in Vercel unter „Storage“ eine *neue* Supabase-Datenbank anlegen – das wäre ein zweites,
+     leeres Projekt ohne unsere Tabellen.
+   - Danach in Vercel unter **Settings → Environment Variables** prüfen, dass `NEXT_PUBLIC_SUPABASE_URL`,
+     `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` und `SUPABASE_SECRET_KEY` da sind (weitere Einträge wie `POSTGRES_…` stören nicht).
+   - Findest du die Integration nicht: die drei Werte aus Schritt 1.3 von Hand unter **Environment Variables** eintragen.
+6. Einmal neu bauen, damit die Website die neuen Werte übernimmt: **Deployments** → beim obersten Eintrag „⋯“ → **Redeploy**.
+7. Die Server-Region Frankfurt (`fra1`, nah an der EU-Datenbank) ist über `vercel.json` bereits voreingestellt.
 
 ## 5. GoDaddy (Domain tisch6.at auf Vercel zeigen lassen)
 
