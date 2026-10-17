@@ -43,9 +43,10 @@ export default function Datenschutz() {
       <h2>4. Einsatz von künstlicher Intelligenz</h2>
       <p>
         Der Kennenlern-Chat wird von einem KI-Sprachmodell (Claude von Anthropic) geführt. Deine Antworten werden an Anthropic übermittelt, um die nächste
-        Frage zu formulieren und am Ende ein strukturiertes Profil zu erstellen. Die KI unterstützt bei der Zusammenstellung von Tischen; eine
-        Bewerbung kann automatisiert angenommen oder auf die Warteliste gesetzt werden. Du kannst jederzeit verlangen, dass eine Entscheidung von
-        einem Menschen überprüft wird (Art. 22 Abs. 3 DSGVO) – schreib uns einfach.
+        Frage zu formulieren und am Ende ein strukturiertes Profil zu erstellen. Für die Prüfung der Bewerbung, die Zusammenstellung der Tische und
+        die Eisbrecher-Karten erhält die KI Profilangaben ohne Namen und Kontaktdaten. Eine Bewerbung kann automatisiert angenommen oder auf die
+        Warteliste gesetzt werden; dabei achten wir auch auf ein ausgewogenes Verhältnis von Frauen und Männern. Du kannst jederzeit verlangen, dass
+        eine Entscheidung von einem Menschen überprüft wird (Art. 22 Abs. 3 DSGVO) – schreib uns einfach.
       </p>
 
       <h2>5. Speicherung des Fotos</h2>
@@ -60,14 +61,20 @@ export default function Datenschutz() {
         <li>Vercel Inc. – Hosting der Website (USA; Datenübermittlung auf Grundlage des EU-US Data Privacy Framework bzw. Standardvertragsklauseln).</li>
         <li>Anthropic PBC – KI-Kennenlern-Chat (USA; Standardvertragsklauseln). Daten werden laut Anthropic nicht zum Training von Modellen verwendet.</li>
         <li><Todo>SMS-Anbieter, z. B. Twilio Inc.</Todo> – Versand von Bestätigungscode, Erinnerungen und Nachrücker-Angeboten.</li>
-        <li>Ab Einführung der Einladungen: Resend (E-Mail-Versand) und Stripe (Zahlungsabwicklung).</li>
+        <li>Resend Inc. – Versand von E-Mails (USA; EU-US Data Privacy Framework bzw. Standardvertragsklauseln).</li>
+        <li>Stripe Payments Europe Ltd. (Irland) – Zahlungsabwicklung. Karten- und Kontodaten gibst du direkt bei Stripe ein; wir erhalten sie nicht.</li>
+        <li>Unsere Stammlokale – erhalten für die Reservierung nur die Personenzahl und anonyme Hinweise für die Küche (z. B. „1× vegetarisch“), keine Namen.</li>
       </ul>
-      <p>Andere Gäste sehen deine Chat-Antworten und dein Profil nicht. Kontaktdaten werden nur bei gegenseitigem Wiedersehen-Wunsch geteilt.</p>
+      <p>
+        Andere Gäste sehen deine Chat-Antworten und dein Profil nicht – am Abend nur deinen Vornamen. Kontaktdaten werden nur bei gegenseitigem
+        Wiedersehen-Wunsch geteilt: deine E-Mail-Adresse und, wenn du zustimmst, deine Handynummer.
+      </p>
 
       <h2>7. Speicherdauer</h2>
       <p>
-        Wir speichern deine Daten, solange du ein Profil bei Tisch6 hast. Du kannst dein Profil jederzeit unter „Mein Konto“ selbst endgültig löschen.
-        Gesetzliche Aufbewahrungspflichten (z. B. für Rechnungen, 7 Jahre) bleiben unberührt.
+        Wir speichern deine Daten, solange du ein Profil bei Tisch6 hast. Du kannst dein Profil jederzeit unter „Mein Konto“ selbst endgültig löschen –
+        dabei werden auch Foto, Chat, Feedback und Wiedersehen-Angaben gelöscht und offene Einladungen abgesagt. Zahlungsbelege bewahren wir wegen
+        gesetzlicher Pflichten 7 Jahre auf, getrennt von deinem Profil. Bewerbungen von Personen unter 18 Jahren löschen wir sofort.
       </p>
 
       <h2>8. Deine Rechte</h2>

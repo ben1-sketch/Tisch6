@@ -1,19 +1,14 @@
 import "server-only";
-import Anthropic from "@anthropic-ai/sdk";
+import type Anthropic from "@anthropic-ai/sdk";
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import { z } from "zod";
-
-const MODEL = process.env.ANTHROPIC_MODEL ?? "claude-opus-5-5";
-// Bei einer Ablehnung durch Sicherheitsfilter springt automatisch ein Ersatzmodell ein.
-const FALLBACK_BETA = "server-side-fallback-2026-07-01";
+import { FALLBACK_BETA, MODEL, askStructured, claude } from "./claude";
 
 /** Obergrenze für Antworten pro Interview – schützt vor Endlos-Chats und Kosten. */
 export const MAX_USER_TURNS = 30;
 export const MAX_MESSAGE_LENGTH = 1200;
 
 export type ChatMessage = { role: "user" | "assistant"; content: string };
-
-const client = new Anthropic();
 
 const INTERVIEW_SYSTEM = `Du bist die Gastgeberin von Tisch6 – KI-kuratierte Dating-Dinner für Singles, Pilot in Wien.
 Sechs Menschen (drei Frauen, drei Männer) sitzen an einem Tisch in einem Wiener Stammlokal. Den Termin legt Tisch6 fest, sobald ein passender Tisch beisammen ist – anhand der Wunschtage. Nicht die Singles suchen, sondern du stellst den Tisch zusammen.
@@ -103,7 +98,7 @@ function toApiMessages(history: ChatMessage[]): Anthropic.Beta.BetaMessageParam[
 
 /** Nächste Nachricht der Gastgeberin. history muss mit einer User-Nachricht enden. */
 export async function nextTurn(firstName: string, history: ChatMessage[]): Promise<Turn> {
-  const response = await client.beta.messages.parse({
+  const response = await claude().beta.messages.parse({
     model: MODEL,
     max_tokens: 4000,
     betas: [FALLBACK_BETA],
@@ -123,19 +118,12 @@ export async function extractProfile(history: ChatMessage[]): Promise<Profile> {
   const transcript = history
     .map((m) => `${m.role === "user" ? "Person" : "Gastgeberin"}: ${m.content}`)
     .join("\n\n");
-  const response = await client.beta.messages.parse({
-    model: MODEL,
-    max_tokens: 8000,
-    betas: [FALLBACK_BETA],
-    fallbacks: "default",
-    output_config: { effort: "medium", format: betaZodOutputFormat(ProfileSchema) },
+  return askStructured({
+    schema: ProfileSchema,
     system: EXTRACT_SYSTEM,
-    messages: [{ role: "user", content: `<gespraech>\n${transcript}\n</gespraech>` }],
+    user: `<gespraech>\n${transcript}\n</gespraech>`,
+    effort: "medium",
   });
-  if (response.stop_reason === "refusal" || !response.parsed_output) {
-    throw new Error(`Profil-Auswertung fehlgeschlagen (stop_reason: ${response.stop_reason})`);
-  }
-  return response.parsed_output;
 }
 
 /** Die erste Frage ist fix – spart einen API-Aufruf und startet sofort. */

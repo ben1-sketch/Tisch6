@@ -28,7 +28,7 @@ export default function Agb() {
       <ul>
         <li>Dinner sind an jedem Tag möglich. Tisch6 legt den Termin fest, sobald ein passender Tisch zusammengestellt ist, und berücksichtigt dabei die angegebenen Wunschtage. Angenommene Personen erhalten per E-Mail eine Einladung zu dieser konkreten Tischteilnahme (Datum, Uhrzeit, Stammlokal).</li>
         <li>Eine Tischteilnahme kostet 35 Euro. Sie umfasst den Platz an einem kuratierten Tisch, die Eisbrecher-Karte und die Wiedersehen-Funktion. Speisen und Getränke bezahlt jede Person selbst im Lokal.</li>
-        <li>Der Platz ist erst nach vollständiger Zahlung über unseren Zahlungsanbieter (Stripe) verbindlich reserviert. Bis dahin kann der Platz anderweitig vergeben werden.</li>
+        <li>Eine Einladung gilt 48 Stunden, längstens bis 72 Stunden vor Beginn. Der Platz ist erst nach vollständiger Zahlung über unseren Zahlungsanbieter (Stripe) verbindlich reserviert. Bis dahin kann der Platz anderweitig vergeben werden. Geht eine Zahlung ein, nachdem der Platz bereits vergeben wurde, wird sie automatisch erstattet.</li>
         <li>Gründungsangebot „Gründungsmitglied Tisch6“: Für die ersten 300 Käuferinnen und Käufer in Wien gibt es drei Tischteilnahmen im Paket für 79 Euro statt 105 Euro. Das Paket ist ab Kauf zwölf Monate gültig; nicht genutzte Tischteilnahmen verfallen danach. Das Paket ist persönlich und nicht übertragbar. Käufer erhalten das Abzeichen „Gründungsmitglied“ im Profil.</li>
       </ul>
 
@@ -45,8 +45,9 @@ export default function Agb() {
         <li>Nachrücker werden per E-Mail und SMS benachrichtigt und haben zwölf Stunden Zeit, zuzusagen und zu bezahlen. Danach geht das Angebot an die nächste passende Person.</li>
         <li>Absage weniger als 48 Stunden vor Beginn: Die Gebühr verfällt.</li>
         <li>Nichterscheinen ohne Absage: Die Gebühr verfällt. Beim zweiten Nichterscheinen ohne Absage wird das Profil gesperrt.</li>
-        <li>Fällt kurzfristig eine Person aus, findet das Dinner mit fünf Personen statt. Alle Anwesenden erhalten einen Rabatt auf ihre nächste Tischteilnahme.</li>
-        <li>Kommt ein Tisch mangels passender Teilnehmer nicht zustande, wird der Termin verschoben. Du kannst dann einen neuen Termin wählen oder erhältst den vollen Betrag zurück.</li>
+        <li>Als nicht erschienen gilt, wer von mindestens zwei anderen Gästen des Tisches im Feedback als abwesend angegeben wird.</li>
+        <li>Fällt kurzfristig eine Person aus, findet das Dinner mit fünf Personen statt. Alle Anwesenden erhalten einen Rabatt auf ihre nächste Tischteilnahme (25 Euro statt 35 Euro).</li>
+        <li>Haben 72 Stunden vor Beginn weniger als fünf Personen zugesagt, wird der Termin verschoben. Bereits bezahlte Beträge werden automatisch erstattet bzw. dem Paket wieder gutgeschrieben; du erhältst eine neue Einladung, sobald ein passender Tisch zustande kommt.</li>
       </ul>
 
       <h2>7. Rücktrittsrecht</h2>
@@ -61,7 +62,9 @@ export default function Agb() {
       <h2>9. Nach dem Dinner</h2>
       <p>
         Am Tag nach dem Dinner kannst du anonym angeben, wen du wiedersehen möchtest. Kontaktdaten werden ausschließlich bei gegenseitigem Interesse
-        geteilt. Ein kurzes Feedback ist freiwillig. Ohne Match erhältst du am dritten Tag eine Einladung zum nächsten Termin.
+        geteilt: Beide erhalten die E-Mail-Adresse der anderen Person, die Handynummer nur, wenn diese der Weitergabe zugestimmt hat. Ein kurzes
+        Feedback ist freiwillig. Ohne Match erhältst du am dritten Tag eine Einladung zum nächsten Termin; bleibt sie zweimal unbeantwortet, erinnern
+        wir höchstens noch einmal im Monat. Einladungen lassen sich im Konto jederzeit pausieren.
       </p>
 
       <h2>10. Haftung</h2>
