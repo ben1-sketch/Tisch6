@@ -7,8 +7,8 @@ KI-kuratierte Dating-Dinner für Singles – sechs Menschen, ein Tisch. Pilot in
 
 | Etappe | Inhalt | Status |
 |---|---|---|
-| 1 | Öffentliche Website, Bewerbung, SMS-Verifizierung, KI-Onboarding, Rechtstexte, Profil löschen | ✅ |
-| 2 | Automatische Bewertung, E-Mails (Resend), Matching & Tische, Stripe, Wiedersehen-Funktion | offen |
+| 1 | Öffentliche Website, Bewerbung (auch zu zweit), SMS-Verifizierung, KI-Onboarding, Rechtstexte, Profil löschen | ✅ |
+| 2 | Bewertung, E-Mails & SMS, Matching & Tische, Nachrücker, Stripe, Eisbrecher-Karte, Wiedersehen & Feedback | offen |
 | 3 | Adminbereich | offen |
 
 Einrichtung: **[docs/SETUP-ETAPPE-1.md](docs/SETUP-ETAPPE-1.md)**

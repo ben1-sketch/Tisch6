@@ -4,15 +4,17 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Dictionary } from "@/i18n/get-dictionary";
+import { InviteBox } from "./ApplyFlow";
 
 type T = Dictionary["account"];
 
-export function Account({ lang, t }: { lang: string; t: T }) {
+export function Account({ lang, t, buddyT }: { lang: string; t: T; buddyT: Dictionary["apply"]["buddy"] }) {
   const [state, setState] = useState<"loading" | "loggedOut" | "loggedIn" | "deleted">(
     process.env.NEXT_PUBLIC_SUPABASE_URL ? "loading" : "loggedOut",
   );
   const [status, setStatus] = useState<keyof T["statuses"]>("none");
   const [phone, setPhone] = useState<string | null>(null);
+  const [invite, setInvite] = useState<{ code: string; linked: boolean } | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,6 +26,7 @@ export function Account({ lang, t }: { lang: string; t: T }) {
       setPhone(data.user.phone ? `+${data.user.phone}` : null);
       const json = await fetch("/api/onboarding").then((r) => r.json()).catch(() => ({}));
       setStatus(json.application?.status ?? "none");
+      if (json.application) setInvite({ code: json.application.invite_code, linked: Boolean(json.application.buddy_id) });
       setState("loggedIn");
     })();
   }, []);
@@ -79,6 +82,13 @@ export function Account({ lang, t }: { lang: string; t: T }) {
               </button>
             </div>
           </section>
+          {invite && status !== "rejected" && (
+            invite.linked ? (
+              <p className="glass rounded-3xl p-6 text-mist">{t.buddyLinked}</p>
+            ) : (
+              <InviteBox t={buddyT} lang={lang} code={invite.code} />
+            )
+          )}
           <section className="rounded-3xl border border-rose-500/30 p-6">
             <h2 className="font-display text-lg font-semibold">{t.deleteTitle}</h2>
             <p className="mt-2 text-sm text-mist">{t.deleteText}</p>

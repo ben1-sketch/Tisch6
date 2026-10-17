@@ -13,8 +13,8 @@ export function Header({ lang, dict }: { lang: string; dict: Dictionary }) {
           <Link href={`/${lang}#so-gehts`} className="hidden rounded-full px-3 py-2 text-mist hover:text-cloud md:inline">
             {dict.nav.how}
           </Link>
-          <Link href={`/${lang}#sicherheit`} className="hidden rounded-full px-3 py-2 text-mist hover:text-cloud md:inline">
-            {dict.nav.safety}
+          <Link href={`/${lang}#preise`} className="hidden rounded-full px-3 py-2 text-mist hover:text-cloud md:inline">
+            {dict.nav.prices}
           </Link>
           <Link href={`/${lang}#faq`} className="hidden rounded-full px-3 py-2 text-mist hover:text-cloud md:inline">
             {dict.nav.faq}

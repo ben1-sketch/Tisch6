@@ -18,9 +18,12 @@ export default function Datenschutz() {
 
       <h2>2. Welche Daten wir verarbeiten</h2>
       <ul>
-        <li>Bewerbungsdaten: Vorname, E-Mail-Adresse, Handynummer (zur Verifizierung per SMS-Code).</li>
-        <li>Angaben aus dem Kennenlern-Chat: Alter, Geschlecht, wen du kennenlernen möchtest, Wohnbezirk, gewünschte Altersspanne, Lebensstil (Rauchen, Kinder/Kinderwunsch, Beruf grob, Ausgehverhalten, Essensvorlieben, Ernährungsform und Unverträglichkeiten) sowie deine Antworten auf offene Persönlichkeitsfragen.</li>
-        <li>Ein daraus abgeleitetes Profil (z. B. Persönlichkeitstyp), das ausschließlich zur Tischzusammenstellung dient.</li>
+        <li>Bewerbungsdaten: Vorname, E-Mail-Adresse, Handynummer (zur Verifizierung per SMS-Code und für Erinnerungen vor dem Dinner).</li>
+        <li>Angaben aus dem Kennenlern-Chat: Alter, Geschlecht, wen du kennenlernen möchtest, gewünschte Altersspanne, Lebensstil (Rauchen, Kinder/Kinderwunsch, Beruf grob, Ausgehverhalten, Essensvorlieben, Ernährungsform und Unverträglichkeiten) sowie deine Antworten auf Situationsfragen zur Persönlichkeit.</li>
+        <li>Ein daraus abgeleitetes Profil (Persönlichkeitstyp auf vier Achsen, Gesprächsthemen), das ausschließlich zur Tischzusammenstellung und für die Eisbrecher-Karte dient.</li>
+        <li>Bei „Bring eine Freundin mit“: die Verknüpfung mit der Person, über deren Einladungslink du dich beworben hast.</li>
+        <li>Nach dem Dinner: deine anonymen Wiedersehen-Angaben und dein freiwilliges Feedback.</li>
+        <li>Teilnahmen, Absagen und Nichterscheinen sowie Zahlungsinformationen (die Zahlungsdaten selbst verarbeitet nur Stripe).</li>
         <li>Zeitpunkt und Version deiner Einwilligungen.</li>
         <li>Technisch notwendige Daten (Login-Cookies zur Sitzungsverwaltung, Server-Protokolle mit IP-Adresse).</li>
       </ul>
@@ -30,6 +33,8 @@ export default function Datenschutz() {
         <li>Prüfung deiner Bewerbung und Zusammenstellung passender Tische – Art. 6 Abs. 1 lit. a und b DSGVO (Einwilligung, Vertragsanbahnung).</li>
         <li>Angaben, aus denen sich deine sexuelle Orientierung ergeben kann (wen du kennenlernen möchtest), sowie Unverträglichkeiten (Gesundheitsdaten) verarbeiten wir nur mit deiner ausdrücklichen Einwilligung – Art. 9 Abs. 2 lit. a DSGVO.</li>
         <li>Verifizierung per SMS zum Schutz aller Teilnehmer vor Fake-Profilen – Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an Sicherheit).</li>
+        <li>Einladungen, Erinnerungen (drei Tage, einen Tag und zwei Stunden vor dem Dinner), Nachrücker-Angebote, Wiedersehen-Abfrage und Folgeeinladungen per E-Mail und SMS – Art. 6 Abs. 1 lit. b DSGVO. Folgeeinladungen werden seltener, wenn du nicht buchst (nach zweimaligem Nichtbuchen höchstens einmal im Monat), und lassen sich jederzeit abbestellen.</li>
+        <li>Feedback nach dem Dinner zur Verbesserung der Tischzusammenstellung – Art. 6 Abs. 1 lit. f DSGVO.</li>
         <li>Technischer Betrieb und Sicherheit der Website – Art. 6 Abs. 1 lit. f DSGVO.</li>
       </ul>
 
@@ -46,7 +51,7 @@ export default function Datenschutz() {
         <li>Supabase Inc. – Datenbank und Login, Serverstandort EU (Frankfurt).</li>
         <li>Vercel Inc. – Hosting der Website (USA; Datenübermittlung auf Grundlage des EU-US Data Privacy Framework bzw. Standardvertragsklauseln).</li>
         <li>Anthropic PBC – KI-Kennenlern-Chat (USA; Standardvertragsklauseln). Daten werden laut Anthropic nicht zum Training von Modellen verwendet.</li>
-        <li><Todo>SMS-Anbieter, z. B. Twilio Inc.</Todo> – Versand des Bestätigungscodes.</li>
+        <li><Todo>SMS-Anbieter, z. B. Twilio Inc.</Todo> – Versand von Bestätigungscode, Erinnerungen und Nachrücker-Angeboten.</li>
         <li>Ab Einführung der Einladungen: Resend (E-Mail-Versand) und Stripe (Zahlungsabwicklung).</li>
       </ul>
       <p>Andere Gäste sehen deine Chat-Antworten und dein Profil nicht. Kontaktdaten werden nur bei gegenseitigem Wiedersehen-Wunsch geteilt.</p>

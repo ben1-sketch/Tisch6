@@ -2,11 +2,11 @@ const de = {
   meta: {
     title: "Tisch6 – KI-kuratierte Dating-Dinner in Wien",
     description:
-      "Kein Wischen, kein Ghosting, echte Menschen am Tisch. Tisch6 stellt mit KI sechs Singles an einen Tisch – drei Frauen, drei Männer, ein Abend in einem schönen Wiener Restaurant.",
+      "Kein Wischen, kein Ghosting, echte Menschen am Tisch. Tisch6 stellt mit KI sechs Singles an einen Tisch – drei Frauen, drei Männer, ein Abend in einem Wiener Stammlokal.",
   },
   nav: {
     how: "So funktioniert's",
-    safety: "Sicherheit",
+    prices: "Preise",
     faq: "FAQ",
     apply: "Jetzt bewerben",
     account: "Mein Konto",
@@ -19,7 +19,8 @@ const de = {
     lead: "Tisch6 lädt sechs Singles zum Dinner – drei Frauen, drei Männer. Nicht du suchst, sondern unsere KI stellt den Tisch so zusammen, dass die Gespräche von selbst laufen.",
     cta: "Jetzt bewerben",
     secondary: "So funktioniert's",
-    note: "Bewerbung dauert ca. 10 Minuten · Antwort innerhalb von 24 Stunden",
+    note: "Bewerbung in max. 10 Minuten · Antwort innerhalb von 24 Stunden",
+    imageAlt: "Ein gedeckter runder Tisch mit sechs Plätzen, von oben gesehen",
   },
   pillars: [
     {
@@ -36,37 +37,75 @@ const de = {
     },
     {
       title: "Wiedersehen ohne Korb",
-      text: "Nach dem Dinner gibst du anonym an, wen du wiedersehen willst. Kontakt gibt's nur, wenn es beidseitig ist – niemand bekommt vor allen einen Korb.",
+      text: "Am Tag danach gibst du anonym an, wen du wiedersehen willst. Kontakt gibt's nur, wenn es beidseitig ist – niemand bekommt vor allen einen Korb.",
     },
   ],
   how: {
     title: "So funktioniert Tisch6",
-    lead: "Sechs Schritte von der Bewerbung bis zum Wiedersehen.",
+    lead: "Von der Bewerbung bis zum Wiedersehen – alles läuft automatisch, du musst nur kommen.",
     steps: [
-      { title: "Bewerben", text: "Kein Anmelden mit drei Klicks – du bewirbst dich. So bleibt die Qualität an jedem Tisch hoch." },
+      { title: "Bewerben", text: "Kein Anmelden mit drei Klicks – du bewirbst dich. Allein oder mit „Bring eine Freundin mit“." },
       { title: "Verifizieren", text: "Du bestätigst deine Handynummer per SMS-Code. Keine Fake-Profile, keine Bots." },
-      { title: "Kennenlern-Chat", text: "Unsere KI-Gastgeberin stellt dir Fragen zu Fakten, Lebensstil und Persönlichkeit. Ehrlich antworten lohnt sich." },
+      { title: "Kennenlern-Chat", text: "Unsere KI-Gastgeberin stellt dir Fragen zu Fakten, Lebensstil und Persönlichkeit – in höchstens zehn Minuten." },
       { title: "Antwort in 24 h", text: "Du erfährst innerhalb eines Tages, ob du dabei bist oder auf der Warteliste stehst." },
-      { title: "Einladung", text: "Du bekommst eine Einladung zu einem konkreten Dinner. Erst mit der Zahlung ist dein Platz fix." },
-      { title: "Wiedersehen", text: "Nach dem Abend markierst du anonym, wen du wiedersehen willst. Bei Gegenseitigkeit teilen wir den Kontakt." },
+      { title: "Einladung", text: "Du bekommst eine Einladung zu einer konkreten Tischteilnahme. Erst mit der Zahlung ist dein Platz fix." },
+      { title: "Eisbrecher-Karte", text: "Vor dem Dinner bekommst du zwei Gesprächsfragen für den Abend – damit niemand ins Schweigen fällt." },
+      { title: "Wiedersehen", text: "Am Tag danach markierst du anonym, wen du wiedersehen willst. Bei Gegenseitigkeit teilen wir den Kontakt. Dazu drei kurze Feedback-Fragen." },
+      { title: "Nächster Tisch", text: "Kein Match dabei? Am dritten Tag kommt eine Einladung zum nächsten Termin – Zusage mit einem Klick." },
     ],
   },
   table: {
     title: "Wie die KI deinen Tisch deckt",
+    lead: "Aus deinen Antworten im Kennenlern-Chat entsteht ein Typ auf vier Achsen. Am Tisch werden die Achsen gemischt – damit sich die Leute ergänzen.",
+    axes: [
+      ["ruhig", "extrovertiert"],
+      ["spontan", "strukturiert"],
+      ["humorvoll", "ernst"],
+      ["bodenständig", "abenteuerlustig"],
+    ],
     rules: [
       { k: "6", v: "Personen pro Tisch – drei Frauen, drei Männer" },
       { k: "≤ 10", v: "Jahre Altersspanne am Tisch" },
-      { k: "Mix", v: "Persönlichkeiten, die sich ergänzen – ruhig & gesellig, tiefgründig & verspielt" },
+      { k: "4", v: "Persönlichkeitsachsen, bewusst gemischt" },
       { k: "0", v: "Kompromisse: Passt es nicht, verschieben wir lieber, als einen schlechten Tisch zu machen" },
     ],
+  },
+  buddy: {
+    title: "Bring eine Freundin mit",
+    text: "Allein zu einem Dinner mit Fremden? Bewirb dich zu zweit. Ihr kommt am selben Abend ins selbe Lokal – aber an verschiedene Tische. So hast du Rückendeckung und trotzdem lauter neue Gesichter vor dir.",
+    cta: "Zu zweit bewerben",
+  },
+  prices: {
+    title: "Preise",
+    lead: "Die Bewerbung ist kostenlos. Bezahlt wird erst, wenn du eine Einladung annimmst.",
+    single: {
+      name: "Tischteilnahme",
+      price: "35 €",
+      unit: "pro Tischteilnahme",
+      points: ["Platz an einem kuratierten Tisch", "Eisbrecher-Karte vorab", "Wiedersehen-Funktion danach"],
+    },
+    founder: {
+      badge: "Nur für die ersten 300 in Wien",
+      name: "Gründungsmitglied Tisch6",
+      price: "79 €",
+      was: "statt 105 €",
+      unit: "für drei Tischteilnahmen",
+      points: ["3 Tischteilnahmen im Paket", "12 Monate gültig", "Abzeichen „Gründungsmitglied“ in deinem Profil"],
+    },
+    note: "Essen und Getränke zahlt jede Person selbst im Lokal.",
+  },
+  places: {
+    title: "Wo gegessen wird",
+    text: "Tisch6 hat feste Stammlokale in Wien mit reserviertem Tisch an festen Tagen – donnerstags und samstags. Die Adresse steht in deiner Einladung und in den Erinnerungen.",
   },
   safety: {
     title: "Sicherheit & Respekt",
     items: [
       "Jede Person ist per Handynummer verifiziert.",
-      "Ihr trefft euch in ausgewählten, öffentlichen Restaurants.",
+      "Ihr trefft euch in öffentlichen Stammlokalen.",
       "Gruppe statt Zweierdate – kein Druck, kein Verhör.",
       "Kontaktdaten werden nur bei gegenseitigem Interesse geteilt.",
+      "Wer zweimal ohne Absage nicht erscheint, wird gesperrt.",
       "Deine Daten bleiben in der EU und du kannst dein Profil jederzeit löschen.",
     ],
   },
@@ -74,8 +113,8 @@ const de = {
     title: "Häufige Fragen",
     items: [
       {
-        q: "Was kostet ein Dinner?",
-        a: "Die Bewerbung ist kostenlos. Bezahlt wird erst, wenn du eine Einladung zu einem konkreten Dinner annimmst – dann ist dein Platz fix. Den Preis siehst du in der Einladung.",
+        q: "Was kostet eine Tischteilnahme?",
+        a: "35 Euro. Für die ersten 300 in Wien gibt es das Gründungspaket: drei Tischteilnahmen für 79 Euro statt 105 Euro, zwölf Monate gültig. Essen und Getränke zahlt jede Person selbst im Lokal.",
       },
       {
         q: "Wer kann sich bewerben?",
@@ -86,16 +125,24 @@ const de = {
         a: "Weil ein Abend nur so gut ist wie der Tisch. Die Bewerbung hilft uns, Menschen zusammenzubringen, die sich wirklich etwas zu sagen haben.",
       },
       {
+        q: "Kann ich mit einer Freundin kommen?",
+        a: "Ja – mit „Bring eine Freundin mit“ bewerbt ihr euch zu zweit. Ihr seid am selben Abend im selben Lokal, sitzt aber an verschiedenen Tischen.",
+      },
+      {
+        q: "Wann und wo finden die Dinner statt?",
+        a: "In unseren Wiener Stammlokalen, donnerstags und samstags. Die Adresse bekommst du mit der Einladung und nochmal mit den Erinnerungen drei Tage, einen Tag und zwei Stunden vorher.",
+      },
+      {
+        q: "Was, wenn ich absagen muss?",
+        a: "Bis 48 Stunden vorher ist die Absage kostenlos, dein Platz geht automatisch an jemanden von der Warteliste. Bei späterer Absage oder Nichterscheinen verfällt die Gebühr. Wer zweimal ohne Absage nicht kommt, wird gesperrt.",
+      },
+      {
+        q: "Und wenn jemand anderer ausfällt?",
+        a: "Dann läuft das Dinner zu fünft – und alle am Tisch bekommen Rabatt auf die nächste Tischteilnahme.",
+      },
+      {
         q: "Was passiert mit meinen Antworten?",
         a: "Sie dienen ausschließlich dazu, passende Tische zusammenzustellen. Andere Gäste sehen deine Antworten nicht. Du kannst dein Profil jederzeit vollständig löschen.",
-      },
-      {
-        q: "Was, wenn ich nicht kann?",
-        a: "Du kannst Einladungen ablehnen, ohne Nachteile. Sagst du nach der Zahlung ab, gelten die Regeln aus unseren AGB – dann rückt jemand von der Warteliste nach.",
-      },
-      {
-        q: "Wann geht's los?",
-        a: "Wir starten mit einem Pilot in Wien. Sobald genug passende Menschen für einen Tisch da sind, verschicken wir die ersten Einladungen.",
       },
     ],
   },
@@ -105,7 +152,7 @@ const de = {
     cta: "Jetzt bewerben",
   },
   footer: {
-    tagline: "KI-kuratierte Dating-Dinner. Pilot in Wien.",
+    tagline: "KI-kuratierte Dating-Dinner. Pilot in Wien, danach international.",
     imprint: "Impressum",
     privacy: "Datenschutz",
     terms: "AGB",
@@ -117,6 +164,7 @@ const de = {
     intro: {
       title: "Schön, dass du dabei sein willst.",
       lead: "Zuerst das Wichtigste – danach verifizierst du deine Handynummer und unsere KI-Gastgeberin führt ein kurzes Gespräch mit dir.",
+      invited: "Du wurdest eingeladen und bewirbst dich zu zweit. Ihr kommt am selben Abend – an verschiedene Tische.",
       firstName: "Vorname",
       email: "E-Mail-Adresse",
       emailHint: "Hierhin schicken wir Antwort und Einladungen.",
@@ -131,7 +179,7 @@ const de = {
     },
     phone: {
       title: "Deine Handynummer",
-      lead: "Wir schicken dir einen Code per SMS. So stellen wir sicher, dass an jedem Tisch echte Menschen sitzen.",
+      lead: "Wir schicken dir einen Code per SMS. So stellen wir sicher, dass an jedem Tisch echte Menschen sitzen. Später kommen hierhin auch die Erinnerungen vor dem Dinner.",
       label: "Handynummer",
       placeholder: "+43 660 1234567",
       hint: "Mit Ländervorwahl, z. B. +43 für Österreich.",
@@ -158,6 +206,13 @@ const de = {
       rejectedText: "Tisch6 ist leider erst ab 18 Jahren. Wir freuen uns, wenn du später wiederkommst.",
       home: "Zur Startseite",
     },
+    buddy: {
+      title: "Bring eine Freundin mit",
+      text: "Schick diesen Link an eine Freundin oder einen Freund. Wer sich darüber bewirbt, kommt am selben Abend wie du – an einen anderen Tisch.",
+      share: "Link teilen",
+      copied: "Kopiert!",
+      shareText: "Komm mit zu Tisch6 – KI-kuratierte Dating-Dinner in Wien. Wir bewerben uns zu zweit:",
+    },
     errors: {
       generic: "Da ist etwas schiefgelaufen. Bitte versuch es nochmal.",
       phone: "Bitte gib eine gültige Handynummer mit Ländervorwahl ein.",
@@ -177,6 +232,7 @@ const de = {
       waitlist: "Auf der Warteliste",
       rejected: "Nicht angenommen",
     },
+    buddyLinked: "Du bist mit einer Begleitung verknüpft – ihr kommt an verschiedene Tische.",
     continue: "Chat fortsetzen",
     logout: "Abmelden",
     deleteTitle: "Profil löschen",

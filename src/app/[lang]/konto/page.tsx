@@ -10,5 +10,5 @@ export default async function AccountPage({ params }: PageProps<"/[lang]/konto">
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
   const dict = await getDictionary(lang);
-  return <Account lang={lang} t={dict.account} />;
+  return <Account lang={lang} t={dict.account} buddyT={dict.apply.buddy} />;
 }

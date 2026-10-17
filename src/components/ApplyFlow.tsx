@@ -8,7 +8,7 @@ import type { Dictionary } from "@/i18n/get-dictionary";
 type T = Dictionary["apply"];
 type Step = "loading" | "intro" | "phone" | "code" | "chat" | "done";
 type Msg = { role: "user" | "assistant"; content: string };
-type Application = { status: string; first_name: string; transcript: Msg[] };
+type Application = { status: string; first_name: string; transcript: Msg[]; invite_code: string };
 
 /** Ersetzt {platzhalter} in einem Text durch React-Elemente. */
 function fill(text: string, parts: Record<string, ReactNode>) {
@@ -31,7 +31,7 @@ const inputClass =
 const buttonClass =
   "w-full rounded-full bg-rose-400 px-6 py-3.5 font-semibold text-night-950 transition hover:bg-rose-300 disabled:cursor-not-allowed disabled:opacity-50";
 
-export function ApplyFlow({ lang, t }: { lang: string; t: T }) {
+export function ApplyFlow({ lang, t, invitedBy }: { lang: string; t: T; invitedBy?: string }) {
   const supabase = useRef<ReturnType<typeof createClient> | null>(null);
   const configured = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
   const [step, setStep] = useState<Step>(configured ? "loading" : "intro");
@@ -44,10 +44,12 @@ export function ApplyFlow({ lang, t }: { lang: string; t: T }) {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [status, setStatus] = useState("onboarding");
   const [loggedIn, setLoggedIn] = useState(false);
+  const [ownInvite, setOwnInvite] = useState<string | null>(null);
 
   function showApplication(app: Application) {
     setMessages(app.transcript);
     setStatus(app.status);
+    setOwnInvite(app.invite_code);
     setStep(app.status === "onboarding" ? "chat" : "done");
   }
 
@@ -74,6 +76,7 @@ export function ApplyFlow({ lang, t }: { lang: string; t: T }) {
         firstName: form.firstName,
         email: form.email,
         locale: lang,
+        inviteCode: invitedBy,
         consent: { adult: form.adult, privacy: form.privacy, terms: form.terms, sensitive: form.sensitive },
       }),
     });
@@ -152,6 +155,9 @@ export function ApplyFlow({ lang, t }: { lang: string; t: T }) {
           <div>
             <h1 className="font-display text-2xl font-semibold sm:text-3xl">{t.intro.title}</h1>
             <p className="mt-2 text-mist">{t.intro.lead}</p>
+            {invitedBy && (
+              <p className="mt-4 rounded-xl border border-rose-400/30 bg-rose-400/10 px-4 py-3 text-sm text-rose-300">{t.intro.invited}</p>
+            )}
           </div>
           <label className="block">
             <span className="mb-1.5 block text-sm font-medium">{t.intro.firstName}</span>
@@ -254,6 +260,7 @@ export function ApplyFlow({ lang, t }: { lang: string; t: T }) {
           <p className="mt-4 text-mist">
             {status === "rejected" ? t.done.rejectedText : fill(t.done.text, { email: <strong className="text-cloud">{form.email || "deine E-Mail-Adresse"}</strong> })}
           </p>
+          {status !== "rejected" && ownInvite && <InviteBox t={t.buddy} lang={lang} code={ownInvite} />}
           <Link href={`/${lang}`} className="mt-8 inline-block rounded-full border border-white/15 px-6 py-3 hover:border-white/30">
             {t.done.home}
           </Link>
@@ -357,5 +364,33 @@ function Chat({
         </button>
       </form>
     </section>
+  );
+}
+
+/** "Bring eine Freundin mit": persönlicher Link, über den sich jemand als Duo bewirbt. */
+export function InviteBox({ t, lang, code }: { t: T["buddy"]; lang: string; code: string }) {
+  const [copied, setCopied] = useState(false);
+  const url = `${window.location.origin}/${lang}/bewerben?mit=${code}`;
+
+  async function share() {
+    if (navigator.share) {
+      await navigator.share({ title: "Tisch6", text: t.shareText, url }).catch(() => {});
+      return;
+    }
+    await navigator.clipboard.writeText(url);
+    setCopied(true);
+  }
+
+  return (
+    <div className="mt-8 rounded-2xl border border-rose-400/30 bg-rose-400/5 p-5 text-left">
+      <h2 className="font-display text-lg font-semibold">{t.title}</h2>
+      <p className="mt-1 text-sm text-mist">{t.text}</p>
+      <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+        <input readOnly value={url} className={`${inputClass} text-sm`} onFocus={(e) => e.target.select()} aria-label={t.title} />
+        <button type="button" onClick={share} className="shrink-0 rounded-full bg-rose-400 px-5 py-3 font-semibold text-night-950 hover:bg-rose-300">
+          {copied ? t.copied : t.share}
+        </button>
+      </div>
+    </div>
   );
 }

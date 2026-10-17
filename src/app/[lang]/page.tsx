@@ -2,47 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
-
-const SEAT_TRAITS = ["tiefgründig", "humorvoll", "abenteuerlustig", "ruhig", "gesellig", "neugierig"];
-
-/** Illustration: ein runder Tisch mit sechs Plätzen, die von der KI verbunden werden. */
-function TableVisual() {
-  const seats = SEAT_TRAITS.map((trait, i) => {
-    const angle = (Math.PI / 3) * i - Math.PI / 2;
-    return { trait, x: 200 + 140 * Math.cos(angle), y: 200 + 140 * Math.sin(angle), rose: i % 2 === 1 };
-  });
-  return (
-    <div className="relative mx-auto aspect-square w-full max-w-md">
-      <div className="absolute inset-8 rounded-full bg-rose-500/20 blur-3xl" />
-      <svg viewBox="0 0 400 400" className="relative h-full w-full" role="img" aria-label="Sechs Plätze an einem runden Tisch">
-        <g className="animate-orbit" style={{ transformOrigin: "200px 200px" }}>
-          <circle cx="200" cy="200" r="175" fill="none" stroke="rgb(167 174 208 / 0.15)" strokeDasharray="2 8" />
-        </g>
-        {seats.map((a, i) =>
-          seats.slice(i + 1).map((b, j) => (
-            <line key={`${i}-${j}`} x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke="rgb(244 182 194 / 0.12)" />
-          )),
-        )}
-        <circle cx="200" cy="200" r="70" fill="var(--color-night-800)" stroke="var(--color-rose-400)" strokeWidth="2" />
-        <text x="200" y="196" textAnchor="middle" className="fill-cloud font-display" fontSize="26" fontWeight="600">
-          6
-        </text>
-        <text x="200" y="220" textAnchor="middle" className="fill-mist" fontSize="11" letterSpacing="2">
-          PLÄTZE
-        </text>
-        {seats.map((s) => (
-          <g key={s.trait}>
-            <circle cx={s.x} cy={s.y} r="26" fill="var(--color-night-700)" stroke={s.rose ? "var(--color-rose-500)" : "var(--color-cloud)"} strokeOpacity="0.7" />
-            <circle cx={s.x} cy={s.y} r="7" fill={s.rose ? "var(--color-rose-500)" : "var(--color-cloud)"} />
-            <text x={s.x} y={s.y + 44} textAnchor="middle" className="fill-mist" fontSize="12">
-              {s.trait}
-            </text>
-          </g>
-        ))}
-      </svg>
-    </div>
-  );
-}
+import { SetTable } from "@/components/SetTable";
 
 export default async function Home({ params }: PageProps<"/[lang]">) {
   const { lang } = await params;
@@ -82,7 +42,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
             </div>
             <p className="mt-4 text-sm text-mist/80">{t.hero.note}</p>
           </div>
-          <TableVisual />
+          <SetTable label={t.hero.imageAlt} />
         </div>
       </section>
 
@@ -102,7 +62,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
       <section id="so-gehts" className="scroll-mt-20 mx-auto max-w-6xl px-4 py-16 sm:px-6">
         <h2 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">{t.how.title}</h2>
         <p className="mt-3 text-mist">{t.how.lead}</p>
-        <ol className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <ol className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {t.how.steps.map((s, i) => (
             <li key={s.title} className="relative rounded-2xl border border-white/10 bg-night-800/60 p-6">
               <span className="font-display text-sm font-semibold text-rose-400">0{i + 1}</span>
@@ -113,11 +73,33 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         </ol>
       </section>
 
-      {/* Matching-Regeln */}
+      {/* Matching-Regeln & Persönlichkeitsachsen */}
       <section className="border-y border-white/5 bg-night-950/60">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-          <h2 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">{t.table.title}</h2>
-          <dl className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mx-auto grid max-w-6xl gap-12 px-4 py-16 sm:px-6 lg:grid-cols-2">
+          <div>
+            <h2 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">{t.table.title}</h2>
+            <p className="mt-3 leading-relaxed text-mist">{t.table.lead}</p>
+            <ul className="mt-8 space-y-5" aria-label="Persönlichkeitsachsen">
+              {t.table.axes.map(([left, right], i) => (
+                <li key={left}>
+                  <div className="flex justify-between text-sm">
+                    <span>{left}</span>
+                    <span>{right}</span>
+                  </div>
+                  <div className="relative mt-2 h-1.5 rounded-full bg-gradient-to-r from-night-600 via-rose-500/60 to-night-600">
+                    {[18, 46, 80].map((pos, j) => (
+                      <span
+                        key={j}
+                        className={`absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-night-950 ${j === 1 ? "bg-rose-400" : "bg-cloud"}`}
+                        style={{ left: `${(pos + i * 13) % 90 + 5}%` }}
+                      />
+                    ))}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <dl className="grid content-center gap-6 sm:grid-cols-2">
             {t.table.rules.map((r) => (
               <div key={r.v} className="border-l-2 border-rose-400/60 pl-4">
                 <dt className="font-display text-4xl font-semibold text-gradient">{r.k}</dt>
@@ -128,9 +110,56 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         </div>
       </section>
 
-      {/* Sicherheit */}
-      <section id="sicherheit" className="scroll-mt-20 mx-auto max-w-6xl px-4 py-16 sm:px-6">
-        <div className="glass rounded-3xl p-8 sm:p-12">
+      {/* Bring eine Freundin mit */}
+      <section className="mx-auto max-w-6xl px-4 pt-16 sm:px-6">
+        <div className="grid items-center gap-6 rounded-3xl border border-rose-400/25 bg-gradient-to-r from-rose-500/15 to-night-800/40 p-8 sm:p-10 md:grid-cols-[1fr_auto]">
+          <div>
+            <h2 className="font-display text-2xl font-semibold sm:text-3xl">{t.buddy.title}</h2>
+            <p className="mt-3 max-w-2xl leading-relaxed text-mist">{t.buddy.text}</p>
+          </div>
+          <Link href={`/${lang}/bewerben`} className="rounded-full border border-rose-400/60 px-6 py-3 text-center font-medium text-rose-300 hover:bg-rose-400/10">
+            {t.buddy.cta}
+          </Link>
+        </div>
+      </section>
+
+      {/* Preise */}
+      <section id="preise" className="scroll-mt-20 mx-auto max-w-6xl px-4 py-16 sm:px-6">
+        <h2 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">{t.prices.title}</h2>
+        <p className="mt-3 text-mist">{t.prices.lead}</p>
+        <div className="mt-10 grid gap-5 md:grid-cols-2">
+          <article className="glass flex flex-col rounded-3xl p-8">
+            <h3 className="font-display text-xl font-semibold">{t.prices.single.name}</h3>
+            <p className="mt-4 font-display text-5xl font-semibold">{t.prices.single.price}</p>
+            <p className="mt-1 text-sm text-mist">{t.prices.single.unit}</p>
+            <ul className="mt-6 space-y-2 text-sm text-mist">
+              {t.prices.single.points.map((p) => (
+                <li key={p}>· {p}</li>
+              ))}
+            </ul>
+          </article>
+          <article className="relative flex flex-col overflow-hidden rounded-3xl border border-rose-400/50 bg-gradient-to-br from-night-700 to-night-800 p-8 shadow-xl shadow-rose-500/10">
+            <div className="absolute -top-20 -right-20 h-48 w-48 rounded-full bg-rose-500/25 blur-3xl" />
+            <span className="relative self-start rounded-full bg-rose-400 px-3 py-1 text-xs font-semibold text-night-950">{t.prices.founder.badge}</span>
+            <h3 className="relative mt-4 font-display text-xl font-semibold">{t.prices.founder.name}</h3>
+            <p className="relative mt-4 flex items-baseline gap-3">
+              <span className="font-display text-5xl font-semibold text-gradient">{t.prices.founder.price}</span>
+              <span className="text-mist line-through">{t.prices.founder.was}</span>
+            </p>
+            <p className="relative mt-1 text-sm text-mist">{t.prices.founder.unit}</p>
+            <ul className="relative mt-6 space-y-2 text-sm text-mist">
+              {t.prices.founder.points.map((p) => (
+                <li key={p}>· {p}</li>
+              ))}
+            </ul>
+          </article>
+        </div>
+        <p className="mt-6 text-sm text-mist">{t.prices.note}</p>
+      </section>
+
+      {/* Sicherheit & Stammlokale */}
+      <section id="sicherheit" className="scroll-mt-20 mx-auto grid max-w-6xl gap-5 px-4 pb-16 sm:px-6 lg:grid-cols-[2fr_1fr]">
+        <div className="glass rounded-3xl p-8 sm:p-10">
           <h2 className="font-display text-3xl font-semibold tracking-tight">{t.safety.title}</h2>
           <ul className="mt-8 grid gap-4 sm:grid-cols-2">
             {t.safety.items.map((item) => (
@@ -142,6 +171,10 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
               </li>
             ))}
           </ul>
+        </div>
+        <div className="rounded-3xl border border-white/10 bg-night-800/60 p-8 sm:p-10">
+          <h2 className="font-display text-2xl font-semibold">{t.places.title}</h2>
+          <p className="mt-4 leading-relaxed text-mist">{t.places.text}</p>
         </div>
       </section>
 

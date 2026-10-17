@@ -7,7 +7,7 @@ import { CONSENT_VERSION } from "@/lib/consent";
 
 export const dynamic = "force-dynamic";
 
-const STATE_COLUMNS = "status, first_name, transcript, user_turns, submitted_at";
+const STATE_COLUMNS = "status, first_name, transcript, user_turns, submitted_at, invite_code, buddy_id";
 
 /** Aktueller Stand der eigenen Bewerbung (oder null). */
 export async function GET() {
@@ -20,6 +20,7 @@ export async function GET() {
     .eq("id", user.id)
     .maybeSingle();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
   return NextResponse.json({ application: data });
 }
 
@@ -27,6 +28,8 @@ const StartSchema = z.object({
   firstName: z.string().trim().min(1).max(40),
   email: z.email().max(200),
   locale: z.string().max(5).default("de"),
+  // Einladungscode einer Freundin/eines Freundes ("Bring eine Freundin mit")
+  inviteCode: z.string().regex(/^[a-z0-9]{8}$/).optional(),
   consent: z.object({
     adult: z.literal(true),
     privacy: z.literal(true),
@@ -44,7 +47,7 @@ export async function POST(request: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Bitte alle Felder ausfüllen und zustimmen." }, { status: 400 });
   }
-  const { firstName, email, locale } = parsed.data;
+  const { firstName, email, locale, inviteCode } = parsed.data;
   const admin = createAdminClient();
 
   const { data: existing } = await admin
@@ -70,5 +73,27 @@ export async function POST(request: Request) {
     .select(STATE_COLUMNS)
     .single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  if (inviteCode) await linkBuddy(admin, user.id, inviteCode);
   return NextResponse.json({ application: data });
+}
+
+/** Verknüpft zwei Bewerbungen als Duo – nur wenn die Einladende noch frei ist. */
+async function linkBuddy(admin: ReturnType<typeof createAdminClient>, userId: string, inviteCode: string) {
+  const { data: host } = await admin
+    .from("applications")
+    .select("id")
+    .eq("invite_code", inviteCode)
+    .is("buddy_id", null)
+    .neq("id", userId)
+    .maybeSingle();
+  if (!host) return;
+  const { data: claimed } = await admin
+    .from("applications")
+    .update({ buddy_id: userId })
+    .eq("id", host.id)
+    .is("buddy_id", null)
+    .select("id")
+    .maybeSingle();
+  if (claimed) await admin.from("applications").update({ buddy_id: host.id }).eq("id", userId);
 }
