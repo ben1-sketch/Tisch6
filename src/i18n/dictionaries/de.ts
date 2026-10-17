@@ -179,7 +179,7 @@ const de = {
   },
   apply: {
     title: "Bewerbung",
-    steps: ["Über dich", "Handynummer", "Code", "Foto", "Chat"],
+    steps: ["Über dich", "Nummer", "Code", "Foto", "Chat"],
     intro: {
       title: "Schön, dass du dabei sein willst.",
       lead: "Zuerst das Wichtigste – danach verifizierst du deine Handynummer, lädst ein Foto zur Prüfung hoch und unsere KI-Gastgeberin führt ein kurzes Gespräch mit dir.",

@@ -47,6 +47,11 @@ export function ApplyFlow({ lang, t, invitedBy }: { lang: string; t: T; invitedB
   const [loggedIn, setLoggedIn] = useState(false);
   const [ownInvite, setOwnInvite] = useState<string | null>(null);
 
+  // Bei jedem Schritt nach oben, damit Fortschritt und Überschrift sichtbar sind
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+  }, [step]);
+
   function showApplication(app: Application) {
     setMessages(app.transcript);
     setStatus(app.status);
@@ -136,9 +141,9 @@ export function ApplyFlow({ lang, t, invitedBy }: { lang: string; t: T; invitedB
       {step !== "done" && (
         <ol className="mb-8 grid grid-cols-5 gap-2" aria-label="Fortschritt">
           {t.steps.map((label, i) => (
-            <li key={label} className="text-xs text-mist">
+            <li key={label} className="min-w-0 text-xs text-mist">
               <div className={`mb-2 h-1 rounded-full ${i <= stepIndex ? "bg-rose-400" : "bg-white/10"}`} />
-              <span className={i === stepIndex ? "text-cloud" : ""}>{label}</span>
+              <span className={`block truncate ${i === stepIndex ? "text-cloud" : ""}`}>{label}</span>
             </li>
           ))}
         </ol>
@@ -296,6 +301,15 @@ function Chat({
   const [error, setError] = useState<string | null>(null);
   const [finished, setFinished] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  // Eingabefeld wächst mit längeren Antworten mit (bis ca. fünf Zeilen)
+  useEffect(() => {
+    const el = inputRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
+  }, [text]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -355,8 +369,9 @@ function Chat({
         <div ref={endRef} />
       </div>
       {error && <p className="px-4 pb-2 text-sm text-rose-300">{error}</p>}
-      <form onSubmit={send} className="flex gap-2 border-t border-white/10 p-3">
+      <form onSubmit={send} className="flex items-end gap-2 border-t border-white/10 p-3">
         <textarea
+          ref={inputRef}
           rows={1}
           maxLength={1200}
           value={text}
@@ -369,7 +384,7 @@ function Chat({
           className={`${inputClass} resize-none`}
           aria-label={t.chat.placeholder}
         />
-        <button type="submit" disabled={sending || finished || !text.trim()} className="rounded-full bg-rose-400 px-5 font-semibold text-night-950 transition hover:bg-rose-300 disabled:opacity-50">
+        <button type="submit" disabled={sending || finished || !text.trim()} className="rounded-full bg-rose-400 px-5 py-3 font-semibold text-night-950 transition hover:bg-rose-300 disabled:opacity-50">
           {t.chat.send}
         </button>
       </form>
