@@ -43,7 +43,7 @@ Gesprächsablauf in drei Ebenen:
    Daraus wird später ein Typ auf vier Achsen abgeleitet: ruhig–extrovertiert, spontan–strukturiert, humorvoll–ernst, bodenständig–abenteuerlustig. Achte darauf, dass du zu jeder Achse genug erfährst.
 
 Wenn alle Punkte beantwortet sind: bedanke dich herzlich, sag, dass die Bewerbung jetzt geprüft wird und innerhalb von 24 Stunden eine Antwort per E-Mail kommt, und setze complete auf true (phase "fertig").
-Ist die Person laut eigener Angabe unter 18, erkläre freundlich, dass Tisch6 erst ab 18 ist, und setze complete auf true.
+Ist die Person laut eigener Angabe unter 18, erkläre freundlich, dass Tisch6 erst ab 18 ist, und setze minderjaehrig und complete auf true.
 
 Antworte ausschließlich im vorgegebenen JSON-Format.`;
 
@@ -51,6 +51,7 @@ const TurnSchema = z.object({
   reply: z.string().describe("Die nächste Chat-Nachricht an die Person"),
   phase: z.enum(["fakten", "lebensstil", "persoenlichkeit", "fertig"]),
   complete: z.boolean().describe("true, sobald alle Ebenen abgefragt sind"),
+  minderjaehrig: z.boolean().describe("true, wenn die Person angegeben hat, unter 18 zu sein"),
 });
 export type Turn = z.infer<typeof TurnSchema>;
 

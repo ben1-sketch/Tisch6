@@ -19,7 +19,13 @@ Reihenfolge einhalten – jeder Schritt liefert Werte, die der nächste braucht.
    - `Project URL` → wird `NEXT_PUBLIC_SUPABASE_URL`
    - `anon` / `publishable` key → wird `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - `service_role` / `secret` key → wird `SUPABASE_SERVICE_ROLE_KEY` (**geheim halten!**)
-4. **Authentication → Sign In / Providers → Phone** aktivieren und den SMS-Dienst eintragen (siehe Schritt 2).
+4. **Authentication → Sign In / Providers → Phone** aktivieren.
+   - **Zum Testen ohne SMS:** unter „Test Phone Numbers and OTPs“ `436601234567=123456` eintragen.
+     Mit der Handynummer `0660 1234567` und dem Code `123456` kommst du dann ohne echte SMS durch die Bewerbung.
+   - Für echte Nummern braucht es einen SMS-Dienst (Schritt 2). Verlangt Supabase beim Speichern schon
+     Anbieter-Daten und hast du Twilio noch nicht: **Twilio** wählen und vorerst Platzhalter eintragen –
+     Account SID `AC00000000000000000000000000000000`, Auth Token `00000000000000000000000000000000`,
+     Message Service SID `MG00000000000000000000000000000000`. An die Testnummer wird ohnehin keine SMS geschickt.
 5. **Authentication → URL Configuration**: Site URL = `https://tisch6.at`.
 
 ## 2. SMS-Dienst (Verifizierung, später auch Erinnerungen)
@@ -35,18 +41,21 @@ Empfehlung: **Twilio** (wird von Supabase direkt unterstützt und in Etappe 2 au
    eintragen (funktioniert in Österreich ohne eigene Nummer).
 3. **Account SID**, **Auth Token** und die **Messaging Service SID** kopieren.
 4. In Supabase → **Authentication → Sign In / Providers → Phone** → SMS provider **Twilio** → die drei Werte eintragen → Speichern.
-5. **Gratis testen ohne SMS:** im selben Fenster unter „Test phone numbers and OTPs“ z. B. `436601234567=123456` eintragen.
-   Mit dieser Nummer und dem Code `123456` spielst du den ganzen Ablauf ohne SMS-Kosten durch.
+5. Die Testnummer aus 1.4 kannst du behalten – für sie werden nie SMS verschickt.
 
 ## 3. Claude-API (KI-Onboarding)
 
 1. Auf **console.anthropic.com** registrieren → **Settings → Billing**: Guthaben aufladen (z. B. 10 $) und
    unter **Limits** ein Monatslimit setzen, damit nichts ausufert.
 2. **API Keys → Create Key** → Name `tisch6` → Schlüssel kopieren → wird `ANTHROPIC_API_KEY`.
-3. Kosten-Richtwert: ein komplettes Bewerbungsgespräch kostet mit dem Standardmodell grob einige Cent.
-   Wer noch sparen will, setzt in Vercel zusätzlich `ANTHROPIC_MODEL=claude-haiku-5-5` (deutlich billiger, etwas weniger feinfühlig).
+3. Kosten-Richtwert: Ein komplettes Bewerbungsgespräch (ca. 20 Nachrichten plus Auswertung) kostet mit dem
+   Standardmodell Claude Opus 5.5 grob 20–50 Cent. Mit `ANTHROPIC_MODEL=claude-haiku-5-5` (in Vercel zusätzlich
+   eintragen) sind es weniger als 1 Cent – dafür ist das Gespräch etwas weniger feinfühlig. Für Tests reichen 5–10 $ Guthaben.
 
 ## 4. Vercel (Hosting) – kostenlos (Hobby-Tarif)
+
+Hinweis: Den Hobby-Tarif erlaubt Vercel nur für nicht-kommerzielle Nutzung. Zum Testen passt er; spätestens wenn
+echte Zahlungen laufen (Etappe 2), brauchst du den Pro-Tarif (ca. 20 $ im Monat).
 
 1. Auf **vercel.com** mit dem GitHub-Account anmelden.
 2. **Add New → Project** → Repository `ben1-sketch/Tisch6` importieren.
@@ -61,16 +70,18 @@ Empfehlung: **Twilio** (wird von Supabase direkt unterstützt und in Etappe 2 au
    | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | aus Schritt 1.3 |
    | `SUPABASE_SERVICE_ROLE_KEY` | aus Schritt 1.3 |
    | `ANTHROPIC_API_KEY` | aus Schritt 3.2 |
-   | `NEXT_PUBLIC_SITE_URL` | `https://tisch6.at` |
+   | `NEXT_PUBLIC_SITE_URL` | `https://tisch6.at` – erst eintragen, wenn die Domain verbunden ist (Schritt 5) |
    | `PHOTO_ENCRYPTION_KEY` | eine zufällige Passphrase mit mind. 32 Zeichen (siehe unten) |
 
-   **Foto-Schlüssel:** Damit werden die Verifizierungsfotos verschlüsselt. Erzeuge ihn z. B. mit dem
-   Passwort-Generator deines iPhones (Einstellungen → Passwörter → „+“ → „Starkes Passwort“ zweimal hintereinander kopieren)
-   oder auf bitwarden.com/password-generator mit Länge 40. **Bewahre ihn sicher auf und ändere ihn nie** –
-   ohne diesen Schlüssel sind die gespeicherten Fotos nicht mehr lesbar.
+   **Foto-Schlüssel:** Damit werden die Verifizierungsfotos verschlüsselt. Nimm einen langen Satz, den nur du kennst
+   (mind. 32 Zeichen, gern mit Zahlen und Sonderzeichen), und speichere ihn in deiner Passwörter-App.
+   **Ändere ihn nie** – ohne diesen Schlüssel sind die gespeicherten Fotos nicht mehr lesbar.
+
+   **Tipp am Handy:** Vercel erkennt es, wenn du mehrere Zeilen `NAME=Wert` auf einmal in das erste Feld einfügst –
+   du kannst die Werte also vorher in einer Notiz sammeln und gesammelt einfügen.
 
 4. **Deploy** klicken. Nach ca. 1–2 Minuten ist die Seite unter `tisch6-xxx.vercel.app` erreichbar.
-5. **Settings → Functions**: Region **Frankfurt (fra1)** wählen (kürzere Wege zur EU-Datenbank).
+5. Die Server-Region Frankfurt (`fra1`, nah an der EU-Datenbank) ist über `vercel.json` bereits voreingestellt.
 
 ## 5. GoDaddy (Domain tisch6.at auf Vercel zeigen lassen)
 
@@ -95,15 +106,15 @@ Auf den Seiten **Impressum**, **Datenschutz** und **AGB** sind alle offenen Anga
 
 ## 7. Testen
 
-1. `https://tisch6.at/de/bewerben` öffnen.
-2. Formular ausfüllen → Test-Handynummer aus 2.5 → Code `123456` → Foto aufnehmen oder auswählen.
+1. Deine Vercel-Adresse (z. B. `https://tisch6-xxx.vercel.app`) bzw. später `https://tisch6.at` öffnen → „Jetzt bewerben“.
+2. Formular ausfüllen → Handynummer `0660 1234567` → Code `123456` → Foto aufnehmen oder auswählen.
 3. Mit der KI-Gastgeberin chatten bis zum Ende.
 4. In Supabase → **Table Editor → applications**: Die Bewerbung steht mit `status = submitted`,
    dem Chat-Verlauf (`transcript`), dem ausgewerteten `profile` (inkl. `wunschtage` und den vier Achsen) und `photo_path`.
    Unter **Storage → verification-photos** liegt eine Datei `….jpg.enc` – sie ist verschlüsselt und lässt sich
    absichtlich nicht als Bild öffnen. Angezeigt wird sie erst im Adminbereich (Etappe 3).
 5. Am Ende erscheint dein Einladungslink („Bring eine Freundin mit“). In einem privaten Browserfenster öffnen und
-   mit einer zweiten Testnummer bewerben. Mit Häkchen „Wir bewerben uns zu zweit“ sind beide Einträge über `buddy_id`
+   mit einer zweiten Testnummer bewerben (vorher in Supabase z. B. `436601234568=123456` ergänzen). Mit Häkchen „Wir bewerben uns zu zweit“ sind beide Einträge über `buddy_id`
    verknüpft; in jedem Fall steht beim zweiten Eintrag in `referred_by` die einladende Person (Empfehlungsprogramm).
 6. Unter `/de/konto` den Status ansehen und die Löschfunktion testen.
 

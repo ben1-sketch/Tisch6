@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { z } from "zod";
 import { getUser } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -41,10 +41,12 @@ export async function POST(request: Request) {
 
   let reply: string;
   let complete: boolean;
+  let underage: boolean;
   try {
     const turn = await nextTurn(app.first_name, history);
     reply = turn.reply;
-    complete = turn.complete || userTurns >= MAX_USER_TURNS;
+    underage = turn.minderjaehrig;
+    complete = turn.complete || underage || userTurns >= MAX_USER_TURNS;
     if (complete && !turn.complete) {
       reply = "Danke dir, das war's schon – ich habe genug erfahren! Deine Bewerbung wird jetzt geprüft, innerhalb von 24 Stunden bekommst du eine Antwort per E-Mail.";
     }
@@ -57,18 +59,8 @@ export async function POST(request: Request) {
   const update: Record<string, unknown> = { transcript, user_turns: userTurns };
 
   if (complete) {
-    try {
-      const profile = await extractProfile(transcript);
-      update.profile = profile;
-      update.personality_type = profile.persoenlichkeit.typ;
-      update.status = profile.unter_18 ? "rejected" : "submitted";
-      update.submitted_at = new Date().toISOString();
-    } catch (e) {
-      // Interview ist trotzdem gespeichert; die Auswertung kann später nachgeholt werden.
-      console.error(e);
-      update.status = "submitted";
-      update.submitted_at = new Date().toISOString();
-    }
+    update.status = underage ? "rejected" : "submitted";
+    update.submitted_at = new Date().toISOString();
   }
 
   // Optimistische Sperre: nur speichern, wenn niemand parallel geantwortet hat
@@ -81,6 +73,27 @@ export async function POST(request: Request) {
     .maybeSingle();
   if (saveError) return NextResponse.json({ error: saveError.message }, { status: 500 });
   if (!saved) return NextResponse.json({ error: "Bitte Seite neu laden." }, { status: 409 });
+
+  // Profil-Auswertung erst nach der Antwort – die Person wartet nicht darauf,
+  // und das 60-Sekunden-Limit gilt nicht für Gesprächsrunde und Auswertung zusammen.
+  if (complete && !underage) {
+    after(async () => {
+      try {
+        const profile = await extractProfile(transcript);
+        await admin
+          .from("applications")
+          .update({
+            profile,
+            personality_type: profile.persoenlichkeit.typ,
+            ...(profile.unter_18 ? { status: "rejected" } : {}),
+          })
+          .eq("id", user.id);
+      } catch (e) {
+        // Profil bleibt leer; die automatische Bewertung (Etappe 2) holt die Auswertung nach.
+        console.error(e);
+      }
+    });
+  }
 
   return NextResponse.json({ reply, complete, status: saved.status });
 }
