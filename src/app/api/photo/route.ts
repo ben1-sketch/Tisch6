@@ -24,10 +24,16 @@ export async function POST(request: Request) {
 
   // Genau ein Foto pro Person: ein neuer Upload ersetzt das alte
   const path = `${user.id}.jpg.enc`;
-  const { error } = await admin.storage
-    .from(PHOTO_BUCKET)
-    .upload(path, encryptPhoto(data), { contentType: "application/octet-stream", upsert: true });
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  try {
+    const { error } = await admin.storage
+      .from(PHOTO_BUCKET)
+      .upload(path, encryptPhoto(data), { contentType: "application/octet-stream", upsert: true });
+    if (error) throw error;
+  } catch (e) {
+    // Ursache (z. B. fehlender Foto-Schlüssel) steht in den Vercel-Logs
+    console.error("Foto-Speicherung fehlgeschlagen:", e);
+    return NextResponse.json({ error: "Dein Foto konnte gerade nicht gespeichert werden. Bitte versuch es gleich nochmal." }, { status: 500 });
+  }
 
   const { error: dbError } = await admin.from("applications").update({ photo_path: path }).eq("id", user.id);
   if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 });
