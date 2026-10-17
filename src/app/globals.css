@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+/* Tisch6 · Mitternachtsblau mit Rosé – "KI-zukunftsmäßig, aber romantisch" */
+@theme {
+  --color-night-950: #050a1c;
+  --color-night-900: #0a1128;
+  --color-night-800: #111a3a;
+  --color-night-700: #1a2550;
+  --color-night-600: #26336a;
+  --color-mist: #a7aed0;
+  --color-cloud: #eef0fa;
+  --color-rose-300: #f9cdd6;
+  --color-rose-400: #f4b6c2;
+  --color-rose-500: #e88fa3;
+  --color-rose-600: #d16d86;
+
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Sora Variable", "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+  background: var(--color-night-950);
+  color-scheme: dark;
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-night-900);
+  color: var(--color-cloud);
+  font-family: var(--font-sans);
+}
+
+::selection {
+  background: var(--color-rose-500);
+  color: var(--color-night-950);
+}
+
+/* feines Punktraster für den Tech-Look */
+.bg-grid {
+  background-image: radial-gradient(rgb(167 174 208 / 0.12) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+.text-gradient {
+  background: linear-gradient(100deg, var(--color-cloud) 10%, var(--color-rose-400) 60%, var(--color-rose-500));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.glass {
+  background: linear-gradient(180deg, rgb(26 37 80 / 0.55), rgb(17 26 58 / 0.55));
+  border: 1px solid rgb(167 174 208 / 0.14);
+  backdrop-filter: blur(12px);
+}
+
+.prose-legal h2 {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 2rem 0 0.5rem;
+  color: var(--color-cloud);
+}
+.prose-legal p,
+.prose-legal li {
+  color: var(--color-mist);
+  line-height: 1.7;
+  margin: 0.5rem 0;
+}
+.prose-legal ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+}
+.prose-legal a {
+  color: var(--color-rose-400);
+  text-decoration: underline;
+}
+.placeholder {
+  background: rgb(232 143 163 / 0.18);
+  color: var(--color-rose-300);
+  border-radius: 4px;
+  padding: 0 4px;
+}
+
+@keyframes orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.animate-orbit {
+  animation: orbit 60s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-orbit {
+    animation: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
