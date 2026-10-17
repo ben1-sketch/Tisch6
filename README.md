@@ -9,9 +9,9 @@ KI-kuratierte Dating-Dinner für Singles – sechs Menschen, ein Tisch. Pilot in
 |---|---|---|
 | 1 | Öffentliche Website, Bewerbung (auch zu zweit), SMS- & Foto-Verifizierung, KI-Onboarding, Einladungslink, Rechtstexte, Profil löschen | ✅ |
 | 2 | Bewertung, E-Mails & SMS, KI-Matching, Terminfestlegung, Nachrücker, Stripe & Gründungspaket, Erinnerungen, Eisbrecher-Karte, Meldeknopf, Wiedersehen & Feedback, Rabatte, Folgeeinladungen | ✅ |
-| 3 | Adminbereich | offen |
+| 3 | Adminbereich unter `/admin`: Bewerbungen mit Foto, Profile, Warteliste, Dinner, Zahlungen, Matches, Feedback, Meldungen, Lokale, Versand, Protokoll – mit Eingriffen | ✅ |
 
-Einrichtung: **[Etappe 1](docs/SETUP-ETAPPE-1.md)** · **[Etappe 2](docs/SETUP-ETAPPE-2.md)**
+Einrichtung: **[Etappe 1](docs/SETUP-ETAPPE-1.md)** · **[Etappe 2](docs/SETUP-ETAPPE-2.md)** · **[Etappe 3](docs/SETUP-ETAPPE-3.md)**
 
 ## Technik
 
@@ -32,6 +32,8 @@ src/app/api/account/       Konto-Überblick, Verfügbarkeit, Profil endgültig l
 src/app/api/cron/tick/     Automatischer Durchlauf (Bewertung, Matching, Fristen, Erinnerungen, Abschluss)
 src/app/api/seat/…         Einladung: bezahlen, Paket, absagen, melden, Feedback, Kalender
 src/app/api/stripe/webhook Zahlungen verbuchen
+src/app/admin/             Adminbereich (Passwort-Login, Übersicht, Bewerbungen, Dinner, Zahlungen …)
+src/app/admin/actions.ts   Alle Eingriffe des Teams – jede Aktion prüft die Anmeldung selbst
 src/components/            Header, Footer, Logo, ApplyFlow (Bewerbung + Chat), Account
 src/lib/config.ts          Alle Spielregeln: Preise, Fristen, Tischregeln
 src/lib/onboarding.ts      Interview-Prompt, Antwort- und Profil-Schema
@@ -40,7 +42,9 @@ src/lib/matching*.ts       Tischregeln, Kandidatenrunden, KI-Wahl, Terminfindung
 src/lib/seats.ts           Einladen, Zusagen, Absagen, Nachrücker, Entscheidung 72 h vorher
 src/lib/dinners.ts         Erinnerungen, Eisbrecher, Wiedersehen, Abschluss, Lebenszeichen, Lernen
 src/lib/messages.ts        Alle E-Mail- und SMS-Texte
-src/proxy.ts               Sprach-Weiterleitung + Supabase-Session
+src/lib/tick.ts            Der automatische Durchlauf (Cron und Knopf im Adminbereich)
+src/lib/admin/             Admin-Anmeldung, Eingriffe (sperren, stornieren, erstatten …), Anzeige-Texte
+src/proxy.ts               Sprach-Weiterleitung, Supabase-Session, Vorab-Check für /admin
 supabase/migrations/       Datenbankschema
 ```
 

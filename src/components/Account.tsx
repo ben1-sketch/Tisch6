@@ -20,6 +20,7 @@ type Overview = {
   buddyLinked: boolean;
   packageRemaining: number | null;
   packageExpires: string | null;
+  packageIsFounder: boolean;
   discountCents: number | null;
   next: { token: string; status: string; startsAt: string } | null;
 };
@@ -108,7 +109,10 @@ export function Account({ lang, t, buddyT }: { lang: string; t: T; buddyT: Dicti
             {phone && <p className="mt-1 text-sm text-mist">{phone}</p>}
             {overview?.packageRemaining && overview.packageExpires && (
               <p className="mt-3 text-sm text-mist">
-                {fill(t.packageLeft, { n: overview.packageRemaining, date: formatDate(new Date(overview.packageExpires)) })}
+                {fill(overview.packageIsFounder ? t.packageLeft : t.creditLeft, {
+                  n: overview.packageRemaining,
+                  date: formatDate(new Date(overview.packageExpires)),
+                })}
               </p>
             )}
             {overview?.discountCents && !overview.packageRemaining && (

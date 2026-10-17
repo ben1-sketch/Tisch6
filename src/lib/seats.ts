@@ -12,7 +12,7 @@ import {
   OPEN_SEAT,
   must,
 } from "./db";
-import { type Gender, type Person, kitchenNotes, tableSummary, toPerson, validGroup } from "./matching-core";
+import { type Gender, type Person, kitchenNotes, otherGender, tableSummary, toPerson, validGroup } from "./matching-core";
 import {
   type DinnerInfo,
   adminMail,
@@ -51,7 +51,7 @@ export function dinnerInfo(dinner: Dinner, restaurant: Restaurant): DinnerInfo {
   return { startsAt: new Date(dinner.starts_at), restaurant: restaurant.name, district: restaurant.district, address: restaurant.address };
 }
 
-async function seatsOf(db: Db, dinnerId: string) {
+export async function seatsOf(db: Db, dinnerId: string) {
   return must(await db.from("seats").select("*").eq("dinner_id", dinnerId), "Plätze laden") as Seat[];
 }
 
@@ -105,7 +105,7 @@ export async function offerFor(db: Db, app: Pick<Application, "id" | "city">): P
 
   let founderAvailable = false;
   if (!pkg && app.city === FOUNDER.city) {
-    const { data: owned } = await db.from("packages").select("id").eq("application_id", app.id).limit(1);
+    const { data: owned } = await db.from("packages").select("id").eq("application_id", app.id).eq("kind", "founder").limit(1);
     if (!owned?.length) {
       const { count } = await db.from("packages").select("id", { count: "exact", head: true }).eq("kind", "founder");
       founderAvailable = (count ?? 0) < FOUNDER.limit;
@@ -117,7 +117,8 @@ export async function offerFor(db: Db, app: Pick<Application, "id" | "city">): P
 export function priceText(offer: Offer) {
   if (offer.package) {
     const n = offer.package.remaining;
-    return `mit deinem Gründungspaket (noch ${n} ${n === 1 ? "Tischteilnahme" : "Tischteilnahmen"})`;
+    const what = offer.package.kind === "founder" ? "deinem Gründungspaket" : "deinem Guthaben";
+    return `mit ${what} (noch ${n} ${n === 1 ? "Tischteilnahme" : "Tischteilnahmen"})`;
   }
   if (offer.discount) return `${euro(offer.priceCents)} statt ${euro(PRICES.seat)}`;
   return `${euro(PRICES.seat)} pro Tischteilnahme`;
@@ -160,33 +161,45 @@ export async function sendInvitation(
 }
 
 /**
- * Nachrücker suchen: gleiches Geschlecht wie der frei gewordene Platz, passt in die Runde
- * (Alter, Wunsch-Altersspannen, Wochentag, keine Begleitung am Tisch), wer am längsten wartet zuerst.
+ * Mögliche Nachrücker je Geschlecht: passt in die Runde (Alter, Wunsch-Altersspannen, Wochentag,
+ * keine Begleitung am Tisch), wer am längsten wartet zuerst. Null, wenn das Dinner keine Nachrücker mehr nimmt.
  */
-export async function findReplacement(db: Db, dinnerId: string, gender: Gender | null) {
+export async function replacementCandidates(db: Db, dinnerId: string, limit = 1) {
   const { dinner, restaurant } = await loadDinner(db, dinnerId);
   if (dinner.status !== "inviting" && dinner.status !== "confirmed") return null;
   if (hoursUntil(dinner.starts_at) < TIMING.lastReplacementHoursBefore) return null;
 
   const seats = await seatsOf(db, dinner.id);
   const members = await tablePeople(db, seats);
-  const missing = (g: Gender) => TABLE.perGender - members.filter((m) => m.gender === g).length;
-  const g: Gender | null = gender && missing(gender) > 0 ? gender : missing("frau") > 0 ? "frau" : missing("mann") > 0 ? "mann" : null;
-  if (!g) return null;
-
+  const missing = {
+    frau: TABLE.perGender - members.filter((m) => m.gender === "frau").length,
+    mann: TABLE.perGender - members.filter((m) => m.gender === "mann").length,
+  };
   const tried = new Set(seats.map((s) => s.application_id));
   const weekday = weekdayOf(viennaDate(new Date(dinner.starts_at)));
-  const candidate = (await loadPool(db))
-    .filter((p) => p.gender === g && !tried.has(p.id) && (!p.days || p.days.includes(weekday)) && validGroup([...members, p]))
-    .sort((a, b) => a.waitingSince - b.waitingSince)[0];
-  if (!candidate) return null;
+  const pool = missing.frau > 0 || missing.mann > 0 ? await loadPool(db) : [];
+  const fits = (g: Gender) =>
+    missing[g] <= 0
+      ? []
+      : pool
+          .filter((p) => p.gender === g && !tried.has(p.id) && (!p.days || p.days.includes(weekday)) && validGroup([...members, p]))
+          .sort((a, b) => a.waitingSince - b.waitingSince)
+          .slice(0, limit);
+  return { dinner, restaurant, members, missing, candidates: { frau: fits("frau"), mann: fits("mann") } };
+}
 
+/** Bietet einer Person einen frei gewordenen Platz an: 12 Stunden Zeit, E-Mail + SMS. */
+export async function offerSeat(
+  db: Db,
+  o: { dinner: Dinner; restaurant: Restaurant; members: Person[] },
+  candidate: Person,
+) {
   const expires = new Date(
-    Math.min(Date.now() + TIMING.replacementHours * HOUR, new Date(dinner.starts_at).getTime() - 2 * HOUR),
+    Math.min(Date.now() + TIMING.replacementHours * HOUR, new Date(o.dinner.starts_at).getTime() - 2 * HOUR),
   );
   const { data: seat, error } = await db
     .from("seats")
-    .insert({ dinner_id: dinner.id, application_id: candidate.id, status: "offered", replacement: true, expires_at: expires.toISOString() })
+    .insert({ dinner_id: o.dinner.id, application_id: candidate.id, status: "offered", replacement: true, expires_at: expires.toISOString() })
     .select("*")
     .single();
   if (error) {
@@ -196,8 +209,17 @@ export async function findReplacement(db: Db, dinnerId: string, gender: Gender |
   }
   await db.from("applications").update({ last_invited_at: new Date().toISOString() }).eq("id", candidate.id);
   const app = await loadApplication(db, candidate.id);
-  await sendInvitation(db, { seat: seat as Seat, app, dinner, restaurant, table: [...members, candidate] });
+  await sendInvitation(db, { seat: seat as Seat, app, dinner: o.dinner, restaurant: o.restaurant, table: [...o.members, candidate] });
   return seat as Seat;
+}
+
+/** Nachrücker suchen: zuerst das Geschlecht des frei gewordenen Platzes, sonst was am Tisch fehlt. */
+export async function findReplacement(db: Db, dinnerId: string, gender: Gender | null) {
+  const found = await replacementCandidates(db, dinnerId, 1);
+  if (!found) return null;
+  const order: Gender[] = gender ? [gender, otherGender(gender)] : ["frau", "mann"];
+  const g = order.find((x) => found.candidates[x].length > 0);
+  return g ? offerSeat(db, found, found.candidates[g][0]) : null;
 }
 
 // ---------------------------------------------------------------------------
@@ -216,10 +238,10 @@ export async function afterSeatChange(db: Db, dinner: Dinner, restaurant: Restau
 }
 
 /** Meldet dem Lokal Personenzahl und Küchenhinweise (ohne Namen); bei Änderungen erneut. */
-export async function sendReservation(db: Db, dinner: Dinner, restaurant: Restaurant, seats?: Seat[]) {
+export async function sendReservation(db: Db, dinner: Dinner, restaurant: Restaurant, seats?: Seat[], force = false) {
   seats ??= await seatsOf(db, dinner.id);
   const confirmed = seats.filter((s) => s.status === "confirmed");
-  if (!confirmed.length || confirmed.length === dinner.reserved_count) return;
+  if (!confirmed.length || (confirmed.length === dinner.reserved_count && !force)) return;
   const apps = await applicationsByIds(db, confirmed.map((s) => s.application_id));
   const content = reservationMail({
     dinner: dinnerInfo(dinner, restaurant),
@@ -227,7 +249,7 @@ export async function sendReservation(db: Db, dinner: Dinner, restaurant: Restau
     kitchen: kitchenNotes(apps.map((a) => ({ diet: a.profile?.ernaehrung ?? null, intolerances: a.profile?.unvertraeglichkeiten ?? [] }))),
     update: dinner.reserved_count !== null,
   });
-  const dedupeKey = `reservation:${dinner.id}:${confirmed.length}`;
+  const dedupeKey = `reservation:${dinner.id}:${confirmed.length}${force ? `:${Date.now()}` : ""}`;
   const result = restaurant.email
     ? await sendEmail(db, { to: restaurant.email, content, kind: "reservation", dedupeKey })
     : await notifyAdmin(db, { ...content, subject: `[Bitte ans Lokal weitergeben – keine E-Mail hinterlegt] ${content.subject}` }, "reservation", dedupeKey);
@@ -237,7 +259,7 @@ export async function sendReservation(db: Db, dinner: Dinner, restaurant: Restau
 export async function confirmSeat(
   db: Db,
   seatId: string,
-  p: { paidWith: "stripe" | "package"; priceCents: number; paymentId?: string | null; packageId?: string | null; discountId?: string | null },
+  p: { paidWith: "stripe" | "package" | "manual"; priceCents: number; paymentId?: string | null; packageId?: string | null; discountId?: string | null },
 ) {
   const now = new Date().toISOString();
   const { data } = await db
@@ -281,7 +303,7 @@ async function bumpMissed(db: Db, applicationId: string) {
   await db.from("applications").update({ missed_bookings: app.missed_bookings + 1 }).eq("id", applicationId);
 }
 
-async function genderOf(db: Db, applicationId: string): Promise<Gender | null> {
+export async function genderOf(db: Db, applicationId: string): Promise<Gender | null> {
   const { data } = await db.from("applications").select("gender:profile->>geschlecht").eq("id", applicationId).maybeSingle();
   const g = (data as { gender: string | null } | null)?.gender;
   return g === "frau" || g === "mann" ? g : null;
@@ -329,6 +351,15 @@ export async function giveBack(db: Db, seat: Seat): Promise<string | null> {
         text = `Deine Zahlung von ${euro(pay.amount_cents)} erstatten wir dir in den nächsten Tagen.`;
       }
     }
+  } else if (seat.paid_with === "manual" && (seat.price_cents ?? 0) > 0) {
+    // von Hand bestätigt (z. B. bar bezahlt) – Erstattung kann nur das Team erledigen
+    await notifyAdmin(
+      db,
+      adminMail("Erstattung von Hand", [`Platz ${seat.id} war von Hand bestätigt (${euro(seat.price_cents!)}). Bitte den Betrag selbst erstatten.`]),
+      "admin_refund",
+      `admin_refund_manual:${seat.id}`,
+    );
+    text = `Deine Zahlung von ${euro(seat.price_cents!)} erstatten wir dir in den nächsten Tagen.`;
   }
   if (seat.discount_id) await db.from("discounts").update({ used_at: null, used_seat_id: null }).eq("id", seat.discount_id);
   return text;

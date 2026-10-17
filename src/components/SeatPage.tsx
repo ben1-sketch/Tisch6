@@ -113,9 +113,11 @@ export function SeatPage({ view, t, lang, paid }: { view: SeatView; t: T; lang: 
             {view.offer.packageRemaining ? (
               <>
                 <button className={primary} disabled={busy} onClick={() => act("credit")}>
-                  {t.usePackage}
+                  {view.offer.packageIsFounder ? t.usePackage : t.useCredit}
                 </button>
-                <p className="text-center text-xs text-mist">{fill(t.packageLeft, { n: view.offer.packageRemaining })}</p>
+                <p className="text-center text-xs text-mist">
+                  {fill(view.offer.packageIsFounder ? t.packageLeft : t.creditLeft, { n: view.offer.packageRemaining })}
+                </p>
               </>
             ) : (
               <>

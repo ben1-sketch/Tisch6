@@ -132,7 +132,7 @@ export async function matchTables(db: Db, deadline: number) {
       db,
       adminMail("Kein Stammlokal eingetragen", [
         `${pool.length} Personen warten auf einen Tisch, aber es ist noch kein aktives Lokal eingetragen.`,
-        "Bitte in Supabase in der Tabelle restaurants ein Lokal anlegen (siehe Anleitung Etappe 2).",
+        "Bitte im Adminbereich unter „Lokale“ ein Lokal anlegen: /admin/lokale",
       ]),
       "admin_no_restaurant",
       `no_restaurant:${dateKey(viennaDate(new Date()))}`,

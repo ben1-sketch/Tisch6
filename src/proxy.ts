@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { defaultLocale, locales } from "@/i18n/config";
+import { ADMIN_COOKIE, verifySessionToken } from "@/lib/admin/session";
 import { isSupabaseConfigured, supabasePublishableKey, supabaseUrl } from "@/lib/supabase/env";
 
 function pickLocale(request: NextRequest) {
@@ -13,6 +14,21 @@ function pickLocale(request: NextRequest) {
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // Adminbereich: ohne Sprachpräfix und ohne Supabase-Session. Nicht angemeldet → zur Anmeldung
+  // (nur ein Vorab-Check – jede Admin-Seite und -Aktion prüft selbst noch einmal).
+  if (pathname === "/admin" || pathname.startsWith("/admin/")) {
+    const loggedIn = verifySessionToken(request.cookies.get(ADMIN_COOKIE)?.value);
+    if (!loggedIn && request.method === "GET" && pathname !== "/admin/login") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/admin/login";
+      url.search = `?weiter=${encodeURIComponent(pathname + request.nextUrl.search)}`;
+      return NextResponse.redirect(url);
+    }
+    const response = NextResponse.next();
+    response.headers.set("X-Robots-Tag", "noindex, nofollow");
+    return response;
+  }
 
   // Seiten ohne Sprachpräfix auf /de/... umleiten
   if (!pathname.startsWith("/api")) {

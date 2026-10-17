@@ -39,6 +39,9 @@ export type Application = {
   founder: boolean;
   referral_rewarded_at: string | null;
   magic_token: string;
+  admin_note: string | null;
+  consent_version: string;
+  consent_at: string;
 };
 
 export type Restaurant = {
@@ -53,6 +56,7 @@ export type Restaurant = {
   start_time: string;
   tables_per_evening: number;
   active: boolean;
+  notes: string | null;
 };
 
 export type DinnerStatus = "inviting" | "confirmed" | "completed" | "postponed" | "cancelled";
@@ -80,7 +84,9 @@ export type SeatStatus =
   | "attended"
   | "no_show"
   | "postponed"
-  | "withdrawn";
+  | "withdrawn"
+  /** vom Team storniert oder zurückgezogen */
+  | "removed";
 
 /** Plätze, die (noch) zählen: eingeladen, angeboten oder fix */
 export const OPEN_SEAT: SeatStatus[] = ["invited", "offered", "confirmed"];
@@ -100,7 +106,7 @@ export type Seat = {
   confirmed_at: string | null;
   ended_at: string | null;
   price_cents: number | null;
-  paid_with: "stripe" | "package" | null;
+  paid_with: "stripe" | "package" | "manual" | null;
   payment_id: string | null;
   package_id: string | null;
   discount_id: string | null;
@@ -116,11 +122,17 @@ export type Payment = {
   stripe_session_id: string | null;
   stripe_payment_intent: string | null;
   status: "paid" | "refunded";
+  created_at: string;
+  refunded_at: string | null;
 };
 
 export type Package = {
   id: string;
+  created_at: string;
   application_id: string;
+  payment_id: string | null;
+  /** 'founder' = Gründungspaket, 'gutschrift' = vom Team geschenkt */
+  kind: "founder" | "gutschrift";
   total: number;
   remaining: number;
   expires_at: string;
@@ -129,7 +141,7 @@ export type Package = {
 export type Discount = {
   id: string;
   application_id: string;
-  reason: "referral" | "five_person";
+  reason: "referral" | "five_person" | "manual";
   price_cents: number;
   source_id: string;
   used_at: string | null;
@@ -138,6 +150,7 @@ export type Discount = {
 
 export type Feedback = {
   seat_id: string;
+  created_at: string;
   rating_evening: number | null;
   rating_table: number | null;
   improve: string | null;
@@ -145,6 +158,45 @@ export type Feedback = {
   absent: string[];
   share_phone: boolean;
 };
+
+export type Match = { id: string; created_at: string; dinner_id: string; a_id: string; b_id: string };
+
+export type Report = {
+  id: string;
+  created_at: string;
+  dinner_id: string | null;
+  reporter_id: string | null;
+  reported_id: string | null;
+  reason: string | null;
+  status: "open" | "dismissed" | "blocked";
+  resolved_at: string | null;
+  admin_note: string | null;
+};
+
+export type Notification = {
+  id: string;
+  created_at: string;
+  application_id: string | null;
+  channel: "email" | "sms";
+  kind: string;
+  dedupe_key: string | null;
+  recipient: string;
+  subject: string | null;
+  status: "pending" | "sent" | "failed" | "logged";
+  provider_id: string | null;
+  error: string | null;
+};
+
+export type AdminLog = {
+  id: string;
+  created_at: string;
+  action: string;
+  application_id: string | null;
+  dinner_id: string | null;
+  detail: string | null;
+};
+
+export type Learning = { id: string; created_at: string; feedback_count: number; notes: string };
 
 /** Wirft bei Datenbankfehlern, statt sie still zu übergehen */
 export function must<T>(result: { data: T; error: { message: string } | null }, context: string): T {

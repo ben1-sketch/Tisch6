@@ -304,6 +304,78 @@ export function cancelledMail(o: { name: string; dinner: DinnerInfo; refund: str
   });
 }
 
+/** Vom Team storniert bzw. zurückgezogen (Adminbereich) */
+export function seatRemovedMail(o: { name: string; dinner: DinnerInfo; refund: string | null; wasConfirmed: boolean }): EmailContent {
+  return layout({
+    subject: o.wasConfirmed ? "Dein Platz wurde storniert" : "Deine Einladung ist hinfällig",
+    title: `Eine Änderung für dich, ${o.name}`,
+    paragraphs: [
+      o.wasConfirmed
+        ? `Wir mussten deinen Platz für den ${formatDate(o.dinner.startsAt)} leider stornieren. Das tut uns leid!`
+        : `Deine Einladung für den ${formatDate(o.dinner.startsAt)} ist leider hinfällig – du musst nichts tun.`,
+      ...(o.wasConfirmed ? [o.refund ?? "Für dich fallen dadurch keine Kosten an."] : []),
+      "Wir stellen dir so bald wie möglich einen neuen Tisch zusammen.",
+    ],
+    cta: { label: "Mein Konto", url: accountUrl() },
+  });
+}
+
+/** Das ganze Dinner fällt aus (vom Team abgesagt) */
+export function dinnerCancelledMail(o: { name: string; dinner: DinnerInfo; refund: string | null; wasConfirmed: boolean }): EmailContent {
+  return layout({
+    subject: "Dein Tisch fällt leider aus",
+    title: `Dein Tisch fällt leider aus, ${o.name}`,
+    paragraphs: [
+      `Den Abend am ${formatDate(o.dinner.startsAt)} im ${place(o.dinner)} müssen wir leider absagen. Das tut uns sehr leid!`,
+      ...(o.wasConfirmed ? [o.refund ?? "Für dich fallen dadurch keine Kosten an."] : ["Die Einladung ist damit hinfällig – du musst nichts tun."]),
+      "Wir stellen dir so bald wie möglich einen neuen Tisch zusammen.",
+    ],
+    cta: { label: "Mein Konto", url: accountUrl() },
+  });
+}
+
+export function blockedMail(o: { name: string; refund: string | null }): EmailContent {
+  return layout({
+    subject: "Dein Tisch6-Profil ist gesperrt",
+    title: `Dein Profil ist gesperrt, ${o.name}`,
+    paragraphs: [
+      "Wir haben dein Tisch6-Profil gesperrt. Du bekommst deshalb keine Einladungen mehr; offene Plätze haben wir freigegeben.",
+      ...(o.refund ? [o.refund] : []),
+      "Wenn du denkst, dass das ein Irrtum ist, antworte einfach auf diese E-Mail.",
+    ],
+  });
+}
+
+export function creditMail(o: { name: string; seats: number }): EmailContent {
+  const what = o.seats === 1 ? "eine Tischteilnahme" : `${o.seats} Tischteilnahmen`;
+  return layout({
+    subject: "Ein Geschenk von Tisch6",
+    title: `Ein kleines Geschenk für dich, ${o.name}`,
+    paragraphs: [
+      `Wir haben dir ${what} gutgeschrieben – 12 Monate gültig.`,
+      "Bei deiner nächsten Einladung kannst du damit mit einem Klick zusagen, ganz ohne zu bezahlen.",
+    ],
+    cta: { label: "Mein Konto", url: accountUrl() },
+  });
+}
+
+export function discountMail(o: { name: string; cents: number }): EmailContent {
+  return layout({
+    subject: "Deine nächste Tischteilnahme ist günstiger",
+    title: `Gute Nachricht, ${o.name}`,
+    paragraphs: [`Deine nächste Tischteilnahme kostet nur ${euro(o.cents)} statt ${euro(PRICES.seat)}. Der Rabatt wird bei deiner nächsten Einladung automatisch abgezogen.`],
+    cta: { label: "Mein Konto", url: accountUrl() },
+  });
+}
+
+export function refundMail(o: { name: string; cents: number }): EmailContent {
+  return layout({
+    subject: "Wir haben dir Geld erstattet",
+    title: `Erstattung für dich, ${o.name}`,
+    paragraphs: [`Wir haben dir ${euro(o.cents)} erstattet. Je nach Bank ist der Betrag in ein paar Tagen auf deinem Konto.`],
+  });
+}
+
 export function refundText(o: { cents: number | null; package: boolean }) {
   if (o.package) return "Die Tischteilnahme ist wieder in deinem Paket gutgeschrieben.";
   if (o.cents) return `Deine Zahlung von ${euro(o.cents)} bekommst du automatisch zurück – je nach Bank dauert das ein paar Tage.`;
@@ -412,6 +484,17 @@ export function reservationMail(o: { dinner: DinnerInfo; count: number; kitchen:
       ["Hinweise für die Küche", o.kitchen.length ? o.kitchen.join(", ") : "keine"],
     ],
     after: ["Die Gäste bestellen und zahlen Essen und Getränke selbst. Vielen Dank – wir freuen uns auf den Abend bei euch!"],
+  });
+}
+
+export function reservationCancelledMail(o: { dinner: DinnerInfo }): EmailContent {
+  return layout({
+    subject: `Storno Tisch6: ${formatDate(o.dinner.startsAt)}`,
+    title: "Storno unserer Reservierung",
+    paragraphs: [
+      `Hallo liebes Team vom ${o.dinner.restaurant},`,
+      `leider müssen wir unsere Tisch6-Reservierung für ${formatDateTime(o.dinner.startsAt)} absagen. Bitte gebt den Tisch frei – danke und entschuldigt die Umstände!`,
+    ],
   });
 }
 

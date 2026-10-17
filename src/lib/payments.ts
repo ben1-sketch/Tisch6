@@ -27,7 +27,7 @@ export async function createCheckout(db: Db, seat: Seat, app: Application, wants
     amount = PRICES.founderPackage;
     name = `Tisch6 · Gründungspaket (${FOUNDER.seats} Tischteilnahmen, ${FOUNDER.validMonths} Monate gültig)`;
   } else if (offer.package) {
-    throw new PaymentError("Du hast noch Guthaben in deinem Gründungspaket – nutze das.");
+    throw new PaymentError("Du hast noch Guthaben für eine Tischteilnahme – nutze das.");
   }
 
   const metadata = {
@@ -52,7 +52,7 @@ export async function createCheckout(db: Db, seat: Seat, app: Application, wants
   return session.url;
 }
 
-/** Ein-Klick-Zusage mit Guthaben aus dem Gründungspaket */
+/** Ein-Klick-Zusage mit Guthaben (Gründungspaket oder Gutschrift vom Team) */
 export async function redeemCredit(db: Db, seat: Seat, app: Application) {
   const offer = await offerFor(db, app);
   const pkg = offer.package;

@@ -36,6 +36,7 @@ export async function GET() {
       buddyLinked: Boolean(app.buddy_id),
       packageRemaining: offer.package?.remaining ?? null,
       packageExpires: offer.package?.expires_at ?? null,
+      packageIsFounder: offer.package?.kind === "founder",
       discountCents: offer.discount?.price_cents ?? null,
       next: next ? { token: next.token, status: next.status, startsAt: next.dinners.starts_at } : null,
     },

@@ -481,16 +481,17 @@ const LearningSchema = z.object({
   notizen: z.array(z.string()).describe("Höchstens acht konkrete Hinweise für künftige Tischrunden"),
 });
 
-export async function updateLearnings(db: Db) {
+/** Wöchentlich ab fünf neuen Rückmeldungen; force (Adminbereich) wertet sofort alles aus. */
+export async function updateLearnings(db: Db, force = false) {
   const latest = (await db.from("learnings").select("created_at").order("created_at", { ascending: false }).limit(1).maybeSingle()).data as
     | { created_at: string }
     | null;
-  if (latest && Date.now() - new Date(latest.created_at).getTime() < 7 * DAY) return false;
+  if (!force && latest && Date.now() - new Date(latest.created_at).getTime() < 7 * DAY) return false;
 
   let newer = db.from("feedback").select("seat_id", { count: "exact", head: true });
-  if (latest) newer = newer.gt("created_at", latest.created_at);
+  if (latest && !force) newer = newer.gt("created_at", latest.created_at);
   const { count } = await newer;
-  if ((count ?? 0) < 5) return false;
+  if ((count ?? 0) < (force ? 1 : 5)) return false;
 
   const rows = must(
     await db

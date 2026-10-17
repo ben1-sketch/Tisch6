@@ -26,6 +26,7 @@ export default function Datenschutz() {
         <li>Meldungen über das Verhalten am Tisch: wer wen wann gemeldet hat und die Beschreibung. Die gemeldete Person erfährt nicht, wer gemeldet hat.</li>
         <li>Nach dem Dinner: deine anonymen Wiedersehen-Angaben und dein freiwilliges Feedback.</li>
         <li>Teilnahmen, Absagen und Nichterscheinen sowie Zahlungsinformationen (die Zahlungsdaten selbst verarbeitet nur Stripe).</li>
+        <li>Interne Vermerke des Tisch6-Teams, z. B. zur Prüfung einer Meldung, zu Gutschriften oder zu Absprachen mit dir. Eingriffe des Teams werden ohne Namen protokolliert.</li>
         <li>Zeitpunkt und Version deiner Einwilligungen.</li>
         <li>Technisch notwendige Daten (Login-Cookies zur Sitzungsverwaltung, Server-Protokolle mit IP-Adresse).</li>
       </ul>

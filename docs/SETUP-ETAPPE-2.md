@@ -15,7 +15,8 @@ Dafür brauchst du einmalig: **Supabase** (Datenbank, Lokal, Zeitplan), **Resend
 **SQL Editor** → neue Abfrage → kompletten Inhalt von `supabase/migrations/0004_etappe2_dinner.sql` einfügen → **Run**.
 
 ### 1.2 Stammlokal eintragen
-Ohne Lokal kann kein Termin entstehen. Im **SQL Editor** (Werte anpassen):
+Ohne Lokal kann kein Termin entstehen. **Einfacher ab Etappe 3:** im Adminbereich unter **Lokale** anlegen.
+Oder im **SQL Editor** (Werte anpassen):
 
 ```sql
 insert into public.restaurants (name, address, district, email, phone, weekdays, start_time, tables_per_evening)

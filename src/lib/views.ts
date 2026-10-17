@@ -24,7 +24,7 @@ export type SeatView = {
   restaurant: { name: string; district: string | null; address: string | null; mapsUrl: string | null };
   table: string;
   members: { id: string; firstName: string }[];
-  offer: { packageRemaining: number | null; priceCents: number; discounted: boolean; founderAvailable: boolean } | null;
+  offer: { packageRemaining: number | null; packageIsFounder: boolean; priceCents: number; discounted: boolean; founderAvailable: boolean } | null;
   paymentsEnabled: boolean;
   canCancel: boolean;
   cancelFree: boolean;
@@ -84,6 +84,7 @@ export async function seatView(db: Db, token: string): Promise<SeatView | null> 
     offer: offer
       ? {
           packageRemaining: offer.package?.remaining ?? null,
+          packageIsFounder: offer.package?.kind === "founder",
           priceCents: offer.priceCents,
           discounted: Boolean(offer.discount),
           founderAvailable: offer.founderAvailable,
