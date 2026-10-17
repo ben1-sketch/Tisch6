@@ -52,3 +52,7 @@ create policy "eigene Bewerbung lesen"
   on public.applications for select
   to authenticated
   using ((select auth.uid()) = id);
+
+-- Rechte ausdrücklich setzen – auch für Projekte, in denen neue Tabellen nicht automatisch freigegeben werden
+grant select, insert, update, delete on public.applications to service_role;
+grant select on public.applications to authenticated;
