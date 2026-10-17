@@ -9,6 +9,11 @@ import { DAY, WEEKDAY_CODES, addDays, dateKey, viennaDate, viennaToUtc, weekdayO
 
 export type Gender = "frau" | "mann";
 
+/** Momentaufnahme eines Persönlichkeitstyps aus der Wiedersehen-Historie */
+export type TypeSnapshot = { typ: string | null; axes: number[] | null };
+/** Wen eine Person bisher wiedersehen wollte – und wer sie wiedersehen wollte (nur Typen, keine Namen) */
+export type History = { liked: TypeSnapshot[]; likedBy: TypeSnapshot[] };
+
 export type Person = {
   id: string;
   firstName: string;
@@ -31,6 +36,13 @@ export type Person = {
   waitingSince: number;
   buddyId: string | null;
   notes: string[];
+  /** ernsthafte Beziehung oder erstmal schauen – nur fürs Matching, wird nie angezeigt */
+  goal: "ernsthaft" | "offen" | null;
+  /** Wichtigkeit von Glaube, Politik, Familie (1–3) – nur fürs Matching, wird nie angezeigt */
+  values: { glaube: number | null; politik: number | null; familie: number | null };
+  history: History;
+  /** Lokal des letzten Abends – niemand sitzt zweimal hintereinander im selben Lokal */
+  lastRestaurantId: string | null;
 };
 
 export const AXES = ["ruhig–extrovertiert", "spontan–strukturiert", "humorvoll–ernst", "bodenständig–abenteuerlustig"] as const;
@@ -42,7 +54,7 @@ const clampAxis = (v: number) => Math.min(5, Math.max(1, Math.round(v || 3)));
 /** Bewerbung → Person für das Matching (null, wenn Angaben fürs Matching fehlen) */
 export function toPerson(
   app: { id: string; first_name: string; profile: Profile | null; available_since: string | null; buddy_id: string | null },
-  notes: string[] = [],
+  extra: { notes?: string[]; history?: History; lastRestaurantId?: string | null } = {},
 ): Person | null {
   const p = app.profile;
   if (!p || (p.geschlecht !== "frau" && p.geschlecht !== "mann") || !p.alter) return null;
@@ -72,8 +84,40 @@ export function toPerson(
     intolerances: p.unvertraeglichkeiten ?? [],
     waitingSince: app.available_since ? new Date(app.available_since).getTime() : Date.now(),
     buddyId: app.buddy_id,
-    notes,
+    notes: extra.notes ?? [],
+    // ältere Profile kennen Beziehungsziel und Werte noch nicht
+    goal: p.beziehungsziel ?? null,
+    values: { glaube: p.werte?.glaube ?? null, politik: p.werte?.politik ?? null, familie: p.werte?.familie ?? null },
+    history: extra.history ?? { liked: [], likedBy: [] },
+    lastRestaurantId: extra.lastRestaurantId ?? null,
   };
+}
+
+/** Wie ähnlich sind zwei Typen? 1 = gleich, 0 = deutlich verschieden (Summe der Achsenabstände ≥ 4) */
+export function typeSimilarity(a: number[], b: number[] | null) {
+  if (!b || b.length !== 4) return 0;
+  const distance = a.reduce((sum, v, i) => sum + Math.abs(v - b[i]), 0);
+  return Math.max(0, 1 - distance / 4);
+}
+
+/**
+ * Lernendes Matching: Wie gut passt jemand am Tisch zu dem, was bei dieser Person bisher funktioniert hat?
+ * Je Person zählt das beste Gegenüber – ähnlich zu Typen, die sie wiedersehen wollte bzw. die sie wiedersehen wollten.
+ */
+export function historyAffinity(people: Person[]) {
+  let total = 0;
+  for (const p of people) {
+    if (!p.history.liked.length && !p.history.likedBy.length) continue;
+    let best = 0;
+    for (const q of people) {
+      if (q.gender === p.gender) continue;
+      const liked = Math.max(0, ...p.history.liked.map((h) => typeSimilarity(q.axes, h.axes)));
+      const likedBy = Math.max(0, ...p.history.likedBy.map((h) => typeSimilarity(q.axes, h.axes)));
+      best = Math.max(best, liked + likedBy);
+    }
+    total += best;
+  }
+  return total;
 }
 
 /** Wie viele Jahre liegt q außerhalb der Wunsch-Altersspanne von p? (0 = passt) */
@@ -116,22 +160,41 @@ export function validGroup(people: Person[], complete = false): boolean {
   // Wer sich zu zweit beworben hat, sitzt nie am selben Tisch
   if (people.some((p) => p.buddyId && ids.has(p.buddyId))) return false;
 
+  // Temperament (ruhig–extrovertiert) ähnlich halten – alle sechs im ähnlichen Bereich
+  const energy = people.map((p) => p.axes[0]);
+  if (Math.max(...energy) - Math.min(...energy) > TABLE.maxEnergySpread) return false;
+
   return commonDays(people).length > 0;
 }
 
-/** Je höher, desto besser: Persönlichkeiten gemischt, Wartezeit fair, Altersspannen eingehalten. */
+/**
+ * Je höher, desto besser: Temperament nah beieinander, Beziehungsziel gleich, Werte nicht weit auseinander,
+ * Konstellationen, die bei den Personen schon funktioniert haben, faire Wartezeit, Altersspannen eingehalten.
+ */
 export function scoreGroup(people: Person[], now: number) {
   let score = 0;
-  for (let i = 0; i < 4; i++) {
+  // Temperament: je näher, desto besser (die harte Grenze prüft validGroup)
+  const energy = people.map((p) => p.axes[0]);
+  score -= (Math.max(...energy) - Math.min(...energy)) * 4;
+  // Die anderen drei Achsen dürfen gemischt sein – etwas Abwechslung belebt das Gespräch
+  for (let i = 1; i < 4; i++) {
     const values = people.map((p) => p.axes[i]);
-    score += (Math.max(...values) - Math.min(...values)) * 3;
+    score += Math.max(...values) - Math.min(...values);
   }
-  // mindestens eine eher gesellige Person hält das Gespräch am Laufen
-  if (people.some((p) => p.axes[0] >= 4)) score += 3;
   // nicht mehr als zwei vom gleichen Typ
   const types = new Map<string, number>();
   for (const p of people) types.set(p.typ, (types.get(p.typ) ?? 0) + 1);
-  for (const n of types.values()) if (n > 2) score -= (n - 2) * 4;
+  for (const n of types.values()) if (n > 2) score -= (n - 2) * 2;
+
+  // Beziehungsziel möglichst übereinstimmend
+  const serious = people.filter((p) => p.goal === "ernsthaft").length;
+  const open = people.filter((p) => p.goal === "offen").length;
+  if (Math.min(serious, open) === 0 && serious + open === people.length) score += 6;
+  score -= Math.min(serious, open) * 5;
+
+  // Lernendes Matching aus der Wiedersehen-Historie
+  score += historyAffinity(people) * 3;
+
   // Längerwartende bevorzugen
   score += people.reduce((sum, p) => sum + Math.min(30, (now - p.waitingSince) / DAY), 0) * 0.5;
 
@@ -141,6 +204,12 @@ export function scoreGroup(people: Person[], now: number) {
     for (const m of men) {
       score -= (ageMiss(w, m) + ageMiss(m, w)) * 2;
       if ((w.childWish === "ja" && m.childWish === "nein") || (w.childWish === "nein" && m.childWish === "ja")) score -= 1.5;
+      // Werte: wem Glaube, Politik oder Familie sehr wichtig ist, sitzt nicht neben jemandem, dem es völlig egal ist
+      for (const key of ["glaube", "politik", "familie"] as const) {
+        const a = w.values[key];
+        const b = m.values[key];
+        if (a !== null && b !== null && Math.abs(a - b) >= 2) score -= 1;
+      }
     }
   }
   return score;
@@ -161,16 +230,20 @@ function combinations<T>(items: T[], k: number): T[][] {
 export function candidateTables(anchor: Person, pool: Person[], now: number, limit = 8): Person[][] {
   const g = anchor.gender;
   const o = otherGender(g);
-  const near = (p: Person) => Math.abs(p.age - anchor.age) <= TABLE.maxAgeSpan;
+  const near = (p: Person) =>
+    Math.abs(p.age - anchor.age) <= TABLE.maxAgeSpan && Math.abs(p.axes[0] - anchor.axes[0]) <= TABLE.maxEnergySpread;
   const sharesDay = (p: Person) => commonDays([anchor, p]).length > 0;
+  // gleiches Beziehungsziel zuerst, dann wer länger wartet
+  const sameGoal = (p: Person) => anchor.goal === null || p.goal === null || p.goal === anchor.goal;
+  const fit = (a: Person, b: Person) => Number(sameGoal(b)) - Number(sameGoal(a)) || byWaiting(a, b);
 
   const same = pool
     .filter((p) => p.id !== anchor.id && p.gender === g && p.seeks.includes(o) && near(p) && sharesDay(p) && p.id !== anchor.buddyId)
-    .sort(byWaiting)
+    .sort(fit)
     .slice(0, 10);
   const opposite = pool
     .filter((p) => p.gender === o && p.seeks.includes(g) && near(p) && sharesDay(p) && mutualAgeOk(anchor, p) && p.id !== anchor.buddyId)
-    .sort(byWaiting)
+    .sort(fit)
     .slice(0, 12);
 
   const found: { people: Person[]; score: number }[] = [];
@@ -186,20 +259,27 @@ export function candidateTables(anchor: Person, pool: Person[], now: number, lim
 export type Slot = { restaurant: Restaurant; startsAt: Date; dateKey: string };
 
 /**
- * Frühester passender Termin: gemeinsamer Wunschtag, Lokal hat an dem Wochentag geöffnet
- * und noch einen freien Tisch. busy zählt bestehende Tische je "lokalId|YYYY-MM-DD".
+ * Frühester passender Termin: gemeinsamer Wunschtag, Lokal hat an dem Wochentag geöffnet und noch einen freien Tisch.
+ * Rotation: niemand sitzt zweimal hintereinander im selben Lokal (außer es gibt keine Alternative),
+ * sonst das Lokal, das am längsten nicht dran war. busy zählt bestehende Tische je "lokalId|YYYY-MM-DD".
  */
 export function pickSlot(
   people: Person[],
   restaurants: Restaurant[],
   busy: Map<string, number>,
   now: Date,
-  options: { onlyDate?: string; preferRestaurantId?: string } = {},
+  options: { onlyDate?: string; preferRestaurantId?: string; lastUsed?: Map<string, number> } = {},
 ): Slot | null {
   const days = commonDays(people);
   const today = viennaDate(now);
-  const ordered = [...restaurants].sort(
-    (a, b) => Number(b.id === options.preferRestaurantId) - Number(a.id === options.preferRestaurantId),
+  const active = restaurants.filter((r) => r.active);
+  const recent = new Set(people.map((p) => p.lastRestaurantId).filter(Boolean));
+  const fresh = active.filter((r) => !recent.has(r.id));
+  const lastUsed = options.lastUsed ?? new Map<string, number>();
+  const ordered = (fresh.length ? fresh : active).sort(
+    (a, b) =>
+      Number(b.id === options.preferRestaurantId) - Number(a.id === options.preferRestaurantId) ||
+      (lastUsed.get(a.id) ?? 0) - (lastUsed.get(b.id) ?? 0),
   );
   for (let offset = TIMING.leadDaysMin; offset <= TIMING.leadDaysMax; offset++) {
     const day = addDays(today, offset);
@@ -208,7 +288,7 @@ export function pickSlot(
     const weekday = weekdayOf(day);
     if (!days.includes(weekday)) continue;
     for (const restaurant of ordered) {
-      if (!restaurant.active || !restaurant.weekdays.includes(weekday)) continue;
+      if (!restaurant.weekdays.includes(weekday)) continue;
       if ((busy.get(`${restaurant.id}|${key}`) ?? 0) >= restaurant.tables_per_evening) continue;
       return { restaurant, startsAt: viennaToUtc(day, restaurant.start_time), dateKey: key };
     }

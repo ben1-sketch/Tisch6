@@ -16,7 +16,7 @@ const primary =
 const secondary =
   "w-full rounded-full border border-white/15 px-6 py-3 text-center font-medium transition hover:border-white/30 disabled:opacity-50";
 
-export function SeatPage({ view, t, lang, paid }: { view: SeatView; t: T; lang: string; paid: boolean }) {
+export function SeatPage({ view, t, lang, paid, openReport = false }: { view: SeatView; t: T; lang: string; paid: boolean; openReport?: boolean }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -170,17 +170,29 @@ export function SeatPage({ view, t, lang, paid }: { view: SeatView; t: T; lang: 
         )}
       </section>
 
-      {(view.icebreaker || view.icebreakerSoon) && (
+      {(view.card || view.cardSoon) && (
         <section className="rounded-3xl border border-rose-400/30 p-6 sm:p-8">
-          <h2 className="font-display text-lg font-semibold">{t.icebreakerTitle}</h2>
-          {view.icebreaker ? (
-            <ol className="mt-3 list-decimal space-y-2 pl-5 text-cloud">
-              {view.icebreaker.map((q) => (
-                <li key={q}>{q}</li>
+          <h2 className="font-display text-lg font-semibold">{t.cardTitle}</h2>
+          {view.card ? (
+            <>
+              {view.card.runden.map((r) => (
+                <div key={r.name} className="mt-4">
+                  <h3 className="text-sm font-semibold text-rose-300">{r.name}</h3>
+                  <ol className="mt-1.5 list-decimal space-y-1.5 pl-5 text-cloud">
+                    {r.fragen.map((q) => (
+                      <li key={q}>{q}</li>
+                    ))}
+                  </ol>
+                </div>
               ))}
-            </ol>
+              <ul className="mt-5 space-y-1 border-t border-white/10 pt-4 text-sm text-mist">
+                {t.cardRules.map((rule) => (
+                  <li key={rule}>· {rule}</li>
+                ))}
+              </ul>
+            </>
           ) : (
-            <p className="mt-2 text-sm text-mist">{t.icebreakerSoon}</p>
+            <p className="mt-2 text-sm text-mist">{t.cardSoon}</p>
           )}
         </section>
       )}
@@ -189,7 +201,11 @@ export function SeatPage({ view, t, lang, paid }: { view: SeatView; t: T; lang: 
         <section className="rounded-3xl border border-white/10 p-6 sm:p-8">
           <h2 className="font-display text-lg font-semibold">{t.cancelTitle}</h2>
           <p className="mt-2 text-sm text-mist">
-            {view.cancelFree ? fill(t.cancelFree, { date: formatDateTime(new Date(view.freeCancelUntil)) }) : t.cancelLate}
+            {view.cancelMovedFree
+              ? t.cancelMoved
+              : view.cancelFree
+                ? fill(t.cancelFree, { date: formatDateTime(new Date(view.freeCancelUntil)) })
+                : t.cancelLate}
           </p>
           <button className={`${secondary} mt-4`} disabled={busy} onClick={() => window.confirm(t.cancelConfirm) && act("cancel")}>
             {t.cancel}
@@ -197,14 +213,14 @@ export function SeatPage({ view, t, lang, paid }: { view: SeatView; t: T; lang: 
         </section>
       )}
 
-      {view.canReport && view.members.length > 0 && <ReportBox t={t} token={view.token} members={view.members} />}
+      {view.canReport && view.members.length > 0 && <ReportBox t={t} token={view.token} members={view.members} initiallyOpen={openReport} />}
     </div>
   );
 }
 
 /** Diskreter Meldeknopf – zugeklappt nur ein unauffälliger Textlink */
-function ReportBox({ t, token, members }: { t: T; token: string; members: SeatView["members"] }) {
-  const [open, setOpen] = useState(false);
+function ReportBox({ t, token, members, initiallyOpen }: { t: T; token: string; members: SeatView["members"]; initiallyOpen: boolean }) {
+  const [open, setOpen] = useState(initiallyOpen);
   const [who, setWho] = useState("");
   const [reason, setReason] = useState("");
   const [state, setState] = useState<"idle" | "busy" | "done" | "error">("idle");
@@ -229,7 +245,7 @@ function ReportBox({ t, token, members }: { t: T; token: string; members: SeatVi
     );
   }
   return (
-    <section className="rounded-3xl border border-white/10 bg-night-800/60 p-6 sm:p-8">
+    <section id="melden" className="scroll-mt-20 rounded-3xl border border-white/10 bg-night-800/60 p-6 sm:p-8">
       <h2 className="font-display text-lg font-semibold">{t.reportTitle}</h2>
       <p className="mt-2 text-sm text-mist">{t.reportText}</p>
       {state === "done" ? (

@@ -31,6 +31,7 @@ import {
   deleteAction,
   discountAction,
   noteAction,
+  rejectAction,
   unblockAction,
   waitlistAction,
 } from "../../../actions";
@@ -91,7 +92,19 @@ export default async function ApplicationPage({ params }: PageProps<"/admin/bewe
   const p = app.profile;
   const hidden = { id: app.id };
   const active = ["submitted", "accepted", "waitlist"].includes(app.status);
-  const evaluation = app.evaluation as { serioes?: boolean; warnsignale?: string[]; begruendung?: string } | null;
+  const evaluation = app.evaluation as { serioes?: boolean; eindeutig?: boolean; warnsignale?: string[]; begruendung?: string } | null;
+  const decision =
+    app.status === "accepted"
+      ? "angenommen"
+      : app.status === "rejected"
+        ? "abgelehnt"
+        : app.status === "waitlist"
+          ? app.waitlist_reason === "review"
+            ? "zur Prüfung durch dich"
+            : "Warteliste"
+          : app.status === "submitted"
+            ? "folgt innerhalb von 24 Stunden"
+            : "–";
 
   return (
     <>
@@ -113,7 +126,7 @@ export default async function ApplicationPage({ params }: PageProps<"/admin/bewe
         </Link>
       </PageTitle>
 
-      <div className="grid gap-4 lg:grid-cols-[20rem_1fr]">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[20rem_minmax(0,1fr)]">
         <div className="space-y-4">
           <Card title="Verifizierungsfoto">
             {app.photo_path ? (
@@ -143,13 +156,21 @@ export default async function ApplicationPage({ params }: PageProps<"/admin/bewe
 
           <Card title="Eingreifen">
             <div className="space-y-5">
-              {(app.status === "submitted" || app.status === "waitlist") && (
+              {(app.status === "submitted" || app.status === "waitlist" || app.status === "rejected") && (
                 <ActionForm
                   action={acceptAction}
                   hidden={hidden}
                   submit="Annehmen"
                   tone="primary"
                   confirm={`${app.first_name} annehmen? Die Person bekommt eine E-Mail und kommt in den Pool.`}
+                />
+              )}
+              {active && (
+                <ActionForm
+                  action={rejectAction}
+                  hidden={hidden}
+                  submit="Ablehnen"
+                  confirm={`${app.first_name} ablehnen? Die Person bekommt eine freundliche Absage per E-Mail; die Daten werden nach 30 Tagen gelöscht.`}
                 />
               )}
               {app.under_review && app.status === "accepted" && (
@@ -244,6 +265,7 @@ export default async function ApplicationPage({ params }: PageProps<"/admin/bewe
                   ["Ernährung", p.ernaehrung ?? "–"],
                   ["Isst gern", p.essensvorlieben.join(", ") || "–"],
                   ["Unverträglichkeiten", p.unvertraeglichkeiten.join(", ") || "keine"],
+                  ["Beziehungsziel, Werte", "nutzt nur die KI fürs Matching – wird nirgends angezeigt"],
                 ]}
               />
             ) : (
@@ -269,12 +291,20 @@ export default async function ApplicationPage({ params }: PageProps<"/admin/bewe
             </Card>
           )}
 
-          {evaluation && (
-            <Card title="KI-Prüfung" aside={<Chip tone={evaluation.serioes ? "green" : "red"}>{evaluation.serioes ? "ernst gemeint" : "auffällig"}</Chip>}>
+          {app.status !== "onboarding" && (
+            <Card
+              title="KI-Entscheidung"
+              aside={
+                typeof evaluation?.serioes === "boolean" ? (
+                  <Chip tone={evaluation.serioes ? "green" : "red"}>{evaluation.serioes ? "ernst gemeint" : "auffällig"}</Chip>
+                ) : null
+              }
+            >
               <Facts
                 rows={[
-                  ["Warnsignale", evaluation.warnsignale?.length ? evaluation.warnsignale.join(", ") : "keine"],
-                  ["Begründung", evaluation.begruendung ?? "–"],
+                  ["Entscheidung", decision],
+                  ["Warnsignale", evaluation?.warnsignale?.length ? evaluation.warnsignale.join(", ") : "keine"],
+                  ["Begründung", evaluation?.begruendung ?? "–"],
                   ["Geprüft", when(app.evaluated_at)],
                 ]}
               />
@@ -290,7 +320,7 @@ export default async function ApplicationPage({ params }: PageProps<"/admin/bewe
                   <li key={s.id} className="flex flex-wrap items-center justify-between gap-2 py-2.5 text-sm">
                     <span className="min-w-0">
                       {s.dinners ? (
-                        <Link href={`/admin/dinner/${s.dinners.id}`} className="font-medium hover:text-rose-200">
+                        <Link href={`/admin/tische/${s.dinners.id}`} className="font-medium hover:text-rose-200">
                           {when(s.dinners.starts_at)} · {s.dinners.restaurants?.name ?? "–"}
                         </Link>
                       ) : (
@@ -298,7 +328,7 @@ export default async function ApplicationPage({ params }: PageProps<"/admin/bewe
                       )}
                       <span className="block text-mist">
                         {s.paid_with ? `${PAID_WITH[s.paid_with]}${s.price_cents !== null ? ` · ${euro(s.price_cents)}` : ""}` : s.replacement ? "Nachrücker-Angebot" : "Einladung"}
-                        {s.dinners && ` · Dinner: ${DINNER_STATUS[s.dinners.status].label}`}
+                        {s.dinners && ` · Tisch: ${DINNER_STATUS[s.dinners.status].label}`}
                       </span>
                     </span>
                     <Chip tone={SEAT_STATUS[s.status].tone}>{SEAT_STATUS[s.status].label}</Chip>
@@ -389,7 +419,7 @@ export default async function ApplicationPage({ params }: PageProps<"/admin/bewe
                 })}
                 {feedbackRows.map((f) => (
                   <li key={f.seat_id} className="text-mist">
-                    <Link href={`/admin/dinner/${f.seats.dinner_id}`} className="text-cloud hover:underline">
+                    <Link href={`/admin/tische/${f.seats.dinner_id}`} className="text-cloud hover:underline">
                       Feedback vom {day(f.created_at)}
                     </Link>
                     : Abend {f.rating_evening ?? "–"}/5, Runde {f.rating_table ?? "–"}/5, möchte {f.wants_to_see.length} wiedersehen

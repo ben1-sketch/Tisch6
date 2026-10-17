@@ -82,6 +82,19 @@ body {
   padding: 0 4px;
 }
 
+@keyframes flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+.animate-flicker {
+  animation: flicker 3.2s ease-in-out infinite;
+}
+
 @keyframes orbit {
   to {
     transform: rotate(360deg);
@@ -91,7 +104,8 @@ body {
   animation: orbit 60s linear infinite;
 }
 @media (prefers-reduced-motion: reduce) {
-  .animate-orbit {
+  .animate-orbit,
+  .animate-flicker {
     animation: none;
   }
   html {

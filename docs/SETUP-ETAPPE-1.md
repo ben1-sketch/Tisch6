@@ -127,8 +127,8 @@ Auf den Seiten **Impressum**, **Datenschutz** und **AGB** sind alle offenen Anga
 
 ---
 
-**Was Etappe 1 noch nicht macht** (kommt in Etappe 2): automatische Bewertung (angenommen/Warteliste, inkl. Steuerung
-des Geschlechterverhältnisses), E-Mails über Resend, Matching und Tische, Stripe-Zahlung inkl. Gründungspaket,
-Terminfestlegung nach Wunschtagen, Nachrücker, Lebenszeichen nach sieben Tagen, Eisbrecher-Karte, Erinnerungen per
-E-Mail und SMS, Meldeknopf, Wiedersehen-Abfrage, Feedback, Folgeeinladungen und Empfehlungsrabatt.
+**Was Etappe 1 noch nicht macht** (kommt in Etappe 2): automatische Bewertung (angenommen/abgelehnt/Warteliste, inkl.
+Steuerung des Geschlechterverhältnisses), E-Mails über Resend, Matching und Tische, Stripe-Zahlung inkl. Gründungspaket,
+Terminfestlegung nach Wunschtagen, Nachrücker, Lebenszeichen nach sieben Tagen, Gesprächskarte, Erinnerungen per
+E-Mail und SMS, Notfallnummer, Meldeknopf, Wiedersehen-Abfrage, Feedback, Folgeeinladungen und Empfehlungsrabatt.
 Resend und Stripe brauchst du deshalb erst in Etappe 2 einzurichten.

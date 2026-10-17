@@ -2,9 +2,11 @@ import "server-only";
 import { z } from "zod";
 import { askStructured } from "./claude";
 import { NO_SHOW_LIMIT, NO_SHOW_VOTES, PRICES, TABLE, TIMING } from "./config";
-import { type Application, type Db, type Dinner, type Feedback, type Seat, OPEN_SEAT, must } from "./db";
+import { type Application, type ConversationCard, type Db, type Dinner, type Feedback, type Seat, OPEN_SEAT, TAKING_PART, must } from "./db";
 import {
   adminMail,
+  dayOfMail,
+  emergencySms,
   feedbackRequestMail,
   fivePersonMail,
   followUpMail,
@@ -13,14 +15,14 @@ import {
   noShowMail,
   referralRewardMail,
   reminder1dMail,
-  reminder1dSms,
   reminder2hMail,
   reminder2hSms,
   reminder3dMail,
 } from "./messages";
 import { notifyAdmin, sendEmail, sendSms } from "./notify";
-import { dinnerInfo, loadApplication, loadDinner } from "./seats";
-import { DAY, HOUR, dateKey, viennaDate } from "./time";
+import { dinnerInfo, loadApplication, loadDinner, movedSuffix } from "./seats";
+import type { Profile } from "./onboarding";
+import { DAY, HOUR, dateKey, viennaDate, viennaHour } from "./time";
 
 async function seatsOf(db: Db, dinnerId: string) {
   return must(await db.from("seats").select("*").eq("dinner_id", dinnerId), "Plätze laden") as Seat[];
@@ -32,59 +34,152 @@ async function applicationsByIds(db: Db, ids: string[]) {
 }
 
 // ---------------------------------------------------------------------------
-// Eisbrecher-Karte: zwei eigene Gesprächsfragen pro Person
+// Gesprächskarte: drei Runden für den ganzen Tisch – vom Aperitif bis zum Dessert
 // ---------------------------------------------------------------------------
 
-const IcebreakerSchema = z.object({
-  karten: z.array(z.object({ person: z.string(), fragen: z.array(z.string()) })),
+const CARD_ROUNDS = ["Runde 1 · Aperitif – leicht", "Runde 2 · Hauptgang – persönlicher", "Runde 3 · Dessert – tief"];
+
+const CardSchema = z.object({
+  runden: z.array(z.object({ fragen: z.array(z.string()) })).describe("Genau drei Runden in der Reihenfolge Aperitif, Hauptgang, Dessert"),
 });
 
-const ICEBREAKER_SYSTEM = `Du schreibst Eisbrecher-Karten für ein Tisch6-Dinner: sechs Singles an einem Tisch in Wien.
-Jede Person bekommt zwei eigene, leichte Gesprächsfragen, die sie am Abend in die Runde stellen kann.
-Die Fragen sollen neugierig machen, verbinden und zum Erzählen einladen – nicht zu intim, nichts über Ex-Partner, Geld, Politik oder Religion.
-Nutze die Themen der Runde als Inspiration, verrate aber nichts Persönliches über andere Gäste. Höchstens 15 Wörter pro Frage, alle Fragen verschieden, Du-Form.
+const CARD_SYSTEM = `Du schreibst die Gesprächskarte für einen Tisch6-Abend: sechs Singles an einem Tisch in Wien.
+Die Karte hat drei Runden, die der Tisch nacheinander spielt – reihum beantwortet jede Person die Frage:
+1. Aperitif, leicht – zum Warmwerden (Beispiel: "Was war dein bester Tag in diesem Jahr?")
+2. Hauptgang, persönlicher – mit Geschichten (Beispiel: "Was würdest du gern können, was du nicht kannst?")
+3. Dessert, tief – ehrlich und verbindend (Beispiel: "Wofür bist du gerade wirklich dankbar?")
+Schreibe je Runde zwei Fragen, passend zu dieser Gruppe (Themen, Persönlichkeiten, Alter).
+Regeln: Du-Form, höchstens 15 Wörter pro Frage, nichts über Ex-Partner, Geld, Politik oder Religion, nichts Peinliches, alle Fragen verschieden. Verrate nichts über einzelne Gäste.
 Antworte im vorgegebenen JSON-Format.`;
 
-const FALLBACK_QUESTIONS = [
-  "Was war das schönste Kompliment, das du je bekommen hast?",
-  "Welcher Ort in Wien ist dein heimlicher Lieblingsplatz?",
-  "Was würdest du tun, wenn du ein Jahr frei hättest?",
-  "Welches Essen erinnert dich an deine Kindheit?",
-  "Worüber hast du zuletzt deine Meinung geändert?",
-  "Welche kleine Gewohnheit macht dich glücklich?",
-  "Was ist das Mutigste, das du je gemacht hast?",
-  "Welches Buch, welcher Film oder Podcast hat dich zuletzt gepackt?",
-  "Wo warst du das letzte Mal so richtig überrascht?",
-  "Welche Fähigkeit würdest du gern über Nacht beherrschen?",
-  "Was steht ganz oben auf deiner Wien-Bucketlist?",
-  "Wofür kannst du dich ehrlich begeistern?",
+const FALLBACK_CARD = [
+  [
+    "Was war dein bester Tag in diesem Jahr?",
+    "Welcher Ort in Wien ist dein heimlicher Lieblingsplatz?",
+    "Welche kleine Gewohnheit macht dich glücklich?",
+    "Was steht ganz oben auf deiner Wien-Bucketlist?",
+  ],
+  [
+    "Was würdest du gern können, was du nicht kannst?",
+    "Was ist das Mutigste, das du je gemacht hast?",
+    "Worüber hast du zuletzt deine Meinung geändert?",
+    "Welches Essen erinnert dich an deine Kindheit?",
+  ],
+  [
+    "Wofür bist du gerade wirklich dankbar?",
+    "Was hat dich zu dem Menschen gemacht, der du heute bist?",
+    "Wann hast du dich zuletzt so richtig lebendig gefühlt?",
+    "Was wünschst du dir für die nächsten fünf Jahre?",
+  ],
 ];
 
-export async function ensureIcebreakers(db: Db, dinner: Dinner) {
-  const seats = (await seatsOf(db, dinner.id)).filter((s) => s.status === "confirmed");
-  if (!seats.length || seats.every((s) => s.icebreaker)) return;
-  const apps = new Map((await applicationsByIds(db, seats.map((s) => s.application_id))).map((a) => [a.id, a]));
-  const labels = seats.map((_, i) => `G${i + 1}`);
+function fallbackCard(seed: string): ConversationCard {
+  const n = [...seed].reduce((sum, c) => sum + c.charCodeAt(0), 0);
+  return {
+    runden: CARD_ROUNDS.map((name, i) => {
+      const pool = FALLBACK_CARD[i];
+      const first = (n + i) % pool.length;
+      return { name, fragen: [pool[first], pool[(first + 1) % pool.length]] };
+    }),
+  };
+}
 
-  let cards: string[][] | null = null;
-  try {
-    const user = seats
-      .map((s, i) => {
-        const p = apps.get(s.application_id)?.profile;
-        return `${labels[i]} (${p?.geschlecht ?? "?"}, ${p?.alter ?? "?"}): Themen ${p?.gespraechsthemen?.join(", ") || "–"}; Typ ${p?.persoenlichkeit.typ ?? "–"}`;
-      })
-      .join("\n");
-    const result = await askStructured({ schema: IcebreakerSchema, system: ICEBREAKER_SYSTEM, user, effort: "low", maxTokens: 3000 });
-    cards = labels.map((label) => result.karten.find((k) => k.person === label)?.fragen.slice(0, 2) ?? []);
-    if (cards.some((c) => c.length < 2)) cards = null;
-  } catch (e) {
-    console.error("Eisbrecher-Karten über KI fehlgeschlagen – nehme Standardfragen", e);
-  }
-  cards ??= seats.map((_, i) => [FALLBACK_QUESTIONS[(i * 2) % 12], FALLBACK_QUESTIONS[(i * 2 + 1) % 12]]);
+/** Die KI wählt die Fragen passend zur Gruppe (ohne Namen); ohne Antwort gibt es eine Standardkarte. */
+export async function ensureConversationCard(db: Db, dinner: Dinner, useAi = true): Promise<ConversationCard> {
+  if (dinner.conversation_card?.runden?.length === 3) return dinner.conversation_card;
+  const seats = (await seatsOf(db, dinner.id)).filter((s) => TAKING_PART.includes(s.status));
+  const apps = await applicationsByIds(db, seats.map((s) => s.application_id));
 
-  for (const [i, seat] of seats.entries()) {
-    if (!seat.icebreaker) await db.from("seats").update({ icebreaker: { fragen: cards[i] } }).eq("id", seat.id);
+  let card: ConversationCard | null = null;
+  if (useAi && apps.length) {
+    try {
+      const user = apps
+        .map((a, i) => {
+          const p = a.profile;
+          return `G${i + 1}: ${p?.alter ?? "?"} Jahre, Typ ${p?.persoenlichkeit.typ ?? "–"}, Themen ${p?.gespraechsthemen?.join(", ") || "–"}`;
+        })
+        .join("\n");
+      const result = await askStructured({ schema: CardSchema, system: CARD_SYSTEM, user, effort: "low", maxTokens: 2000 });
+      if (result.runden.length >= 3 && result.runden.slice(0, 3).every((r) => r.fragen.length >= 2)) {
+        card = { runden: CARD_ROUNDS.map((name, i) => ({ name, fragen: result.runden[i].fragen.slice(0, 2) })) };
+      }
+    } catch (e) {
+      console.error("Gesprächskarte über KI fehlgeschlagen – nehme Standardfragen", e);
+    }
   }
+  card ??= fallbackCard(dinner.id);
+  await db.from("dinners").update({ conversation_card: card }).eq("id", dinner.id).is("conversation_card", null);
+  return card;
+}
+
+/** Karten für die fixen Tische der nächsten 36 Stunden vorbereiten – damit sie rechtzeitig gedruckt werden können */
+export async function prepareCards(db: Db, deadline: number) {
+  const now = Date.now();
+  const dinners = must(
+    await db
+      .from("dinners")
+      .select("*")
+      .eq("status", "confirmed")
+      .not("decided_at", "is", null)
+      .is("conversation_card", null)
+      .gt("starts_at", new Date(now).toISOString())
+      .lte("starts_at", new Date(now + 36 * HOUR).toISOString()),
+    "Tische für Gesprächskarten laden",
+  ) as Dinner[];
+  let prepared = 0;
+  for (const dinner of dinners) {
+    if (Date.now() > deadline - 15_000) break;
+    await ensureConversationCard(db, dinner);
+    prepared++;
+  }
+  return prepared;
+}
+
+/** Am Tag des Tisches: Gesprächskarte per E-Mail, Notfallnummer per SMS (EMERGENCY_PHONE) */
+export async function sendDayOf(db: Db, deadline: number) {
+  const now = new Date();
+  if (viennaHour(now) < TIMING.dayOfHour) return 0;
+  const today = dateKey(viennaDate(now));
+  const dinners = must(
+    await db
+      .from("dinners")
+      .select("*")
+      .eq("status", "confirmed")
+      .gt("starts_at", now.toISOString())
+      .lte("starts_at", new Date(now.getTime() + DAY).toISOString()),
+    "Heutige Tische laden",
+  ) as Dinner[];
+  const emergency = process.env.EMERGENCY_PHONE?.trim() || null;
+  let sent = 0;
+  for (const dinner of dinners) {
+    if (dateKey(viennaDate(new Date(dinner.starts_at))) !== today) continue;
+    if (Date.now() > deadline) break;
+    const card = await ensureConversationCard(db, dinner, Date.now() < deadline - 20_000);
+    const { restaurant } = await loadDinner(db, dinner.id);
+    const info = dinnerInfo(dinner, restaurant);
+    const suffix = movedSuffix(dinner);
+    for (const seat of (await seatsOf(db, dinner.id)).filter((s) => s.status === "confirmed")) {
+      const app = await loadApplication(db, seat.application_id);
+      await sendEmail(db, {
+        to: app.email,
+        content: dayOfMail({ name: app.first_name, dinner: info, token: seat.token, card, emergency }),
+        kind: "conversation_card",
+        dedupeKey: `dayof:${seat.id}${suffix}`,
+        applicationId: app.id,
+      });
+      if (emergency) {
+        await sendSms(db, {
+          to: app.phone,
+          body: emergencySms({ dinner: info, phone: emergency }),
+          kind: "emergency",
+          dedupeKey: `notfall:${seat.id}${suffix}`,
+          applicationId: app.id,
+        });
+      }
+      sent++;
+    }
+  }
+  return sent;
 }
 
 // ---------------------------------------------------------------------------
@@ -93,48 +188,53 @@ export async function ensureIcebreakers(db: Db, dinner: Dinner) {
 
 export async function sendReminders(db: Db, deadline: number) {
   const now = Date.now();
+  // auch Tische vor der Entscheidung – wer bezahlt hat, wird erinnert
   const dinners = must(
     await db
       .from("dinners")
       .select("*")
-      .eq("status", "confirmed")
+      .in("status", ["inviting", "confirmed"])
       .gt("starts_at", new Date(now).toISOString())
-      .lte("starts_at", new Date(now + TIMING.decisionHoursBefore * HOUR).toISOString()),
+      .lte("starts_at", new Date(now + 3 * DAY).toISOString()),
     "Anstehende Dinner laden",
   ) as Dinner[];
   let sent = 0;
   for (const dinner of dinners) {
     if (Date.now() > deadline) break;
-    const start = new Date(dinner.starts_at).getTime();
+    const left = new Date(dinner.starts_at).getTime() - now;
     const { restaurant } = await loadDinner(db, dinner.id);
     const info = dinnerInfo(dinner, restaurant);
-    const left = start - now;
-    if (left <= 24 * HOUR) await ensureIcebreakers(db, dinner);
+    const suffix = movedSuffix(dinner);
     const seats = (await seatsOf(db, dinner.id)).filter((s) => s.status === "confirmed");
 
     for (const seat of seats) {
       const app = await loadApplication(db, seat.application_id);
       const base = { applicationId: app.id };
       if (left <= 2 * HOUR) {
-        await sendSms(db, { ...base, to: app.phone, body: reminder2hSms({ dinner: info }), kind: "reminder_2h", dedupeKey: `r2h_sms:${seat.id}` });
-        await sendEmail(db, { ...base, to: app.email, content: reminder2hMail({ name: app.first_name, dinner: info, token: seat.token }), kind: "reminder_2h", dedupeKey: `r2h:${seat.id}` });
-      } else if (left <= 24 * HOUR) {
-        const icebreaker = seat.icebreaker?.fragen ?? [];
+        // zwei Stunden vorher: E-Mail und SMS mit Adresse, Reservierungsname und Tipp fürs Ankommen
+        await sendSms(db, { ...base, to: app.phone, body: reminder2hSms({ dinner: info }), kind: "reminder_2h", dedupeKey: `r2h_sms:${seat.id}${suffix}` });
         await sendEmail(db, {
           ...base,
           to: app.email,
-          content: reminder1dMail({ name: app.first_name, dinner: info, token: seat.token, icebreaker }),
-          kind: "reminder_1d",
-          dedupeKey: `r1d:${seat.id}`,
+          content: reminder2hMail({ name: app.first_name, dinner: info, token: seat.token }),
+          kind: "reminder_2h",
+          dedupeKey: `r2h:${seat.id}${suffix}`,
         });
-        await sendSms(db, { ...base, to: app.phone, body: reminder1dSms({ dinner: info, token: seat.token }), kind: "reminder_1d", dedupeKey: `r1d_sms:${seat.id}` });
+      } else if (left <= DAY) {
+        await sendEmail(db, {
+          ...base,
+          to: app.email,
+          content: reminder1dMail({ name: app.first_name, dinner: info, token: seat.token }),
+          kind: "reminder_1d",
+          dedupeKey: `r1d:${seat.id}${suffix}`,
+        });
       } else {
         await sendEmail(db, {
           ...base,
           to: app.email,
           content: reminder3dMail({ name: app.first_name, dinner: info, token: seat.token }),
           kind: "reminder_3d",
-          dedupeKey: `r3d:${seat.id}`,
+          dedupeKey: `r3d:${seat.id}${suffix}`,
         });
       }
       sent++;
@@ -332,6 +432,8 @@ export async function saveFeedback(db: Db, seat: Seat, input: FeedbackInput) {
     "Feedback speichern",
   );
 
+  await recordAffinities(db, seat, wants);
+
   if (!wants.length) return;
   const theirFeedback = must(
     await db.from("feedback").select("*").in("seat_id", wants.map((id) => others.get(id)!.id)),
@@ -361,6 +463,42 @@ export async function saveFeedback(db: Db, seat: Seat, input: FeedbackInput) {
       applicationId: other.id,
     });
   }
+}
+
+const axesOf = (p: Profile | null | undefined) =>
+  p
+    ? [p.persoenlichkeit.ruhig_extrovertiert, p.persoenlichkeit.spontan_strukturiert, p.persoenlichkeit.humorvoll_ernst, p.persoenlichkeit.bodenstaendig_abenteuerlustig].map(
+        (v) => Math.min(5, Math.max(1, Math.round(v || 3))),
+      )
+    : null;
+
+/**
+ * Lernendes Matching: hält fest, welche Typen diese Person wiedersehen will – als Momentaufnahme ohne Namen.
+ * Beim nächsten Matching bevorzugt die KI Konstellationen, die bei ihr funktioniert haben.
+ */
+async function recordAffinities(db: Db, seat: Seat, wants: string[]) {
+  const { error } = await db.from("affinities").delete().eq("dinner_id", seat.dinner_id).eq("from_id", seat.application_id);
+  if (error) {
+    console.error("Wiedersehen-Historie speichern", error.message);
+    return;
+  }
+  if (!wants.length) return;
+  const people = await applicationsByIds(db, [seat.application_id, ...wants]);
+  const me = people.find((a) => a.id === seat.application_id);
+  if (!me) return;
+  const rows = people
+    .filter((a) => a.id !== me.id)
+    .map((other) => ({
+      dinner_id: seat.dinner_id,
+      from_id: me.id,
+      to_id: other.id,
+      from_typ: me.profile?.persoenlichkeit.typ ?? null,
+      from_achsen: axesOf(me.profile),
+      to_typ: other.profile?.persoenlichkeit.typ ?? null,
+      to_achsen: axesOf(other.profile),
+    }));
+  const { error: insertError } = await db.from("affinities").insert(rows);
+  if (insertError) console.error("Wiedersehen-Historie speichern", insertError.message);
 }
 
 /** Diskreter Meldeknopf: geht ans Team, das Profil wird bis zur Prüfung nicht mehr eingeladen. */

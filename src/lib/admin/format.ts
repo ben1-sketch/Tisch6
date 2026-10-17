@@ -79,9 +79,12 @@ export function relative(iso: string | null | undefined, now = Date.now()) {
 
 const STEP_LABELS: Record<string, string> = {
   abgelaufen: "Abgelaufene Einladungen",
-  entscheidung: "Entscheidung 72 h vorher",
+  entscheidung: "Entscheidung 24 h vorher",
   erinnerungen: "Erinnerungen",
-  nachDemDinner: "Nach dem Dinner",
+  nachDemDinner: "Nach dem Abend",
+  amTag: "Am Tag des Tisches",
+  gespraechskarten: "Gesprächskarten",
+  aufraeumen: "Aufräumen",
   bewerbungen: "Bewerbungen",
   matching: "Tischplanung",
   lebenszeichen: "Lebenszeichen",
@@ -91,7 +94,7 @@ const STEP_LABELS: Record<string, string> = {
 
 const VALUE_LABELS: Record<string, string> = {
   confirmed: "fix",
-  postponed: "verschoben",
+  cancelled: "abgesagt",
   feedbackRequests: "Feedback-Anfragen",
   wrappedUp: "abgeschlossen",
   profiles: "Profile nachgeholt",

@@ -11,14 +11,14 @@ export default function Agb() {
 
       <h2>2. Leistung</h2>
       <p>
-        Tisch6 stellt mithilfe künstlicher Intelligenz Tischgruppen von sechs Singles (drei Frauen, drei Männer) zusammen und organisiert Dinner in Wiener Stammlokalen. Tisch6
+        Tisch6 stellt mithilfe künstlicher Intelligenz Tischgruppen von sechs Singles (drei Frauen, drei Männer) zusammen und organisiert Dinner in Wiener Partnerlokalen. Tisch6
         schuldet keinen Erfolg im Sinne einer Partnerschaft und keine bestimmte Tischbesetzung.
       </p>
 
       <h2>3. Bewerbung und Teilnahme</h2>
       <ul>
         <li>Teilnehmen können Singles ab 18 Jahren. Die Bewerbung ist kostenlos und begründet keinen Anspruch auf eine Einladung.</li>
-        <li>Über Annahme oder Warteliste wird automatisiert innerhalb von 24 Stunden entschieden. Dabei wird unter anderem auf ein ausgewogenes Verhältnis von Frauen und Männern geachtet.</li>
+        <li>Über die Bewerbung wird automatisiert innerhalb von 24 Stunden entschieden (angenommen, abgelehnt oder – für ein ausgewogenes Verhältnis von Frauen und Männern – Warteliste). In Zweifelsfällen prüft ein Mensch. Abgelehnte Bewerbungen werden nach 30 Tagen gelöscht.</li>
         <li>Die Angaben in der Bewerbung müssen wahrheitsgemäß sein. Falsche Angaben berechtigen zum Ausschluss.</li>
         <li>Pro Person ist nur ein Profil erlaubt. Zur Verifizierung sind eine per SMS-Code bestätigte Handynummer und genau ein aktuelles Foto erforderlich. Das Foto dient ausschließlich der Prüfung durch Tisch6 und wird anderen Teilnehmern nie gezeigt.</li>
         <li>„Bring eine Freundin mit“: Wer sich über den Einladungslink einer anderen Person bewirbt, wird mit ihr verknüpft. Beide werden nach Möglichkeit zum selben Termin, aber stets an verschiedene Tische eingeladen. Jede Person bewirbt sich und zahlt selbst.</li>
@@ -26,9 +26,9 @@ export default function Agb() {
 
       <h2>4. Tischteilnahme, Preise und Zahlung</h2>
       <ul>
-        <li>Dinner sind an jedem Tag möglich. Tisch6 legt den Termin fest, sobald ein passender Tisch zusammengestellt ist, und berücksichtigt dabei die angegebenen Wunschtage. Angenommene Personen erhalten per E-Mail eine Einladung zu dieser konkreten Tischteilnahme (Datum, Uhrzeit, Stammlokal).</li>
-        <li>Eine Tischteilnahme kostet 35 Euro. Sie umfasst den Platz an einem kuratierten Tisch, die Eisbrecher-Karte und die Wiedersehen-Funktion. Speisen und Getränke bezahlt jede Person selbst im Lokal.</li>
-        <li>Eine Einladung gilt 48 Stunden, längstens bis 72 Stunden vor Beginn. Der Platz ist erst nach vollständiger Zahlung über unseren Zahlungsanbieter (Stripe) verbindlich reserviert. Bis dahin kann der Platz anderweitig vergeben werden. Geht eine Zahlung ein, nachdem der Platz bereits vergeben wurde, wird sie automatisch erstattet.</li>
+        <li>Dinner sind an jedem Tag möglich. Tisch6 stellt die Tische automatisch zusammen und legt den Termin fest, sobald ein passender Tisch beisammen ist; dabei werden die angegebenen Wunschtage berücksichtigt. Angenommene Personen erhalten per E-Mail eine Einladung zu dieser konkreten Tischteilnahme (Datum, Uhrzeit, Partnerlokal).</li>
+        <li>Eine Tischteilnahme kostet 35 Euro. Sie umfasst den Platz an einem kuratierten Tisch, die Gesprächskarte und die Wiedersehen-Funktion. Speisen und Getränke bezahlen die Gäste selbst im Lokal; die Partnerlokale teilen die Rechnung dabei gleichmäßig auf alle Gäste des Tisches auf. Es gibt keine weiteren Kosten.</li>
+        <li>Eine Einladung gilt 48 Stunden, längstens bis 25 Stunden vor Beginn. Der Platz ist erst nach vollständiger Zahlung über unseren Zahlungsanbieter (Stripe) verbindlich reserviert. Bis dahin kann der Platz anderweitig vergeben werden. Geht eine Zahlung ein, nachdem der Platz bereits vergeben wurde, wird sie automatisch erstattet.</li>
         <li>Gründungsangebot „Gründungsmitglied Tisch6“: Für die ersten 300 Käuferinnen und Käufer in Wien gibt es drei Tischteilnahmen im Paket für 79 Euro statt 105 Euro. Das Paket ist ab Kauf zwölf Monate gültig; nicht genutzte Tischteilnahmen verfallen danach. Das Paket ist persönlich und nicht übertragbar. Käufer erhalten das Abzeichen „Gründungsmitglied“ im Profil.</li>
       </ul>
 
@@ -41,13 +41,14 @@ export default function Agb() {
 
       <h2>6. Absagen, Nachrücker und Nichterscheinen</h2>
       <ul>
-        <li>Absage bis 48 Stunden vor Beginn: kostenlos. Die Gebühr wird erstattet bzw. die Tischteilnahme dem Paket wieder gutgeschrieben. Der Platz geht automatisch an die erste passende Person auf der Warteliste.</li>
+        <li>Absage bis 48 Stunden vor Beginn: kostenlos. Die Gebühr wird erstattet bzw. die Tischteilnahme dem Guthaben wieder gutgeschrieben. Der Platz geht automatisch an die erste passende Person auf der Warteliste.</li>
         <li>Nachrücker werden per E-Mail und SMS benachrichtigt und haben zwölf Stunden Zeit, zuzusagen und zu bezahlen. Danach geht das Angebot an die nächste passende Person.</li>
         <li>Absage weniger als 48 Stunden vor Beginn: Die Gebühr verfällt.</li>
         <li>Nichterscheinen ohne Absage: Die Gebühr verfällt. Beim zweiten Nichterscheinen ohne Absage wird das Profil gesperrt.</li>
         <li>Als nicht erschienen gilt, wer von mindestens zwei anderen Gästen des Tisches im Feedback als abwesend angegeben wird.</li>
-        <li>Fällt kurzfristig eine Person aus, findet das Dinner mit fünf Personen statt. Alle Anwesenden erhalten einen Rabatt auf ihre nächste Tischteilnahme (25 Euro statt 35 Euro).</li>
-        <li>Haben 72 Stunden vor Beginn weniger als fünf Personen zugesagt, wird der Termin verschoben. Bereits bezahlte Beträge werden automatisch erstattet bzw. dem Paket wieder gutgeschrieben; du erhältst eine neue Einladung, sobald ein passender Tisch zustande kommt.</li>
+        <li>Ab fünf bestätigten Personen findet der Tisch statt. Fällt kurzfristig eine Person aus, findet das Dinner mit fünf Personen statt. Alle Anwesenden erhalten einen Rabatt auf ihre nächste Tischteilnahme (25 Euro statt 35 Euro).</li>
+        <li>Sind 24 Stunden vor Beginn weniger als fünf Personen bestätigt, wird der Tisch automatisch abgesagt; alle werden per E-Mail und SMS informiert. Bereits bezahlte Tischteilnahmen bleiben als Guthaben für die nächste Einladung erhalten (zwölf Monate gültig). Auf Wunsch erstatten wir den bezahlten Betrag stattdessen zurück.</li>
+        <li>Muss Tisch6 einen Tisch verschieben oder absagen, werden alle Teilnehmenden sofort per E-Mail und SMS informiert. Nach einer Verschiebung kann jede Person, die den neuen Termin nicht wahrnehmen kann, kostenlos absagen.</li>
       </ul>
 
       <h2>7. Rücktrittsrecht</h2>
@@ -57,7 +58,7 @@ export default function Agb() {
       </p>
 
       <h2>8. Verhalten</h2>
-      <p>Wir erwarten respektvolles Verhalten gegenüber allen Gästen und dem Lokal. Wer sich unwohl fühlt, kann während oder nach dem Dinner über den Meldeknopf eine Person melden. Tisch6 prüft jede Meldung und sperrt das Profil bei Bedarf, bei Belästigung oder grobem Fehlverhalten dauerhaft. Die gemeldete Person erfährt nicht, wer gemeldet hat.</p>
+      <p>Wir erwarten respektvolles Verhalten gegenüber allen Gästen und dem Lokal. Wer sich unwohl fühlt, kann während oder nach dem Dinner über den Meldeknopf im Profil eine Person melden; am Tag des Tisches erhalten alle Gäste zudem eine Notfallnummer per SMS. Tisch6 prüft jede Meldung und sperrt das Profil bei Bedarf, bei Belästigung oder grobem Fehlverhalten dauerhaft. Die gemeldete Person erfährt nicht, wer gemeldet hat.</p>
 
       <h2>9. Nach dem Dinner</h2>
       <p>

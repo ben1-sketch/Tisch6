@@ -22,7 +22,9 @@ import {
   inviteToDinner,
   logAdmin,
   markNoShow,
+  moveDinner,
   refundPayment,
+  rejectApplicant,
   removeSeat,
   replaceNow,
   resendReservation,
@@ -39,7 +41,8 @@ import { checkPassword, createSessionToken, passwordStatus, safeAdminPath } from
 import { describeTick } from "@/lib/admin/format";
 import type { ActionResult, LoginState } from "@/lib/admin/types";
 import { type Application, db } from "@/lib/db";
-import { updateLearnings } from "@/lib/dinners";
+import { ensureConversationCard, updateLearnings } from "@/lib/dinners";
+import { loadDinner } from "@/lib/seats";
 import { runTick } from "@/lib/tick";
 
 // Jede Aktion ist von außen per POST erreichbar – deshalb prüft jede einzelne die Anmeldung.
@@ -139,6 +142,16 @@ export async function tickAction(): Promise<ActionResult> {
   });
 }
 
+export async function planTablesAction(): Promise<ActionResult> {
+  return run(async () => {
+    const client = db();
+    const report = await runTick(client, { matching: "force" });
+    if (report.skipped) throw new AdminError(report.skipped);
+    await logAdmin(client, "Tischplanung von Hand gestartet");
+    return describeTick(report);
+  });
+}
+
 export async function learningsAction(): Promise<ActionResult> {
   return run(async () => {
     if (!(await updateLearnings(db(), true))) throw new AdminError("Es gibt noch kein Feedback, aus dem die KI lernen könnte.");
@@ -152,6 +165,10 @@ export async function learningsAction(): Promise<ActionResult> {
 
 export async function acceptAction(_: ActionResult, form: FormData) {
   return run(async () => acceptApplicant(db(), await applicationFrom(form)));
+}
+
+export async function rejectAction(_: ActionResult, form: FormData) {
+  return run(async () => rejectApplicant(db(), await applicationFrom(form)));
 }
 
 export async function waitlistAction(_: ActionResult, form: FormData) {
@@ -205,7 +222,25 @@ export async function deleteAction(_: ActionResult, form: FormData): Promise<Act
 // ---------------------------------------------------------------------------
 
 export async function cancelDinnerAction(_: ActionResult, form: FormData) {
-  return run(async () => cancelDinner(db(), idFrom(form)));
+  return run(async () => cancelDinner(db(), idFrom(form), form.get("money") === "refund" ? "refund" : "credit"));
+}
+
+export async function moveDinnerAction(_: ActionResult, form: FormData) {
+  return run(async () => moveDinner(db(), idFrom(form), String(form.get("when") ?? ""), idFrom(form, "restaurant")));
+}
+
+export async function cardAction(_: ActionResult, form: FormData) {
+  return run(async () => {
+    const client = db();
+    const { dinner } = await loadDinner(client, idFrom(form));
+    if (form.get("renew") === "1") {
+      await client.from("dinners").update({ conversation_card: null }).eq("id", dinner.id);
+      dinner.conversation_card = null;
+    }
+    await ensureConversationCard(client, dinner);
+    await logAdmin(client, "Gesprächskarte erstellt", { dinnerId: dinner.id });
+    return "Die Gesprächskarte ist fertig.";
+  });
 }
 
 export async function replaceNowAction(_: ActionResult, form: FormData) {

@@ -1,8 +1,8 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
-import { FOUNDER, NO_SHOW_LIMIT, PRICES, euro } from "../config";
-import { type Application, type Db, type Payment, type Report, type Seat, OPEN_SEAT, must } from "../db";
+import { FOUNDER, NO_SHOW_LIMIT, PRICES, TIMING, euro } from "../config";
+import { type Application, type Db, type Dinner, type Payment, type Report, type Restaurant, type Seat, OPEN_SEAT, must } from "../db";
 import { setAvailability } from "../dinners";
 import { eraseApplicant } from "../erase";
 import { APP_STATUS } from "./format";
@@ -10,17 +10,20 @@ import {
   acceptedMail,
   blockedMail,
   creditMail,
-  dinnerCancelledMail,
+  dinnerMovedMail,
+  dinnerMovedSms,
   discountMail,
   noShowMail,
   refundMail,
+  rejectedMail,
   reservationCancelledMail,
   seatRemovedMail,
   waitlistMail,
 } from "../messages";
-import { notifyAdmin, sendEmail } from "../notify";
+import { notifyAdmin, sendEmail, sendSms } from "../notify";
 import {
   afterSeatChange,
+  closeDinner,
   confirmSeat,
   dinnerInfo,
   findReplacement,
@@ -34,7 +37,7 @@ import {
   sendReservation,
 } from "../seats";
 import { refund } from "../stripe";
-import { HOUR, WEEKDAY_CODES, formatDateTime } from "../time";
+import { HOUR, WEEKDAY_CODES, formatDateTime, viennaToUtc } from "../time";
 
 /** Fehler, deren Text so im Adminbereich angezeigt wird */
 export class AdminError extends Error {}
@@ -102,8 +105,8 @@ async function removeFromTables(db: Db, applicationId: string) {
 // ---------------------------------------------------------------------------
 
 export async function acceptApplicant(db: Db, app: Application) {
-  if (app.status !== "submitted" && app.status !== "waitlist") {
-    throw new AdminError("Annehmen geht nur bei eingereichten Bewerbungen und von der Warteliste.");
+  if (app.status !== "submitted" && app.status !== "waitlist" && app.status !== "rejected") {
+    throw new AdminError("Annehmen geht nur bei eingereichten, wartenden oder abgelehnten Bewerbungen.");
   }
   const p = app.profile;
   if (!p) throw new AdminError("Das Profil ist noch nicht ausgewertet. Der nächste Durchlauf holt das nach – bitte kurz warten.");
@@ -118,6 +121,7 @@ export async function acceptApplicant(db: Db, app: Application) {
       available_since: ts,
       waitlist_reason: null,
       under_review: false,
+      rejected_at: null,
       evaluated_at: app.evaluated_at ?? ts,
     })
     .eq("id", app.id)
@@ -139,13 +143,35 @@ export async function acceptApplicant(db: Db, app: Application) {
     : "Angenommen. Achtung: Ohne Alter und Geschlecht Frau/Mann kann die KI die Person keinem 3+3-Tisch zuordnen.";
 }
 
+/** Ablehnen – freundliche E-Mail, die Daten werden nach 30 Tagen automatisch gelöscht */
+export async function rejectApplicant(db: Db, app: Application) {
+  if (!["submitted", "accepted", "waitlist"].includes(app.status)) {
+    throw new AdminError("Ablehnen geht bei eingereichten, wartenden oder angenommenen Bewerbungen.");
+  }
+  if (app.status === "accepted" && (await openSeats(db, app.id)).length) {
+    throw new AdminError("Die Person hat offene Plätze – bitte zuerst im Tisch stornieren oder das Profil sperren.");
+  }
+  const ts = now();
+  const { data } = await db
+    .from("applications")
+    .update({ status: "rejected", rejected_at: ts, available_since: null, under_review: false, waitlist_reason: null, evaluated_at: app.evaluated_at ?? ts })
+    .eq("id", app.id)
+    .eq("status", app.status)
+    .select("id")
+    .maybeSingle();
+  if (!data) throw stale();
+  await sendEmail(db, { to: app.email, content: rejectedMail(app.first_name), kind: "rejected", dedupeKey: `rejected:${app.id}`, applicationId: app.id });
+  await logAdmin(db, "Abgelehnt", { applicationId: app.id });
+  return `Abgelehnt – die Person wurde freundlich per E-Mail informiert. Die Daten werden nach ${TIMING.rejectedRetentionDays} Tagen gelöscht.`;
+}
+
 export async function waitlistApplicant(db: Db, app: Application, reason: keyof typeof WAITLIST_REASONS) {
   if (!["submitted", "accepted", "waitlist"].includes(app.status)) {
     throw new AdminError("Die Warteliste geht nur bei eingereichten, angenommenen oder wartenden Bewerbungen.");
   }
   if (app.status === "waitlist" && app.waitlist_reason === reason) throw new AdminError("Steht schon mit diesem Grund auf der Warteliste.");
   if (app.status === "accepted" && (await openSeats(db, app.id)).length) {
-    throw new AdminError("Die Person hat offene Plätze – bitte zuerst im Dinner stornieren oder zurückziehen.");
+    throw new AdminError("Die Person hat offene Plätze – bitte zuerst beim Tisch stornieren oder zurückziehen.");
   }
   const { data } = await db
     .from("applications")
@@ -286,49 +312,86 @@ export async function deleteApplicant(db: Db, app: Application) {
 // Dinner und Plätze
 // ---------------------------------------------------------------------------
 
-export async function cancelDinner(db: Db, dinnerId: string) {
+/** Tisch absagen: alle sechs bekommen sofort E-Mail und SMS; Bezahltes bleibt als Guthaben (oder wird erstattet). */
+export async function cancelDinner(db: Db, dinnerId: string, money: "credit" | "refund") {
   const { dinner, restaurant } = await loadDinner(db, dinnerId);
-  if (dinner.status !== "inviting" && dinner.status !== "confirmed") throw new AdminError("Nur geplante Dinner können abgesagt werden.");
-  const { data } = await db.from("dinners").update({ status: "cancelled" }).eq("id", dinner.id).eq("status", dinner.status).select("id").maybeSingle();
+  if (dinner.status !== "inviting" && dinner.status !== "confirmed") throw new AdminError("Nur geplante Tische können abgesagt werden.");
+  const { data } = await db
+    .from("dinners")
+    .update({ status: "cancelled", decided_at: dinner.decided_at ?? now() })
+    .eq("id", dinner.id)
+    .eq("status", dinner.status)
+    .select("id")
+    .maybeSingle();
   if (!data) throw stale();
+  const guests = await closeDinner(db, dinner, restaurant, { reason: "team", money });
+  await logAdmin(db, "Tisch abgesagt", { dinnerId: dinner.id, detail: `${guests} informiert, ${money === "credit" ? "Guthaben bleibt" : "erstattet"}` });
+  return `Tisch abgesagt. ${guests} ${guests === 1 ? "Person wurde" : "Personen wurden"} per E-Mail und SMS informiert${
+    dinner.reserved_count !== null ? ", das Lokal bekommt eine Stornierung" : ""
+  }.`;
+}
 
-  const info = dinnerInfo(dinner, restaurant);
-  let guests = 0;
-  for (const seat of await seatsOf(db, dinner.id)) {
-    if (!OPEN_SEAT.includes(seat.status)) continue;
-    const { data: done } = await db
-      .from("seats")
-      .update({ status: "removed", ended_at: now(), expires_at: null })
-      .eq("id", seat.id)
-      .eq("status", seat.status)
-      .select("id")
-      .maybeSingle();
-    if (!done) continue;
-    guests++;
-    const wasConfirmed = seat.status === "confirmed";
-    const text = wasConfirmed ? await giveBack(db, seat) : null;
-    // zurück in den Pool – mit der Wartezeit seit Tischbildung, damit es beim nächsten Mal schneller geht
-    if (wasConfirmed) await db.from("applications").update({ available_since: dinner.created_at }).eq("id", seat.application_id).eq("status", "accepted");
-    const app = await loadApplication(db, seat.application_id);
-    await sendEmail(db, {
-      to: app.email,
-      content: dinnerCancelledMail({ name: app.first_name, dinner: info, refund: text, wasConfirmed }),
-      kind: "dinner_cancelled",
-      dedupeKey: `dinner_cancelled:${seat.id}`,
-      applicationId: app.id,
-    });
+/**
+ * Tisch verschieben (neuer Termin, auf Wunsch anderes Lokal): alle sechs bekommen sofort E-Mail und SMS,
+ * wer nicht kann, sagt kostenlos ab. Die 24-Stunden-Entscheidung gilt für den neuen Termin.
+ */
+export async function moveDinner(db: Db, dinnerId: string, local: string, restaurantId: string) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(local);
+  if (!m) throw new AdminError("Bitte Datum und Uhrzeit für den neuen Termin angeben.");
+  const startsAt = viennaToUtc({ year: +m[1], month: +m[2], day: +m[3] }, `${m[4]}:${m[5]}`);
+  const { dinner, restaurant } = await loadDinner(db, dinnerId);
+  if (dinner.status !== "inviting" && dinner.status !== "confirmed") throw new AdminError("Nur geplante Tische können verschoben werden.");
+  if (startsAt.getTime() < Date.now() + (TIMING.decisionHoursBefore + 2) * HOUR) {
+    throw new AdminError(`Der neue Termin muss mindestens ${TIMING.decisionHoursBefore + 2} Stunden in der Zukunft liegen.`);
   }
+  const target = (await db.from("restaurants").select("*").eq("id", restaurantId).maybeSingle()).data as Restaurant | null;
+  if (!target) throw new AdminError("Lokal nicht gefunden.");
+  if (startsAt.getTime() === new Date(dinner.starts_at).getTime() && target.id === restaurant.id) throw new AdminError("Termin und Lokal sind unverändert.");
 
+  const movedAt = now();
+  const { data } = await db
+    .from("dinners")
+    .update({ starts_at: startsAt.toISOString(), restaurant_id: target.id, moved_at: movedAt, decided_at: null, reserved_count: null })
+    .eq("id", dinner.id)
+    .eq("starts_at", dinner.starts_at)
+    .select("*")
+    .maybeSingle();
+  if (!data) throw stale();
+  const moved = data as Dinner;
+  const before = dinnerInfo(dinner, restaurant);
+  const after = dinnerInfo(moved, target);
+  const stamp = new Date(movedAt).getTime();
+
+  // alte Reservierung stornieren – die neue geht raus, sobald genug zugesagt haben
   if (dinner.reserved_count !== null) {
-    const content = reservationCancelledMail({ dinner: info });
-    const key = `reservation_cancelled:${dinner.id}`;
+    const content = reservationCancelledMail({ dinner: before });
+    const key = `reservation_moved:${dinner.id}:${stamp}`;
     if (restaurant.email) await sendEmail(db, { to: restaurant.email, content, kind: "reservation_cancelled", dedupeKey: key });
     else await notifyAdmin(db, { ...content, subject: `[Bitte dem Lokal absagen – keine E-Mail hinterlegt] ${content.subject}` }, "reservation_cancelled", key);
   }
-  await logAdmin(db, "Dinner abgesagt", { dinnerId: dinner.id, detail: `${guests} Gäste informiert` });
-  return `Dinner abgesagt. ${guests} ${guests === 1 ? "Person wurde" : "Personen wurden"} informiert${
-    dinner.reserved_count !== null ? ", das Lokal bekommt eine Stornierung" : ""
-  }.`;
+
+  // offene Einladungen enden spätestens vor der neuen Entscheidung
+  const latest = startsAt.getTime() - (TIMING.decisionHoursBefore + 1) * HOUR;
+  let people = 0;
+  for (const seat of await seatsOf(db, dinner.id)) {
+    if (!OPEN_SEAT.includes(seat.status)) continue;
+    if (seat.status !== "confirmed" && seat.expires_at && new Date(seat.expires_at).getTime() > latest) {
+      await db.from("seats").update({ expires_at: new Date(latest).toISOString() }).eq("id", seat.id).in("status", ["invited", "offered"]);
+    }
+    const app = await loadApplication(db, seat.application_id);
+    await sendEmail(db, {
+      to: app.email,
+      content: dinnerMovedMail({ name: app.first_name, before, after, token: seat.token, wasConfirmed: seat.status === "confirmed" }),
+      kind: "dinner_moved",
+      dedupeKey: `moved:${seat.id}:${stamp}`,
+      applicationId: app.id,
+    });
+    await sendSms(db, { to: app.phone, body: dinnerMovedSms({ before, after }), kind: "dinner_moved", dedupeKey: `moved_sms:${seat.id}:${stamp}`, applicationId: app.id });
+    people++;
+  }
+  await afterSeatChange(db, moved, target);
+  await logAdmin(db, "Tisch verschoben", { dinnerId: dinner.id, detail: `neu: ${formatDateTime(startsAt)}, ${target.name}` });
+  return `Verschoben auf ${formatDateTime(startsAt)} (${target.name}). ${people} ${people === 1 ? "Person wurde" : "Personen wurden"} per E-Mail und SMS informiert.`;
 }
 
 /** Platz vom Team storniert (fix) bzw. Einladung zurückgezogen (offen) */
@@ -385,7 +448,7 @@ export async function extendInvite(db: Db, seatId: string, hours: number) {
   const { dinner } = await loadDinner(db, seat.dinner_id);
   const base = Math.max(Date.now(), seat.expires_at ? new Date(seat.expires_at).getTime() : 0);
   const expires = Math.min(base + hours * HOUR, new Date(dinner.starts_at).getTime() - 2 * HOUR);
-  if (expires <= Date.now()) throw new AdminError("Das Dinner ist zu nah – keine Verlängerung mehr möglich.");
+  if (expires <= Date.now()) throw new AdminError("Der Tisch ist zu nah – keine Verlängerung mehr möglich.");
   const { data } = await db
     .from("seats")
     .update({ expires_at: new Date(expires).toISOString() })
@@ -413,7 +476,7 @@ export async function markNoShow(db: Db, seatId: string) {
   const seat = await loadSeat(db, seatId);
   if (seat.status !== "attended" && seat.status !== "confirmed") throw new AdminError("Nur Gäste eines Abends können als nicht erschienen markiert werden.");
   const { dinner, restaurant } = await loadDinner(db, seat.dinner_id);
-  if (new Date(dinner.starts_at).getTime() > Date.now()) throw new AdminError("Das Dinner hat noch nicht stattgefunden.");
+  if (new Date(dinner.starts_at).getTime() > Date.now()) throw new AdminError("Der Tisch hat noch nicht stattgefunden.");
   const { data } = await db.from("seats").update({ status: "no_show" }).eq("id", seat.id).eq("status", seat.status).select("id").maybeSingle();
   if (!data) throw stale();
 
@@ -455,7 +518,7 @@ export async function revertNoShow(db: Db, seatId: string) {
 
 export async function resendReservation(db: Db, dinnerId: string) {
   const { dinner, restaurant } = await loadDinner(db, dinnerId);
-  if (dinner.status !== "confirmed") throw new AdminError("Eine Reservierung gibt es erst, wenn das Dinner fix ist.");
+  if (dinner.status !== "confirmed") throw new AdminError("Eine Reservierung gibt es erst, wenn der Tisch fix ist.");
   await sendReservation(db, dinner, restaurant, undefined, true);
   await logAdmin(db, "Reservierung erneut gesendet", { dinnerId: dinner.id });
   return restaurant.email ? `Reservierung an ${restaurant.email} gesendet.` : "Beim Lokal ist keine E-Mail hinterlegt – die Reservierung ging an ADMIN_EMAIL.";
@@ -463,7 +526,7 @@ export async function resendReservation(db: Db, dinnerId: string) {
 
 export async function inviteToDinner(db: Db, dinnerId: string, applicationId: string) {
   const found = await replacementCandidates(db, dinnerId, 100);
-  if (!found) throw new AdminError("Dieses Dinner nimmt keine Nachrücker mehr (abgesagt, vorbei oder zu knapp vor Beginn).");
+  if (!found) throw new AdminError("Dieser Tisch nimmt keine Nachrücker mehr (abgesagt, vorbei oder zu knapp vor Beginn).");
   const candidate = [...found.candidates.frau, ...found.candidates.mann].find((p) => p.id === applicationId);
   if (!candidate) throw new AdminError("Die Person passt nicht (mehr) an diesen Tisch.");
   const seat = await offerSeat(db, found, candidate);
@@ -490,7 +553,7 @@ export async function refundPayment(db: Db, paymentId: string) {
   if (!pay.stripe_payment_intent) throw new AdminError("Keine Stripe-Zahlung hinterlegt – bitte direkt in Stripe erstatten.");
   if (pay.kind === "seat" && pay.seat_id) {
     const seat = (await db.from("seats").select("status").eq("id", pay.seat_id).maybeSingle()).data as Pick<Seat, "status"> | null;
-    if (seat?.status === "confirmed") throw new AdminError("Der Platz ist noch gebucht – bitte im Dinner stornieren, dort mit Erstattung.");
+    if (seat?.status === "confirmed") throw new AdminError("Der Platz ist noch gebucht – bitte beim Tisch stornieren, dort mit Erstattung.");
   }
 
   // Erst vormerken, dann Stripe – so kann ein Doppelklick nicht zweimal erstatten
@@ -570,7 +633,7 @@ export async function resolveReport(db: Db, reportId: string, decision: "dismiss
 }
 
 // ---------------------------------------------------------------------------
-// Stammlokale
+// Partnerlokale
 // ---------------------------------------------------------------------------
 
 const text = (max: number) => z.string().trim().max(max);
@@ -633,7 +696,7 @@ export async function saveRestaurant(db: Db, id: string | null, values: ReturnTy
 
 export async function deleteRestaurant(db: Db, id: string) {
   const { count } = await db.from("dinners").select("id", { count: "exact", head: true }).eq("restaurant_id", id);
-  if (count) throw new AdminError("Dieses Lokal hatte schon Dinner und bleibt deshalb gespeichert – bitte stattdessen deaktivieren.");
+  if (count) throw new AdminError("Dieses Lokal hatte schon Tische und bleibt deshalb gespeichert – bitte stattdessen deaktivieren.");
   const { data } = await db.from("restaurants").delete().eq("id", id).select("name").maybeSingle();
   if (!data) throw new AdminError("Lokal nicht gefunden.");
   await logAdmin(db, "Lokal gelöscht", { detail: (data as { name: string }).name });

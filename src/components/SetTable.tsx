@@ -1,6 +1,6 @@
 /**
  * Illustration: ein gedeckter runder Tisch für sechs, von oben gesehen.
- * Teller, Besteck und Gläser – keine Menschen. Feine Lichtlinien deuten die KI-Kuratierung an.
+ * Teller, Besteck, Gläser und Kerzen – keine Menschen. Feine Lichtlinien deuten die KI-Kuratierung an.
  * Später durch echte Fotos ersetzbar (z. B. /public/bilder/tisch.jpg mit next/image).
  */
 export function SetTable({ label, className = "" }: { label: string; className?: string }) {
@@ -22,6 +22,10 @@ export function SetTable({ label, className = "" }: { label: string; className?:
           <radialGradient id="plate" cx="45%" cy="40%" r="65%">
             <stop offset="0%" stopColor="#f7f8fd" />
             <stop offset="100%" stopColor="#d9ddef" />
+          </radialGradient>
+          <radialGradient id="candleglow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#ffd9a0" stopOpacity="0.55" />
+            <stop offset="100%" stopColor="#ffd9a0" stopOpacity="0" />
           </radialGradient>
         </defs>
 
@@ -58,6 +62,19 @@ export function SetTable({ label, className = "" }: { label: string; className?:
             <circle cx="-15" cy="42" r="5.5" fill="rgb(238 240 250 / 0.08)" stroke="rgb(238 240 250 / 0.55)" strokeWidth="1.2" />
           </g>
         ))}
+
+        {/* Drei Teelichter rund um die Tischmitte */}
+        {[0, 120, 240].map((d) => {
+          const x = 200 + 56 * Math.cos((d * Math.PI) / 180);
+          const y = 200 + 56 * Math.sin((d * Math.PI) / 180);
+          return (
+            <g key={`kerze-${d}`}>
+              <circle cx={x.toFixed(2)} cy={y.toFixed(2)} r="20" fill="url(#candleglow)" className="animate-flicker" />
+              <circle cx={x.toFixed(2)} cy={y.toFixed(2)} r="6.5" fill="rgb(238 240 250 / 0.85)" stroke="rgb(167 174 208 / 0.6)" />
+              <circle cx={x.toFixed(2)} cy={y.toFixed(2)} r="2.4" fill="#ffd27a" />
+            </g>
+          );
+        })}
 
         {/* Tischmitte: kleine Vase mit Blüten */}
         <circle cx="200" cy="200" r="22" fill="rgb(10 17 40 / 0.6)" stroke="rgb(244 182 194 / 0.5)" />

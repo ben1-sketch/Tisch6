@@ -18,6 +18,7 @@ const FILTERS = [
   { key: "angenommen", label: "Angenommen" },
   { key: "gespraech", label: "Im Gespräch" },
   { key: "gesperrt", label: "Gesperrt" },
+  { key: "abgelehnt", label: "Abgelehnt" },
   { key: "alle", label: "Alle" },
 ] as const;
 type Filter = (typeof FILTERS)[number]["key"];
@@ -59,7 +60,9 @@ function inFilter(filter: Filter, a: CountRow) {
     case "gespraech":
       return a.status === "onboarding";
     case "gesperrt":
-      return a.status === "blocked" || a.status === "rejected";
+      return a.status === "blocked";
+    case "abgelehnt":
+      return a.status === "rejected";
     default:
       return true;
   }
@@ -73,7 +76,8 @@ function listQuery(client: Db, filter: Filter, search: string, page: number) {
   if (filter === "warteliste") q = q.eq("status", "waitlist");
   if (filter === "angenommen") q = q.eq("status", "accepted");
   if (filter === "gespraech") q = q.eq("status", "onboarding");
-  if (filter === "gesperrt") q = q.in("status", ["blocked", "rejected"]);
+  if (filter === "gesperrt") q = q.eq("status", "blocked");
+  if (filter === "abgelehnt") q = q.eq("status", "rejected");
 
   // Suche nach Vorname, E-Mail oder Handynummer – Sonderzeichen raus, damit die Abfrage intakt bleibt
   const text = search.replace(/[^\p{L}\p{N}@._+\- ]/gu, "").trim().slice(0, 60);

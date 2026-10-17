@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { TIMING } from "@/lib/config";
 import { type Application, OPEN_SEAT, db } from "@/lib/db";
 import { setAvailability } from "@/lib/dinners";
 import { eraseApplicant } from "@/lib/erase";
 import { offerFor, withdrawApplicant } from "@/lib/seats";
 import { getUser } from "@/lib/supabase/server";
+import { DAY, HOUR } from "@/lib/time";
 
 export const dynamic = "force-dynamic";
 
@@ -26,6 +28,17 @@ export async function GET() {
     .limit(1);
   const next = (seats?.[0] as unknown as { token: string; status: string; dinners: { starts_at: string } } | undefined) ?? null;
 
+  // Diskreter Meldeknopf im Profil: für den letzten Abend, ab kurz vorher bis eine Woche danach
+  const { data: recent } = await client
+    .from("seats")
+    .select("token, dinners!inner(starts_at)")
+    .eq("application_id", app.id)
+    .in("status", ["confirmed", "attended", "no_show"])
+    .gte("dinners.starts_at", new Date(Date.now() - TIMING.reportUntilDaysAfter * DAY).toISOString())
+    .lte("dinners.starts_at", new Date(Date.now() + TIMING.reportFromHoursBefore * HOUR).toISOString())
+    .limit(1);
+  const report = (recent?.[0] as { token: string } | undefined)?.token ?? null;
+
   return NextResponse.json({
     application: {
       status: app.status,
@@ -39,6 +52,7 @@ export async function GET() {
       packageIsFounder: offer.package?.kind === "founder",
       discountCents: offer.discount?.price_cents ?? null,
       next: next ? { token: next.token, status: next.status, startsAt: next.dinners.starts_at } : null,
+      reportToken: report,
     },
   });
 }

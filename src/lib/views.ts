@@ -1,10 +1,10 @@
 import "server-only";
 import { TIMING } from "./config";
-import { type Application, type Db, type DinnerStatus, type Feedback, type Seat, type SeatStatus, OPEN_SEAT, must } from "./db";
+import { type Application, type ConversationCard, type Db, type DinnerStatus, type Feedback, type Seat, type SeatStatus, OPEN_SEAT, must } from "./db";
 import { tableSummary, type Gender } from "./matching-core";
 import { loadApplication, loadDinner, offerFor } from "./seats";
 import { stripe } from "./stripe";
-import { DAY, HOUR } from "./time";
+import { DAY, HOUR, dateKey, viennaDate } from "./time";
 
 const TOKEN = /^[a-f0-9]{32}$/;
 
@@ -28,9 +28,12 @@ export type SeatView = {
   paymentsEnabled: boolean;
   canCancel: boolean;
   cancelFree: boolean;
+  /** vom Team verschoben, nachdem die Person zugesagt hatte – Absage kostenlos */
+  cancelMovedFree: boolean;
   freeCancelUntil: string;
-  icebreaker: string[] | null;
-  icebreakerSoon: boolean;
+  /** Gesprächskarte des Tisches – am Tag des Abends */
+  card: ConversationCard | null;
+  cardSoon: boolean;
   canReport: boolean;
   canFeedback: boolean;
   feedbackDone: boolean;
@@ -53,6 +56,7 @@ export async function seatView(db: Db, token: string): Promise<SeatView | null> 
   ) as Pick<Application, "id" | "first_name" | "profile">[];
 
   const isGuest = ["confirmed", "attended", "no_show"].includes(seat.status);
+  const dinnerDay = dateKey(viennaDate(new Date(now))) === dateKey(viennaDate(new Date(start)));
   const open = (seat.status === "invited" || seat.status === "offered") && (!seat.expires_at || new Date(seat.expires_at).getTime() > now);
   const offer = open ? await offerFor(db, app) : null;
   const feedback = (await db.from("feedback").select("seat_id").eq("seat_id", seat.id).maybeSingle()).data as Pick<Feedback, "seat_id"> | null;
@@ -93,9 +97,10 @@ export async function seatView(db: Db, token: string): Promise<SeatView | null> 
     paymentsEnabled: Boolean(stripe()),
     canCancel: seat.status === "confirmed" && now < start,
     cancelFree: start - now >= TIMING.freeCancelHoursBefore * HOUR,
+    cancelMovedFree: Boolean(dinner.moved_at && (!seat.confirmed_at || seat.confirmed_at < dinner.moved_at)),
     freeCancelUntil: new Date(start - TIMING.freeCancelHoursBefore * HOUR).toISOString(),
-    icebreaker: seat.status === "confirmed" && start - now <= 24 * HOUR ? (seat.icebreaker?.fragen ?? null) : null,
-    icebreakerSoon: seat.status === "confirmed" && start - now > 24 * HOUR,
+    card: seat.status === "confirmed" && dinnerDay ? dinner.conversation_card : null,
+    cardSoon: seat.status === "confirmed" && (!dinnerDay || !dinner.conversation_card),
     canReport: isGuest && now >= start - TIMING.reportFromHoursBefore * HOUR && now <= start + TIMING.reportUntilDaysAfter * DAY,
     canFeedback: seat.status === "attended" && now <= start + TIMING.reportUntilDaysAfter * DAY,
     feedbackDone: Boolean(feedback),

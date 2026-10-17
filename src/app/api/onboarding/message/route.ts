@@ -1,5 +1,7 @@
 import { NextResponse, after } from "next/server";
 import { z } from "zod";
+import { receivedMail } from "@/lib/messages";
+import { sendEmail } from "@/lib/notify";
 import { getUser } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
@@ -26,7 +28,7 @@ export async function POST(request: Request) {
   const admin = createAdminClient();
   const { data: app, error } = await admin
     .from("applications")
-    .select("status, first_name, transcript, user_turns, photo_path")
+    .select("status, first_name, email, transcript, user_turns, photo_path")
     .eq("id", user.id)
     .maybeSingle();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -61,6 +63,8 @@ export async function POST(request: Request) {
   if (complete) {
     update.status = underage ? "rejected" : "submitted";
     update.submitted_at = new Date().toISOString();
+    // Minderjährige: der nächste Durchlauf löscht alles und schickt eine kurze E-Mail
+    if (underage) Object.assign(update, { rejected_at: update.submitted_at, evaluation: { minderjaehrig: true } });
   }
 
   // Optimistische Sperre: nur speichern, wenn niemand parallel geantwortet hat
@@ -78,19 +82,31 @@ export async function POST(request: Request) {
   // und das 60-Sekunden-Limit gilt nicht für Gesprächsrunde und Auswertung zusammen.
   if (complete && !underage) {
     after(async () => {
+      let minor = false;
       try {
         const profile = await extractProfile(transcript);
+        minor = profile.unter_18;
         await admin
           .from("applications")
           .update({
             profile,
             personality_type: profile.persoenlichkeit.typ,
-            ...(profile.unter_18 ? { status: "rejected" } : {}),
+            ...(minor ? { status: "rejected", rejected_at: new Date().toISOString(), evaluation: { minderjaehrig: true } } : {}),
           })
           .eq("id", user.id);
       } catch (e) {
-        // Profil bleibt leer; die automatische Bewertung (Etappe 2) holt die Auswertung nach.
+        // Profil bleibt leer; die automatische Bewertung holt die Auswertung nach.
         console.error(e);
+      }
+      // „Bewerbung eingegangen“ – die Antwort folgt innerhalb von 24 Stunden
+      if (!minor) {
+        await sendEmail(admin, {
+          to: app.email,
+          content: receivedMail(app.first_name),
+          kind: "received",
+          dedupeKey: `received:${user.id}`,
+          applicationId: user.id,
+        }).catch((e) => console.error("Eingangsbestätigung", e));
       }
     });
   }

@@ -23,6 +23,7 @@ type Overview = {
   packageIsFounder: boolean;
   discountCents: number | null;
   next: { token: string; status: string; startsAt: string } | null;
+  reportToken: string | null;
 };
 
 export function Account({ lang, t, buddyT }: { lang: string; t: T; buddyT: Dictionary["apply"]["buddy"] }) {
@@ -168,6 +169,14 @@ export function Account({ lang, t, buddyT }: { lang: string; t: T; buddyT: Dicti
           )}
 
           {error && <p className="text-sm text-rose-300">{error}</p>}
+
+          {overview?.reportToken && (
+            <p className="text-center">
+              <Link href={`/${lang}/einladung/${overview.reportToken}?melden=1#melden`} className="text-xs text-mist/70 underline hover:text-mist">
+                {t.report}
+              </Link>
+            </p>
+          )}
 
           <section className="rounded-3xl border border-rose-500/30 p-6">
             <h2 className="font-display text-lg font-semibold">{t.deleteTitle}</h2>

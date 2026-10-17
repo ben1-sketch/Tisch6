@@ -4,15 +4,19 @@ import { askStructured } from "./claude";
 import { BALANCE_MARGIN, TIMING } from "./config";
 import { type Application, type Db, must } from "./db";
 import { eraseApplicant } from "./erase";
-import { acceptedMail, adminMail, minorMail, waitlistMail } from "./messages";
+import { acceptedMail, adminMail, minorMail, rejectedMail, waitlistMail } from "./messages";
 import { notifyAdmin, sendEmail } from "./notify";
 import { extractProfile, type Profile } from "./onboarding";
+import { DAY } from "./time";
 
 type Gender = "frau" | "mann";
 type Counts = Record<Gender, number>;
 
 const AssessmentSchema = z.object({
   serioes: z.boolean().describe("true, wenn die Bewerbung ernst gemeint und respektvoll ist"),
+  eindeutig: z
+    .boolean()
+    .describe("Nur bei serioes = false: true, wenn die Warnsignale klar und eindeutig sind; im Zweifel false (dann prüft ein Mensch)"),
   warnsignale: z
     .array(z.string())
     .describe("Konkrete Warnsignale, z. B. beleidigend, sexuell aufdringlich, offensichtlich erfunden, Werbung, vergeben"),
@@ -22,6 +26,7 @@ const AssessmentSchema = z.object({
 const ASSESS_SYSTEM = `Du prüfst Bewerbungen für Tisch6, KI-kuratierte Dating-Dinner für Singles in Wien (sechs Personen pro Tisch, öffentliches Restaurant).
 Entscheide nur, ob die Bewerbung ernst gemeint und respektvoll ist. Sei wohlwollend: Schüchternheit, kurze Antworten, Humor, Tippfehler oder ungewöhnliche Hobbys sind KEIN Grund für ein Nein.
 Nur klare Warnsignale zählen: beleidigende oder abwertende Aussagen, sexuell aufdringliche Inhalte, offensichtlich erfundene oder widersprüchliche Angaben, Werbung oder Spam, oder die Person sucht ausdrücklich keine Partnerschaft bzw. ist offensichtlich vergeben.
+Ist die Bewerbung nicht ernst gemeint, entscheide zusätzlich, ob das eindeutig ist (dann wird automatisch abgesagt) oder ob ein Mensch noch einmal draufschauen soll. Im Zweifel: nicht eindeutig.
 Antworte im vorgegebenen JSON-Format.`;
 
 const otherGender = (g: Gender): Gender => (g === "frau" ? "mann" : "frau");
@@ -83,7 +88,21 @@ async function waitlist(db: Db, app: Application, reason: "balance" | "format" |
   }
 }
 
-/** Bewertet eine Bewerbung: unter 18 → löschen, KI-Prüfung, 3+3-Format, Geschlechterverhältnis. */
+async function reject(db: Db, app: Application, extra: Record<string, unknown> = {}) {
+  const now = new Date().toISOString();
+  const { data } = await db
+    .from("applications")
+    .update({ status: "rejected", rejected_at: now, evaluated_at: now, available_since: null, ...extra })
+    .eq("id", app.id)
+    .eq("status", "submitted")
+    .select("id")
+    .maybeSingle();
+  if (data) {
+    await sendEmail(db, { to: app.email, content: rejectedMail(app.first_name), kind: "rejected", dedupeKey: `rejected:${app.id}`, applicationId: app.id });
+  }
+}
+
+/** Bewertet eine Bewerbung: unter 18 → löschen, KI-Prüfung (angenommen oder abgelehnt), 3+3-Format, Geschlechterverhältnis. */
 async function evaluate(db: Db, app: Application, counts: Counts) {
   const profile = app.profile!;
 
@@ -105,6 +124,10 @@ async function evaluate(db: Db, app: Application, counts: Counts) {
     maxTokens: 2000,
   });
 
+  if (!assessment.serioes && assessment.eindeutig) {
+    await reject(db, app, { evaluation: assessment });
+    return;
+  }
   if (!assessment.serioes) {
     await waitlist(db, app, "review", { under_review: true, evaluation: assessment });
     await notifyAdmin(
@@ -159,7 +182,7 @@ async function promoteWaitlist(db: Db, counts: Counts) {
 }
 
 /**
- * Automatische Antwort auf Bewerbungen (angenommen oder Warteliste).
+ * Automatische Antwort auf Bewerbungen (angenommen, Warteliste oder abgelehnt).
  * Läuft bei jedem Durchlauf; deadline begrenzt die Zeit für KI-Aufrufe.
  */
 export async function evaluateApplications(db: Db, deadline: number) {
@@ -216,4 +239,25 @@ export async function evaluateApplications(db: Db, deadline: number) {
     }
   }
   return result;
+}
+
+/**
+ * Datensparsamkeit: Minderjährige werden sofort gelöscht (mit kurzer E-Mail),
+ * abgelehnte Bewerbungen nach TIMING.rejectedRetentionDays Tagen.
+ */
+export async function eraseRejected(db: Db) {
+  const rows = must(
+    await db.from("applications").select("id, first_name, email, rejected_at, evaluation").eq("status", "rejected").limit(50),
+    "Abgelehnte Bewerbungen laden",
+  ) as Pick<Application, "id" | "first_name" | "email" | "rejected_at" | "evaluation">[];
+  const limit = Date.now() - TIMING.rejectedRetentionDays * DAY;
+  let erased = 0;
+  for (const app of rows) {
+    const minor = (app.evaluation as { minderjaehrig?: boolean } | null)?.minderjaehrig === true;
+    if (!minor && (!app.rejected_at || new Date(app.rejected_at).getTime() > limit)) continue;
+    if (minor) await sendEmail(db, { to: app.email, content: minorMail(app.first_name), kind: "minor", dedupeKey: `minor:${app.id}`, applicationId: app.id });
+    await eraseApplicant(db, app.id);
+    erased++;
+  }
+  return erased;
 }

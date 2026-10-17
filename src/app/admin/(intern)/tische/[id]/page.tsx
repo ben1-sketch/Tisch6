@@ -7,15 +7,30 @@ import { Card, Chip, Empty, Facts, PageTitle, PersonLink, field } from "@/compon
 import { requireAdmin } from "@/lib/admin/auth";
 import { DINNER_STATUS, GENDER, SEAT_STATUS, day, relative, when } from "@/lib/admin/format";
 import { PRICES, TABLE, TIMING, euro } from "@/lib/config";
-import { type AdminLog, type Application, type Dinner, type Feedback, type Match, type Report, type Restaurant, type Seat, type SeatStatus, TAKING_PART, db } from "@/lib/db";
+import {
+  type AdminLog,
+  type Application,
+  type Dinner,
+  type Feedback,
+  type Match,
+  type Report,
+  type Restaurant,
+  type Seat,
+  type SeatStatus,
+  TAKING_PART,
+  db,
+} from "@/lib/db";
 import type { Person } from "@/lib/matching-core";
+import { CARD_RULES, RESERVATION_NAME } from "@/lib/messages";
 import { replacementCandidates } from "@/lib/seats";
-import { formatDateTime, hoursUntil } from "@/lib/time";
+import { dateKey, formatDateTime, formatTime, hoursUntil, viennaDate } from "@/lib/time";
 import {
   cancelDinnerAction,
+  cardAction,
   confirmManuallyAction,
   extendInviteAction,
   inviteAction,
+  moveDinnerAction,
   noShowAction,
   removeSeatAction,
   replaceNowAction,
@@ -23,7 +38,7 @@ import {
   revertNoShowAction,
 } from "../../../actions";
 
-export const metadata: Metadata = { title: "Dinner" };
+export const metadata: Metadata = { title: "Tisch" };
 
 type SeatRow = Seat & { applications: Pick<Application, "id" | "first_name" | "status" | "no_shows" | "profile"> | null };
 type FeedbackRow = Feedback & { seats: { dinner_id: string; application_id: string } };
@@ -36,7 +51,13 @@ function average(values: (number | null)[]) {
   return v.length ? (v.reduce((a, b) => a + b, 0) / v.length).toFixed(1).replace(".", ",") : "–";
 }
 
-export default async function DinnerPage({ params }: PageProps<"/admin/dinner/[id]">) {
+/** Zeitpunkt als Wert für <input type="datetime-local"> in Wiener Zeit */
+function localInput(iso: string) {
+  const d = new Date(iso);
+  return `${dateKey(viennaDate(d))}T${formatTime(d)}`;
+}
+
+export default async function TablePage({ params }: PageProps<"/admin/tische/[id]">) {
   await requireAdmin();
   const { id } = await params;
   if (!z.uuid().safeParse(id).success) notFound();
@@ -44,15 +65,16 @@ export default async function DinnerPage({ params }: PageProps<"/admin/dinner/[i
   const dinner = (await client.from("dinners").select("*").eq("id", id).maybeSingle()).data as Dinner | null;
   if (!dinner) notFound();
 
-  const [restaurant, seats, feedback, matches, reports, log] = await Promise.all([
-    client.from("restaurants").select("*").eq("id", dinner.restaurant_id).maybeSingle(),
+  const [restaurants, seats, feedback, matches, reports, log] = await Promise.all([
+    client.from("restaurants").select("*").order("name"),
     client.from("seats").select("*, applications(id, first_name, status, no_shows, profile)").eq("dinner_id", id),
     client.from("feedback").select("*, seats!inner(dinner_id, application_id)").eq("seats.dinner_id", id),
     client.from("matches").select("*").eq("dinner_id", id),
     client.from("reports").select("*").eq("dinner_id", id).order("created_at", { ascending: false }),
     client.from("admin_log").select("*").eq("dinner_id", id).order("created_at", { ascending: false }).limit(30),
   ]);
-  const place = restaurant.data as Restaurant | null;
+  const allRestaurants = (restaurants.data ?? []) as Restaurant[];
+  const place = allRestaurants.find((r) => r.id === dinner.restaurant_id) ?? null;
   const seatRows = ((seats.data ?? []) as unknown as SeatRow[]).sort((a, b) => ORDER.indexOf(a.status) - ORDER.indexOf(b.status));
   const feedbackRows = (feedback.data ?? []) as unknown as FeedbackRow[];
   const matchRows = (matches.data ?? []) as Match[];
@@ -66,6 +88,7 @@ export default async function DinnerPage({ params }: PageProps<"/admin/dinner/[i
   const missing = candidates ? candidates.missing.frau + candidates.missing.mann : 0;
   const fixed = seatRows.filter((s) => TAKING_PART.includes(s.status)).length;
   const matching = dinner.matching as { begruendung?: string } | null;
+  const card = dinner.conversation_card;
   const hidden = { id: dinner.id };
 
   return (
@@ -75,24 +98,25 @@ export default async function DinnerPage({ params }: PageProps<"/admin/dinner/[i
         sub={
           <div className="flex flex-wrap items-center gap-2">
             <Chip tone={DINNER_STATUS[dinner.status].tone}>{DINNER_STATUS[dinner.status].label}</Chip>
+            {dinner.moved_at && <Chip tone="amber">verschoben {day(dinner.moved_at)}</Chip>}
             <span>
               {place?.name ?? "–"}
               {place?.district ? ` · ${place.district}` : ""}
             </span>
             <span>
-              · {fixed}/{TABLE.size} {started ? "Gäste" : "fix"}
+              · {fixed}/{TABLE.size} {started ? "Gäste" : "bezahlt"}
             </span>
           </div>
         }
       >
-        <Link href="/admin/dinner" className="text-sm text-rose-300 hover:underline">
-          ← alle Dinner
+        <Link href="/admin/tische" className="text-sm text-rose-300 hover:underline">
+          ← alle Tische
         </Link>
       </PageTitle>
 
-      <div className="grid gap-4 lg:grid-cols-[1fr_22rem]">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_22rem]">
         <div className="min-w-0 space-y-4">
-          <Card title="Plätze">
+          <Card title="Teilnehmer" aside={<span className="text-xs text-mist">rot = unbezahlt</span>}>
             {seatRows.length === 0 ? (
               <Empty>Keine Plätze.</Empty>
             ) : (
@@ -101,7 +125,7 @@ export default async function DinnerPage({ params }: PageProps<"/admin/dinner/[i
                   const p = s.applications?.profile;
                   const open = s.status === "invited" || s.status === "offered";
                   return (
-                    <li key={s.id} className="rounded-xl border border-white/10 p-3 sm:p-4">
+                    <li key={s.id} className={`rounded-xl border p-3 sm:p-4 ${open ? "border-red-400/40 bg-red-500/5" : "border-white/10"}`}>
                       <div className="flex flex-wrap items-start justify-between gap-2">
                         <div className="min-w-0">
                           <PersonLink id={s.application_id} name={s.applications?.first_name} />
@@ -115,7 +139,7 @@ export default async function DinnerPage({ params }: PageProps<"/admin/dinner/[i
                             </span>
                           )}
                         </div>
-                        <Chip tone={SEAT_STATUS[s.status].tone}>{SEAT_STATUS[s.status].label}</Chip>
+                        {open ? <Chip tone="red">unbezahlt</Chip> : <Chip tone={SEAT_STATUS[s.status].tone}>{SEAT_STATUS[s.status].label}</Chip>}
                       </div>
                       <p className="mt-1 text-sm text-mist">
                         {open && s.expires_at && `Frist bis ${when(s.expires_at)} (${relative(s.expires_at)})`}
@@ -125,16 +149,6 @@ export default async function DinnerPage({ params }: PageProps<"/admin/dinner/[i
                         {s.ended_at && !open && ` · beendet ${when(s.ended_at)}`}
                         {p?.unvertraeglichkeiten?.length ? ` · Küche: ${p.unvertraeglichkeiten.join(", ")}` : ""}
                       </p>
-                      {s.icebreaker?.fragen?.length ? (
-                        <details className="mt-2 text-sm">
-                          <summary className="cursor-pointer text-rose-300">Eisbrecher-Karte</summary>
-                          <ol className="mt-1 list-decimal pl-5 text-cloud">
-                            {s.icebreaker.fragen.map((q) => (
-                              <li key={q}>{q}</li>
-                            ))}
-                          </ol>
-                        </details>
-                      ) : null}
 
                       <div className="mt-3 flex flex-wrap gap-x-4 gap-y-3">
                         {open && planned && (
@@ -207,7 +221,7 @@ export default async function DinnerPage({ params }: PageProps<"/admin/dinner/[i
                       Es fehlt {candidates.missing[g]} {g === "frau" ? (candidates.missing[g] === 1 ? "Frau" : "Frauen") : candidates.missing[g] === 1 ? "Mann" : "Männer"}
                     </h3>
                     {candidates.candidates[g].length === 0 ? (
-                      <p className="text-sm text-mist">Gerade passt niemand aus dem Pool (Alter, Wunschtag, Altersspannen).</p>
+                      <p className="text-sm text-mist">Gerade passt niemand aus dem Pool (Alter, Temperament, Wunschtag, Altersspannen).</p>
                     ) : (
                       <ul className="space-y-2">
                         {candidates.candidates[g].map((c: Person) => (
@@ -234,6 +248,51 @@ export default async function DinnerPage({ params }: PageProps<"/admin/dinner/[i
               )}
             </Card>
           )}
+
+          <Card
+            title="Gesprächskarte"
+            aside={
+              card ? (
+                <a href={`/admin/karte/${dinner.id}`} target="_blank" rel="noreferrer" className="text-sm text-rose-300 hover:underline">
+                  Druckversion ↗
+                </a>
+              ) : null
+            }
+          >
+            {card ? (
+              <>
+                <div className="grid gap-4 sm:grid-cols-3">
+                  {card.runden.map((r) => (
+                    <div key={r.name}>
+                      <h3 className="text-sm font-semibold text-rose-300">{r.name}</h3>
+                      <ol className="mt-1 list-decimal space-y-1 pl-5 text-sm text-cloud">
+                        {r.fragen.map((q) => (
+                          <li key={q}>{q}</li>
+                        ))}
+                      </ol>
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-3 text-xs text-mist">{CARD_RULES.join(" · ")}</p>
+                {planned && future && (
+                  <ActionForm
+                    action={cardAction}
+                    hidden={{ ...hidden, renew: "1" }}
+                    submit="Neue Fragen erstellen"
+                    confirm="Die KI erstellt neue Fragen für diesen Tisch. Weiter?"
+                    className="mt-4"
+                  />
+                )}
+              </>
+            ) : (
+              <>
+                <p className="text-sm text-mist">
+                  Die KI erstellt die Karte automatisch, sobald der Tisch fix ist (spätestens am Tag selbst). Am Tag des Tisches kommt sie per E-Mail an alle.
+                </p>
+                {planned && <ActionForm action={cardAction} hidden={hidden} submit="Jetzt erstellen" className="mt-3" />}
+              </>
+            )}
+          </Card>
 
           {matching?.begruendung && (
             <Card title="Warum diese Runde">
@@ -270,7 +329,7 @@ export default async function DinnerPage({ params }: PageProps<"/admin/dinner/[i
           )}
 
           {reportRows.length > 0 && (
-            <Card title="Meldungen zu diesem Abend">
+            <Card title="Meldungen zu diesem Tisch">
               <ul className="space-y-2 text-sm">
                 {reportRows.map((r) => (
                   <li key={r.id}>
@@ -293,6 +352,7 @@ export default async function DinnerPage({ params }: PageProps<"/admin/dinner/[i
                 rows={[
                   ["Name", place.name],
                   ["Adresse", place.address],
+                  ["Reserviert auf", RESERVATION_NAME],
                   ["Reservierung an", place.email ?? "ADMIN_EMAIL (keine E-Mail beim Lokal)"],
                   ["Telefon", place.phone ?? "–"],
                   ["Gemeldete Personen", dinner.reserved_count !== null ? String(dinner.reserved_count) : "noch nicht reserviert"],
@@ -301,44 +361,80 @@ export default async function DinnerPage({ params }: PageProps<"/admin/dinner/[i
             ) : (
               <Empty>Lokal nicht gefunden.</Empty>
             )}
+            {dinner.status === "confirmed" && (
+              <ActionForm
+                action={resendReservationAction}
+                hidden={hidden}
+                submit="Reservierung erneut senden"
+                confirm="Die Reservierung mit aktueller Personenzahl und Küchenhinweisen noch einmal ans Lokal schicken?"
+                className="mt-3"
+              />
+            )}
           </Card>
 
-          <Card title="Eingreifen">
-            {planned ? (
-              <div className="space-y-4">
-                {future && missing > 0 && (
-                  <ActionForm action={replaceNowAction} hidden={hidden} submit="Nächsten Nachrücker einladen" tone="primary" />
-                )}
-                {dinner.status === "confirmed" && (
-                  <ActionForm
-                    action={resendReservationAction}
-                    hidden={hidden}
-                    submit="Reservierung erneut senden"
-                    confirm="Die Reservierung mit aktueller Personenzahl und Küchenhinweisen noch einmal ans Lokal schicken?"
-                  />
-                )}
+          {planned ? (
+            <Card title="Verschieben / Absagen">
+              <div className="space-y-5">
+                {future && missing > 0 && <ActionForm action={replaceNowAction} hidden={hidden} submit="Nächsten Nachrücker einladen" tone="primary" />}
+                <ActionForm
+                  action={moveDinnerAction}
+                  hidden={hidden}
+                  submit="Verschieben"
+                  confirm="Tisch verschieben? Alle Teilnehmer bekommen sofort eine SMS und eine E-Mail; wer nicht kann, sagt kostenlos ab."
+                >
+                  <label className="block w-full text-sm">
+                    <span className="mb-1 block text-mist">Neuer Termin</span>
+                    <input type="datetime-local" name="when" required defaultValue={localInput(dinner.starts_at)} className={`${field} w-full`} />
+                  </label>
+                  <label className="block w-full text-sm">
+                    <span className="mb-1 block text-mist">Lokal</span>
+                    <select name="restaurant" defaultValue={dinner.restaurant_id} className={`${field} w-full`}>
+                      {allRestaurants.map((r) => (
+                        <option key={r.id} value={r.id}>
+                          {r.name}
+                          {r.active ? "" : " (pausiert)"}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                </ActionForm>
                 <ActionForm
                   action={cancelDinnerAction}
                   hidden={hidden}
-                  submit="Dinner absagen"
+                  submit="Tisch absagen"
                   tone="danger"
-                  confirm="Das ganze Dinner absagen? Alle Gäste bekommen eine E-Mail, Zahlungen werden erstattet und das Lokal bekommt eine Stornierung."
-                />
+                  confirm="Den ganzen Tisch absagen? Alle Teilnehmer bekommen sofort eine SMS und eine E-Mail, das Lokal eine Stornierung."
+                  className="border-t border-white/5 pt-4"
+                >
+                  <fieldset className="w-full space-y-1 text-sm text-mist">
+                    <label className="flex items-center gap-2">
+                      <input type="radio" name="money" value="credit" defaultChecked className="accent-rose-400" />
+                      Bezahltes bleibt als Guthaben
+                    </label>
+                    <label className="flex items-center gap-2">
+                      <input type="radio" name="money" value="refund" className="accent-rose-400" />
+                      Geld zurück
+                    </label>
+                  </fieldset>
+                </ActionForm>
                 <p className="text-xs text-mist">
-                  {dinner.status === "inviting"
-                    ? `${TIMING.decisionHoursBefore} Stunden vorher entscheidet der Durchlauf: ab ${TABLE.size - 1} Zusagen findet es statt, sonst wird verschoben und erstattet.`
-                    : "Das Dinner findet statt. Fällt jemand aus, läuft es zu fünft – alle bekommen dann beim nächsten Mal Rabatt."}
+                  {dinner.decided_at
+                    ? "Der Tisch findet statt. Fällt jemand aus, läuft er zu fünft – alle bekommen dann beim nächsten Mal Rabatt."
+                    : `${TIMING.decisionHoursBefore} Stunden vorher entscheidet der Durchlauf: ab ${TABLE.minGuests} bezahlten Plätzen findet der Tisch statt, sonst wird er abgesagt und Bezahltes bleibt als Guthaben.`}
                 </p>
               </div>
-            ) : (
-              <p className="text-sm text-mist">Dieses Dinner ist {DINNER_STATUS[dinner.status].label.toLowerCase()} – hier gibt es nichts mehr zu tun.</p>
-            )}
-          </Card>
+            </Card>
+          ) : (
+            <Card title="Verschieben / Absagen">
+              <p className="text-sm text-mist">Dieser Tisch ist {DINNER_STATUS[dinner.status].label.toLowerCase()} – hier gibt es nichts mehr zu tun.</p>
+            </Card>
+          )}
 
           <Card title="Ablauf">
             <Facts
               rows={[
                 ["Geplant", when(dinner.created_at)],
+                ["Entschieden", when(dinner.decided_at)],
                 ["Feedback angefragt", when(dinner.feedback_sent_at)],
                 ["Abgeschlossen", when(dinner.wrapped_up_at)],
               ]}

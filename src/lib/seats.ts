@@ -1,4 +1,5 @@
 import "server-only";
+import { createHash } from "node:crypto";
 import { FOUNDER, PRICES, TABLE, TIMING, euro } from "./config";
 import {
   type Application,
@@ -18,12 +19,16 @@ import {
   adminMail,
   cancelledMail,
   confirmedMail,
+  creditKeptText,
+  dinnerCancelledMail,
+  dinnerCancelledSms,
   expiredMail,
   invitationMail,
-  postponedMail,
   refundText,
   replacementSms,
+  reservationCancelledMail,
   reservationMail,
+  tableCompleteMail,
 } from "./messages";
 import { notifyAdmin, sendEmail, sendSms } from "./notify";
 import { loadPool } from "./pool";
@@ -167,7 +172,10 @@ export async function sendInvitation(
 export async function replacementCandidates(db: Db, dinnerId: string, limit = 1) {
   const { dinner, restaurant } = await loadDinner(db, dinnerId);
   if (dinner.status !== "inviting" && dinner.status !== "confirmed") return null;
-  if (hoursUntil(dinner.starts_at) < TIMING.lastReplacementHoursBefore) return null;
+  const hours = hoursUntil(dinner.starts_at);
+  if (hours < TIMING.lastReplacementHoursBefore) return null;
+  // Vor der Entscheidung (24 Stunden vorher) muss noch Zeit zum Zusagen bleiben
+  if (!dinner.decided_at && hours < TIMING.decisionHoursBefore + 2) return null;
 
   const seats = await seatsOf(db, dinner.id);
   const members = await tablePeople(db, seats);
@@ -194,9 +202,9 @@ export async function offerSeat(
   o: { dinner: Dinner; restaurant: Restaurant; members: Person[] },
   candidate: Person,
 ) {
-  const expires = new Date(
-    Math.min(Date.now() + TIMING.replacementHours * HOUR, new Date(o.dinner.starts_at).getTime() - 2 * HOUR),
-  );
+  const start = new Date(o.dinner.starts_at).getTime();
+  const latest = o.dinner.decided_at ? start - 2 * HOUR : start - TIMING.decisionHoursBefore * HOUR;
+  const expires = new Date(Math.min(Date.now() + TIMING.replacementHours * HOUR, latest));
   const { data: seat, error } = await db
     .from("seats")
     .insert({ dinner_id: o.dinner.id, application_id: candidate.id, status: "offered", replacement: true, expires_at: expires.toISOString() })
@@ -226,15 +234,46 @@ export async function findReplacement(db: Db, dinnerId: string, gender: Gender |
 // Zusagen, Absagen, Ablauf
 // ---------------------------------------------------------------------------
 
-/** Nach jeder Änderung: volle Runde → Dinner fix; bei fixen Dinnern die Reservierung beim Lokal aktuell halten. */
+/** Kennt jeden Versand pro Termin: nach einer Verschiebung gehen Erinnerungen und Reservierung neu raus. */
+export function movedSuffix(dinner: Pick<Dinner, "moved_at">) {
+  return dinner.moved_at ? `:${new Date(dinner.moved_at).getTime()}` : "";
+}
+
+/**
+ * Nach jeder Änderung: Ab fünf Zusagen findet der Tisch statt (Reservierung ans Lokal, bei Änderungen erneut);
+ * fällt er vor der Entscheidung wieder unter fünf, laufen die Einladungen weiter. Alle sechs bezahlt → „Tisch komplett“.
+ */
 export async function afterSeatChange(db: Db, dinner: Dinner, restaurant: Restaurant) {
   const seats = await seatsOf(db, dinner.id);
-  const confirmed = seats.filter((s) => s.status === "confirmed").length;
-  if (dinner.status === "inviting" && confirmed >= TABLE.size) {
+  const confirmed = seats.filter((s) => s.status === "confirmed");
+  if (dinner.status === "inviting" && confirmed.length >= TABLE.minGuests) {
     const { data } = await db.from("dinners").update({ status: "confirmed" }).eq("id", dinner.id).eq("status", "inviting").select("*").maybeSingle();
+    if (data) dinner = data as Dinner;
+  } else if (dinner.status === "confirmed" && !dinner.decided_at && confirmed.length < TABLE.minGuests) {
+    const { data } = await db
+      .from("dinners")
+      .update({ status: "inviting" })
+      .eq("id", dinner.id)
+      .eq("status", "confirmed")
+      .is("decided_at", null)
+      .select("*")
+      .maybeSingle();
     if (data) dinner = data as Dinner;
   }
   if (dinner.status === "confirmed") await sendReservation(db, dinner, restaurant, seats);
+  if (confirmed.length >= TABLE.size) {
+    const info = dinnerInfo(dinner, restaurant);
+    for (const seat of confirmed) {
+      const app = await loadApplication(db, seat.application_id);
+      await sendEmail(db, {
+        to: app.email,
+        content: tableCompleteMail({ name: app.first_name, dinner: info, token: seat.token }),
+        kind: "table_complete",
+        dedupeKey: `complete:${seat.id}`,
+        applicationId: app.id,
+      });
+    }
+  }
 }
 
 /** Meldet dem Lokal Personenzahl und Küchenhinweise (ohne Namen); bei Änderungen erneut. */
@@ -249,7 +288,9 @@ export async function sendReservation(db: Db, dinner: Dinner, restaurant: Restau
     kitchen: kitchenNotes(apps.map((a) => ({ diet: a.profile?.ernaehrung ?? null, intolerances: a.profile?.unvertraeglichkeiten ?? [] }))),
     update: dinner.reserved_count !== null,
   });
-  const dedupeKey = `reservation:${dinner.id}:${confirmed.length}${force ? `:${Date.now()}` : ""}`;
+  // je Änderung eindeutig (vorher → nachher, wer fix ist) – so geht auch „6 → 5 → 6“ jedes Mal ans Lokal, aber nichts doppelt
+  const who = createHash("sha256").update(confirmed.map((s) => s.id).sort().join(",")).digest("hex").slice(0, 12);
+  const dedupeKey = `reservation:${dinner.id}:${dinner.reserved_count ?? 0}-${confirmed.length}:${who}${movedSuffix(dinner)}${force ? `:${Date.now()}` : ""}`;
   const result = restaurant.email
     ? await sendEmail(db, { to: restaurant.email, content, kind: "reservation", dedupeKey })
     : await notifyAdmin(db, { ...content, subject: `[Bitte ans Lokal weitergeben – keine E-Mail hinterlegt] ${content.subject}` }, "reservation", dedupeKey);
@@ -365,10 +406,11 @@ export async function giveBack(db: Db, seat: Seat): Promise<string | null> {
   return text;
 }
 
-/** Absage nach der Zusage: bis 48 Stunden vorher kostenlos, danach verfällt die Gebühr. */
+/** Absage nach der Zusage: bis 48 Stunden vorher kostenlos (nach einer Verschiebung durch Tisch6 immer), danach verfällt die Gebühr. */
 export async function cancelSeat(db: Db, seat: Seat) {
   const { dinner, restaurant } = await loadDinner(db, seat.dinner_id);
-  const late = hoursUntil(dinner.starts_at) < TIMING.freeCancelHoursBefore;
+  const movedSinceBooking = Boolean(dinner.moved_at && (!seat.confirmed_at || seat.confirmed_at < dinner.moved_at));
+  const late = !movedSinceBooking && hoursUntil(dinner.starts_at) < TIMING.freeCancelHoursBefore;
   const { data } = await db
     .from("seats")
     .update({ status: late ? "cancelled_late" : "cancelled", ended_at: new Date().toISOString() })
@@ -419,24 +461,111 @@ export async function expireSeats(db: Db) {
   return expired;
 }
 
+/** Absage durch Tisch6: Bezahltes bleibt als Guthaben erhalten (Paket-Teilnahme zurück ins Paket, sonst eine Gutschrift). */
+export async function keepAsCredit(db: Db, seat: Seat): Promise<string | null> {
+  if (seat.paid_with === "package" && seat.package_id) {
+    const pkg = (await db.from("packages").select("*").eq("id", seat.package_id).single()).data as Package | null;
+    if (pkg) {
+      await db.from("packages").update({ remaining: pkg.remaining + 1 }).eq("id", pkg.id);
+      return refundText({ cents: null, package: true });
+    }
+    return null;
+  }
+  if ((seat.paid_with === "stripe" || seat.paid_with === "manual") && (seat.price_cents ?? 0) > 0) {
+    const expires = new Date();
+    expires.setMonth(expires.getMonth() + FOUNDER.validMonths);
+    const { error } = await db
+      .from("packages")
+      .insert({ application_id: seat.application_id, payment_id: seat.payment_id, kind: "gutschrift", total: 1, remaining: 1, expires_at: expires.toISOString() });
+    if (error) {
+      await notifyAdmin(db, adminMail("Guthaben anlegen fehlgeschlagen", [`Platz ${seat.id}: ${error.message}`]), "admin_credit", `admin_credit:${seat.id}`);
+    }
+    return creditKeptText();
+  }
+  return null;
+}
+
 /**
- * Entscheidung 72 Stunden vorher: ab fünf Zusagen findet das Dinner statt (Nachrücker laufen weiter),
- * sonst wird verschoben – Zahlungen gehen automatisch zurück.
+ * Tisch fällt aus: alle offenen Plätze schließen, Bezahltes als Guthaben behalten (oder erstatten),
+ * alle per E-Mail und SMS informieren, Reservierung beim Lokal stornieren.
+ */
+export async function closeDinner(
+  db: Db,
+  dinner: Dinner,
+  restaurant: Restaurant,
+  o: { reason: "team" | "zu_wenige"; money: "credit" | "refund" },
+) {
+  const info = dinnerInfo(dinner, restaurant);
+  let guests = 0;
+  for (const seat of await seatsOf(db, dinner.id)) {
+    if (!OPEN_SEAT.includes(seat.status)) continue;
+    const { data } = await db
+      .from("seats")
+      .update({ status: "removed", ended_at: new Date().toISOString(), expires_at: null })
+      .eq("id", seat.id)
+      .eq("status", seat.status)
+      .select("id")
+      .maybeSingle();
+    if (!data) continue;
+    guests++;
+    const wasConfirmed = seat.status === "confirmed";
+    const text = wasConfirmed ? (o.money === "credit" ? await keepAsCredit(db, seat) : await giveBack(db, seat)) : null;
+    // zurück in den Pool – mit der Wartezeit seit Tischbildung, damit es beim nächsten Mal schneller geht
+    if (wasConfirmed) await db.from("applications").update({ available_since: dinner.created_at }).eq("id", seat.application_id).eq("status", "accepted");
+    const app = await loadApplication(db, seat.application_id);
+    await sendEmail(db, {
+      to: app.email,
+      content: dinnerCancelledMail({ name: app.first_name, dinner: info, refund: text, wasConfirmed, reason: o.reason }),
+      kind: "dinner_cancelled",
+      dedupeKey: `dinner_cancelled:${seat.id}`,
+      applicationId: app.id,
+    });
+    // SMS an alle, die sonst kommen würden – beim Absagen durch das Team an alle sechs
+    if (wasConfirmed || o.reason === "team") {
+      await sendSms(db, {
+        to: app.phone,
+        body: dinnerCancelledSms({ dinner: info, wasConfirmed }),
+        kind: "dinner_cancelled",
+        dedupeKey: `dinner_cancelled_sms:${seat.id}`,
+        applicationId: app.id,
+      });
+    }
+  }
+
+  if (dinner.reserved_count !== null) {
+    const content = reservationCancelledMail({ dinner: info });
+    const key = `reservation_cancelled:${dinner.id}${movedSuffix(dinner)}`;
+    if (restaurant.email) await sendEmail(db, { to: restaurant.email, content, kind: "reservation_cancelled", dedupeKey: key });
+    else await notifyAdmin(db, { ...content, subject: `[Bitte dem Lokal absagen – keine E-Mail hinterlegt] ${content.subject}` }, "reservation_cancelled", key);
+  }
+  return guests;
+}
+
+/**
+ * Entscheidung 24 Stunden vorher: ab fünf Zusagen findet der Tisch statt (Nachrücker laufen weiter),
+ * sonst wird er abgesagt – Bezahltes bleibt als Guthaben erhalten.
  */
 export async function decideDinners(db: Db) {
   const limit = new Date(Date.now() + TIMING.decisionHoursBefore * HOUR).toISOString();
   const due = must(
-    await db.from("dinners").select("*").eq("status", "inviting").lte("starts_at", limit),
-    "Fällige Dinner laden",
+    await db.from("dinners").select("*").in("status", ["inviting", "confirmed"]).is("decided_at", null).lte("starts_at", limit),
+    "Fällige Tische laden",
   ) as Dinner[];
-  const result = { confirmed: 0, postponed: 0 };
+  const result = { confirmed: 0, cancelled: 0 };
   for (const dinner of due) {
     const restaurant = must(await db.from("restaurants").select("*").eq("id", dinner.restaurant_id).single(), "Lokal laden") as Restaurant;
     const seats = await seatsOf(db, dinner.id);
     const confirmed = seats.filter((s) => s.status === "confirmed");
+    const now = new Date().toISOString();
 
-    if (confirmed.length >= TABLE.size - 1) {
-      const { data } = await db.from("dinners").update({ status: "confirmed" }).eq("id", dinner.id).eq("status", "inviting").select("*").maybeSingle();
+    if (confirmed.length >= TABLE.minGuests) {
+      const { data } = await db
+        .from("dinners")
+        .update({ status: "confirmed", decided_at: now })
+        .eq("id", dinner.id)
+        .is("decided_at", null)
+        .select("*")
+        .maybeSingle();
       if (data) {
         result.confirmed++;
         await sendReservation(db, data as Dinner, restaurant, seats);
@@ -444,41 +573,24 @@ export async function decideDinners(db: Db) {
       continue;
     }
 
-    const { data } = await db.from("dinners").update({ status: "postponed" }).eq("id", dinner.id).eq("status", "inviting").select("id").maybeSingle();
+    const { data } = await db
+      .from("dinners")
+      .update({ status: "cancelled", decided_at: now })
+      .eq("id", dinner.id)
+      .is("decided_at", null)
+      .select("id")
+      .maybeSingle();
     if (!data) continue;
-    result.postponed++;
-    const info = dinnerInfo(dinner, restaurant);
-    for (const seat of seats) {
-      if (seat.status === "confirmed") {
-        await db.from("seats").update({ status: "postponed", ended_at: new Date().toISOString() }).eq("id", seat.id);
-        const text = await giveBack(db, seat);
-        // zurück in den Pool – mit der Wartezeit seit Tischbildung, damit es beim nächsten Mal schneller geht
-        await db.from("applications").update({ available_since: dinner.created_at }).eq("id", seat.application_id);
-        const app = await loadApplication(db, seat.application_id);
-        await sendEmail(db, {
-          to: app.email,
-          content: postponedMail({ name: app.first_name, dinner: info, refund: text ?? "Für dich fallen dadurch keine Kosten an." }),
-          kind: "dinner_postponed",
-          dedupeKey: `postponed:${seat.id}`,
-          applicationId: app.id,
-        });
-      } else if (seat.status === "invited" || seat.status === "offered") {
-        await db.from("seats").update({ status: "withdrawn", ended_at: new Date().toISOString() }).eq("id", seat.id);
-        const app = await loadApplication(db, seat.application_id);
-        await sendEmail(db, {
-          to: app.email,
-          content: postponedMail({ name: app.first_name, dinner: info, refund: null }),
-          kind: "dinner_postponed",
-          dedupeKey: `postponed:${seat.id}`,
-          applicationId: app.id,
-        });
-      }
-    }
+    result.cancelled++;
+    await closeDinner(db, dinner, restaurant, { reason: "zu_wenige", money: "credit" });
     await notifyAdmin(
       db,
-      adminMail("Dinner verschoben", [`${info.restaurant}, ${dinner.starts_at}: nur ${confirmed.length} Zusagen 72 Stunden vorher.`]),
-      "admin_postponed",
-      `admin_postponed:${dinner.id}`,
+      adminMail("Tisch abgesagt", [
+        `${restaurant.name}, ${new Date(dinner.starts_at).toLocaleString("de-AT", { timeZone: "Europe/Vienna" })}: nur ${confirmed.length} Zusagen 24 Stunden vorher.`,
+        "Alle wurden per E-Mail und SMS informiert, Bezahltes bleibt als Guthaben erhalten.",
+      ]),
+      "admin_cancelled",
+      `admin_cancelled:${dinner.id}`,
     );
   }
   return result;

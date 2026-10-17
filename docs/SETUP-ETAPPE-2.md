@@ -2,7 +2,7 @@
 
 Ab jetzt läuft Tisch6 von selbst: Bewerbungen werden beantwortet, Tische zusammengestellt, Einladungen verschickt,
 Zahlungen verbucht, Nachrücker gesucht, Erinnerungen gesendet und nach dem Abend Wiedersehen und Feedback abgefragt.
-Dafür brauchst du einmalig: **Supabase** (Datenbank, Lokal, Zeitplan), **Resend** (E-Mails), **Stripe** (Zahlungen),
+Dafür brauchst du einmalig: **Supabase** (Datenbank, Lokale, Zeitplan), **Resend** (E-Mails), **Stripe** (Zahlungen),
 **Twilio** (SMS), neue **Vercel**-Variablen und DNS-Einträge bei **GoDaddy**. Dauer: ca. 60–90 Minuten.
 
 > Voraussetzung: Etappe 1 ist eingerichtet (siehe `SETUP-ETAPPE-1.md`).
@@ -14,8 +14,14 @@ Dafür brauchst du einmalig: **Supabase** (Datenbank, Lokal, Zeitplan), **Resend
 ### 1.1 Datenbank erweitern
 **SQL Editor** → neue Abfrage → kompletten Inhalt von `supabase/migrations/0004_etappe2_dinner.sql` einfügen → **Run**.
 
-### 1.2 Stammlokal eintragen
+### 1.2 Partnerlokale eintragen
 Ohne Lokal kann kein Termin entstehen. **Einfacher ab Etappe 3:** im Adminbereich unter **Lokale** anlegen.
+Ideal sind **vier bis fünf Lokale**: Die KI wechselt sie ab, niemand bekommt zweimal hintereinander dasselbe Lokal.
+
+Bitte jedes Lokal vorab um zwei Dinge (beides steht auch in jeder Reservierungs-E-Mail):
+- der Tisch ist immer auf den Namen **„Tisch6“** reserviert,
+- die Rechnung wird **automatisch durch sechs geteilt**, jeder Gast zahlt seinen Teil selbst.
+
 Oder im **SQL Editor** (Werte anpassen):
 
 ```sql
@@ -32,7 +38,7 @@ values (
 );
 ```
 
-Ein zweites Lokal einfach genauso eintragen. Ohne E-Mail-Adresse geht die Reservierung an deine `ADMIN_EMAIL`.
+Weitere Lokale einfach genauso eintragen. Ohne E-Mail-Adresse geht die Reservierung an deine `ADMIN_EMAIL`.
 Vorübergehend sperren: `update public.restaurants set active = false where name = 'Name des Lokals';`
 
 ### 1.3 Zeitplan: alle 10 Minuten ein automatischer Durchlauf
@@ -53,7 +59,11 @@ select cron.schedule(
 
 `DEINE-ADRESSE` ist deine Vercel-Adresse (z. B. `tisch6-abc.vercel.app`) bzw. später `tisch6.at`.
 Ändern: erst `select cron.unschedule('tisch6-durchlauf');`, dann neu anlegen.
-Kontrolle: **Integrations → Cron** zeigt jeden Lauf. Als Sicherheitsnetz ruft zusätzlich Vercel einmal täglich auf.
+Kontrolle: **Integrations → Cron** zeigt jeden Lauf.
+
+Antworten, Erinnerungen und Nachrücker laufen rund um die Uhr. **Neue Tische plant die KI nur nachts**
+(zwischen 1 und 6 Uhr Wiener Zeit) – so liegen die Einladungen morgens im Postfach. Als Sicherheitsnetz ruft
+zusätzlich Vercel jede Nacht einmal auf (steht schon in `vercel.json`, dafür ist nichts zu tun).
 
 ---
 
@@ -85,7 +95,8 @@ gar nicht verschickt, sondern nur im Vercel-Log protokolliert – praktisch zum 
 Falls du in Etappe 1 Platzhalter eingetragen hast, jetzt echt einrichten (Anleitung Etappe 1, Schritt 2):
 Konto upgraden, Messaging Service mit Absender `Tisch6`, die echten Werte in **Supabase → Phone** eintragen –
 und zusätzlich in Vercel (Schritt 5), damit auch Erinnerungen und Nachrücker-SMS rausgehen.
-Kosten: pro Gast und Dinner ca. zwei SMS (1 Tag und 2 Stunden vorher), plus Nachrücker-Angebote.
+Kosten: pro Gast und Tisch ca. zwei SMS (am Morgen die Notfallnummer, 2 Stunden vorher die Erinnerung),
+plus Nachrücker-Angebote und – selten – eine SMS bei Verschiebung oder Absage.
 
 ## 5. Vercel – neue Variablen
 
@@ -96,7 +107,7 @@ Kosten: pro Gast und Dinner ca. zwei SMS (1 Tag und 2 Stunden vorher), plus Nach
 | `RESEND_API_KEY` | aus Schritt 2.4 |
 | `EMAIL_FROM` | `Tisch6 <hallo@tisch6.at>` (erst nach bestätigter Domain) |
 | `EMAIL_REPLY_TO` | deine eigene E-Mail-Adresse (Antworten landen bei dir) |
-| `ADMIN_EMAIL` | deine E-Mail-Adresse – Meldungen vom Meldeknopf, verschobene Dinner, Hinweise |
+| `ADMIN_EMAIL` | deine E-Mail-Adresse – Meldungen vom Meldeknopf, abgesagte Tische, Hinweise |
 | `STRIPE_SECRET_KEY` | aus Schritt 3.2 |
 | `STRIPE_WEBHOOK_SECRET` | aus Schritt 3.3 |
 | `TWILIO_ACCOUNT_SID` | aus Twilio |
@@ -104,6 +115,7 @@ Kosten: pro Gast und Dinner ca. zwei SMS (1 Tag und 2 Stunden vorher), plus Nach
 | `TWILIO_MESSAGING_SERVICE_SID` | aus Twilio |
 | `CRON_SECRET` | ein langes, zufälliges Geheimnis (mind. 32 Zeichen) – dasselbe wie in Schritt 1.3 |
 | `NEXT_PUBLIC_SITE_URL` | `https://tisch6.at`, sobald die Domain verbunden ist |
+| `EMERGENCY_PHONE` | Notfallnummer, die alle Gäste am Tag des Tisches per SMS bekommen – z. B. dein Handy, `+43 660 1234567` |
 
 ## 6. GoDaddy – DNS für Resend
 
@@ -117,20 +129,29 @@ Nach 10–60 Minuten in Resend auf **Verify** tippen.
 
 | Wann | Was passiert automatisch |
 |---|---|
-| ca. 30 Min. nach der Bewerbung | KI-Prüfung, Antwort per E-Mail: angenommen oder Warteliste (Geschlechterverhältnis wird intern gesteuert) |
-| sobald 3 Frauen + 3 Männer passen | Tisch steht, Termin 6–21 Tage später an einem gemeinsamen Wunschtag, Einladung per E-Mail, 48 Stunden zum Bezahlen |
+| direkt nach dem Kennenlern-Gespräch | E-Mail „Bewerbung eingegangen“ |
+| ca. 30 Min. später, spätestens nach 24 Stunden | KI-Prüfung, Antwort per E-Mail: **angenommen**, **abgelehnt** oder Warteliste (Geschlechterverhältnis wird intern gesteuert). Unklare Fälle landen bei dir zur Prüfung. Abgelehnte Bewerbungen werden nach 30 Tagen gelöscht |
+| jede Nacht (1–6 Uhr) | Tischplanung: 3 Frauen + 3 Männer, ähnliches Temperament (ruhig–extrovertiert), möglichst gleiches Beziehungsziel, Werte und Wiedersehen-Erfahrungen fließen ein. Termin 6–21 Tage später an einem gemeinsamen Wunschtag, in einem anderen Lokal als beim letzten Mal. Einladung per E-Mail, 48 Stunden zum Bezahlen |
 | Absage oder Einladung abgelaufen | erster passender Nachrücker bekommt E-Mail + SMS, 12 Stunden Zeit |
+| ab 5 Zahlungen | der Tisch findet statt, das Lokal bekommt die Reservierung auf „Tisch6“ (mit der Bitte, die Rechnung durch sechs zu teilen) |
+| alle sechs haben bezahlt | E-Mail „Tisch bestätigt“ an alle |
 | 7 Tage ohne Tisch | „Wir suchen noch die richtigen fünf für dich“ |
-| 72 Stunden vorher | ab 5 Zusagen findet das Dinner statt und das Lokal bekommt die Reservierung; sonst verschoben und automatisch erstattet |
-| 3 Tage / 1 Tag / 2 Stunden vorher | Erinnerungen mit Adresse; am Vortag mit Eisbrecher-Karte (E-Mail + SMS) |
-| am Abend bis 7 Tage danach | diskreter Meldeknopf auf der Einladungsseite → E-Mail an dich, Profil pausiert bis zur Prüfung |
-| Tag danach | Wiedersehen-Abfrage + drei Feedback-Fragen; beidseitig → Kontakte an beide |
+| 24 Stunden vorher | weniger als 5 Zahlungen → der Tisch wird automatisch abgesagt; wer bezahlt hat, behält die Tischteilnahme als Guthaben (Geld zurück auf Wunsch) |
+| 3 Tage / 1 Tag vorher | Erinnerung per E-Mail |
+| am Tag, ab 9 Uhr | Gesprächskarte per E-Mail (drei Runden: Aperitif, Hauptgang, Dessert), Notfallnummer per SMS |
+| 2 Stunden vorher | Erinnerung per E-Mail + SMS: Adresse, „reserviert auf Tisch6“, Tipp für alle, die zuerst da sind |
+| ab 1 Stunde vorher bis 7 Tage danach | diskreter Meldeknopf auf der Einladungsseite und im Profil → E-Mail an dich, Profil pausiert bis zur Prüfung |
+| Tag danach | Wiedersehen-Abfrage + drei Feedback-Fragen; beidseitig → Kontakte an beide. Wer wen wiedersehen wollte, merkt sich Tisch6 für die nächste Tischplanung |
 | Tag 3 | Nichterscheinen (ab 2 Angaben), Fünfer-Rabatt, Empfehlungsrabatt, Folgeeinladung mit Ein-Klick-Zusage |
 | danach | unbeantwortete Folgeeinladung nach 7 Tagen erneut, nach zwei verpassten nur noch monatlich |
 | wöchentlich | die KI fasst das Feedback zu Lernnotizen zusammen, die ins Matching einfließen |
 
+Verschieben oder absagen kannst du einen Tisch jederzeit im Adminbereich (Etappe 3) – alle sechs bekommen dann
+E-Mail und SMS.
+
 ## Stellschrauben
 
 Alle Regeln stehen in `src/lib/config.ts`: Preise, Gründungspaket, Fristen (48 h Einladung, 12 h Nachrücker,
-72 h Entscheidung, 48 h kostenlose Absage), Vorlauf für Termine, Toleranz bei Altersspannen, Geschlechterverhältnis.
+24 h Entscheidung, 48 h kostenlose Absage), Mindestzahl Gäste (5), Zeitfenster der Tischplanung, Vorlauf für Termine,
+Toleranz bei Altersspannen, Temperament-Abstand am Tisch, Geschlechterverhältnis.
 Sag einfach, was du anders haben willst.

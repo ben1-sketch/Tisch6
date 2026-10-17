@@ -73,6 +73,22 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         </ol>
       </section>
 
+      {/* Was Tisch6 auszeichnet */}
+      <section id="auszeichnet" className="scroll-mt-20 mx-auto max-w-6xl px-4 pb-16 sm:px-6">
+        <h2 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">{t.distinct.title}</h2>
+        <ol className="mt-10 grid gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
+          {t.distinct.items.map((item, i) => (
+            <li key={item.title} className="flex gap-4">
+              <span className="font-display text-2xl font-semibold text-rose-400/80 tabular-nums">{i + 1}</span>
+              <div>
+                <h3 className="font-display font-semibold">{item.title}</h3>
+                <p className="mt-1 text-sm leading-relaxed text-mist">{item.text}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
+
       {/* Sicher für Frauen */}
       <section id="sicher-fuer-frauen" className="scroll-mt-20 relative overflow-hidden border-y border-rose-400/15 bg-gradient-to-b from-night-800/80 to-night-900">
         <div className="absolute -left-32 top-10 h-80 w-80 rounded-full bg-rose-500/15 blur-3xl" />
@@ -96,6 +112,25 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         </div>
       </section>
 
+      {/* Für Männer */}
+      <section id="fuer-maenner" className="scroll-mt-20 mx-auto max-w-6xl px-4 py-16 sm:px-6">
+        <div className="grid items-center gap-10 rounded-3xl border border-white/10 bg-gradient-to-br from-night-800 to-night-900 p-8 sm:p-12 lg:grid-cols-[1.3fr_1fr]">
+          <div>
+            <p className="text-sm font-semibold tracking-wide text-rose-400 uppercase">{t.men.eyebrow}</p>
+            <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight sm:text-4xl">{t.men.title}</h2>
+            <p className="mt-4 max-w-2xl leading-relaxed text-mist">{t.men.lead}</p>
+          </div>
+          <ul className="space-y-4">
+            {t.men.points.map((point) => (
+              <li key={point} className="glass flex items-start gap-3 rounded-2xl p-4 text-sm">
+                <span className="mt-1.5 h-2 w-2 flex-none rounded-full bg-rose-400" aria-hidden="true" />
+                {point}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
       {/* Matching-Regeln & Persönlichkeitsachsen */}
       <section className="border-y border-white/5 bg-night-950/60">
         <div className="mx-auto grid max-w-6xl gap-12 px-4 py-16 sm:px-6 lg:grid-cols-2">
@@ -110,11 +145,11 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
                     <span>{right}</span>
                   </div>
                   <div className="relative mt-2 h-1.5 rounded-full bg-gradient-to-r from-night-600 via-rose-500/60 to-night-600">
-                    {[18, 46, 80].map((pos, j) => (
+                    {(i === 0 ? [44, 52, 60] : [18, 46, 80]).map((pos, j) => (
                       <span
                         key={j}
                         className={`absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-night-950 ${j === 1 ? "bg-rose-400" : "bg-cloud"}`}
-                        style={{ left: `${(pos + i * 13) % 90 + 5}%` }}
+                        style={{ left: `${i === 0 ? pos : ((pos + i * 13) % 90) + 5}%` }}
                       />
                     ))}
                   </div>

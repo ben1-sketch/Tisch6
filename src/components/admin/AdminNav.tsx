@@ -6,11 +6,10 @@ import { usePathname } from "next/navigation";
 const ITEMS = [
   { href: "/admin", label: "Übersicht" },
   { href: "/admin/bewerbungen", label: "Bewerbungen" },
-  { href: "/admin/dinner", label: "Dinner" },
+  { href: "/admin/tische", label: "Tische" },
+  { href: "/admin/wiedersehen", label: "Wiedersehen & Feedback" },
   { href: "/admin/meldungen", label: "Meldungen" },
   { href: "/admin/zahlungen", label: "Zahlungen" },
-  { href: "/admin/wiedersehen", label: "Wiedersehen" },
-  { href: "/admin/feedback", label: "Feedback" },
   { href: "/admin/lokale", label: "Lokale" },
   { href: "/admin/versand", label: "Versand" },
   { href: "/admin/protokoll", label: "Protokoll" },

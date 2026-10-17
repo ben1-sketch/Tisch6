@@ -105,7 +105,7 @@ export default async function PaymentsPage({ searchParams }: PageProps<"/admin/z
         </ul>
       )}
       <p className="mt-3 text-xs text-mist">
-        Eine gebuchte Tischteilnahme erstattest du am besten im jeweiligen Dinner („Platz stornieren“) – dann rückt auch jemand nach. Teilbeträge gehen
+        Eine gebuchte Tischteilnahme erstattest du am besten beim jeweiligen Tisch („Platz stornieren“) – dann rückt auch jemand nach. Teilbeträge gehen
         direkt in Stripe.
       </p>
 
@@ -119,8 +119,8 @@ export default async function PaymentsPage({ searchParams }: PageProps<"/admin/z
                   {s.dinners && (
                     <>
                       {" · "}
-                      <Link href={`/admin/dinner/${s.dinners.id}`} className="hover:underline">
-                        Dinner {day(s.dinners.starts_at)}
+                      <Link href={`/admin/tische/${s.dinners.id}`} className="hover:underline">
+                        Tisch {day(s.dinners.starts_at)}
                       </Link>
                     </>
                   )}

@@ -52,6 +52,11 @@ export function viennaToUtc(local: LocalDate, time: string): Date {
   return new Date(guess - offsetMs(new Date(first)));
 }
 
+/** Stunde in Wien (0–23) */
+export function viennaHour(date: Date) {
+  return viennaParts(date).hour;
+}
+
 export function viennaDate(date: Date): LocalDate {
   const { year, month, day } = viennaParts(date);
   return { year, month, day };

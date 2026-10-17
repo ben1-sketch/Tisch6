@@ -39,8 +39,8 @@ export default async function LogPage({ searchParams }: PageProps<"/admin/protok
                   </Link>
                 )}
                 {e.dinner_id && (
-                  <Link href={`/admin/dinner/${e.dinner_id}`} className="ml-2 text-rose-300 hover:underline">
-                    Dinner
+                  <Link href={`/admin/tische/${e.dinner_id}`} className="ml-2 text-rose-300 hover:underline">
+                    Tisch
                   </Link>
                 )}
               </span>

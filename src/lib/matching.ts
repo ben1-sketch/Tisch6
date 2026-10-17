@@ -3,12 +3,12 @@ import { z } from "zod";
 import { askStructured } from "./claude";
 import { TIMING } from "./config";
 import { type Db, type Dinner, type Restaurant, type Seat, must } from "./db";
-import { AXES, type Person, type Slot, candidateTables, pickSlot } from "./matching-core";
+import { AXES, type Person, type Slot, type TypeSnapshot, candidateTables, pickSlot } from "./matching-core";
 import { adminMail } from "./messages";
 import { notifyAdmin } from "./notify";
 import { loadPool } from "./pool";
 import { loadApplication, sendInvitation } from "./seats";
-import { HOUR, dateKey, viennaDate } from "./time";
+import { DAY, HOUR, dateKey, viennaDate } from "./time";
 
 /** Höchstens so viele neue Tische pro Durchlauf (jede Wahl ist ein KI-Aufruf) */
 const MAX_TABLES_PER_RUN = 3;
@@ -19,21 +19,38 @@ const ChoiceSchema = z.object({
 });
 
 const CHOICE_SYSTEM = `Du bist die Tischplanerin von Tisch6: KI-kuratierte Dating-Dinner in Wien, sechs Singles pro Tisch.
-Du bekommst mehrere mögliche Runden. Alle erfüllen bereits die festen Regeln (drei Frauen, drei Männer, höchstens zehn Jahre Altersspanne, gewünschte Altersspannen, gemeinsamer Wochentag).
-Wähle die Runde, in der die Gespräche am besten fließen und sich die Menschen ergänzen:
-- Die vier Persönlichkeitsachsen sollen gemischt sein – nicht alle gleich, aber auch keine Runde, in der niemand das Gespräch trägt.
-- Gemeinsame oder sich ergänzende Gesprächsthemen helfen.
-- Zwischen Frauen und Männern sollen Lebensentwürfe nicht offensichtlich kollidieren (z. B. Kinderwunsch).
+Du bekommst mehrere mögliche Runden. Alle erfüllen bereits die festen Regeln (drei Frauen, drei Männer, höchstens zehn Jahre Altersspanne, gewünschte Altersspannen, gemeinsamer Wochentag, ähnliches Temperament).
+Wähle die Runde, in der die Gespräche am besten fließen und die beste Chance auf ein Wiedersehen besteht:
+- Temperament (ruhig–extrovertiert) soll am Tisch ähnlich sein – je näher beieinander, desto besser. Die anderen drei Achsen dürfen gemischt sein.
+- Das Beziehungsziel soll möglichst übereinstimmen: alle suchen etwas Ernsthaftes oder alle wollen erstmal schauen.
+- Werte (wie wichtig Glaube, Politik und Familie sind) sollen zwischen Frauen und Männern nicht stark auseinandergehen.
+- Lernendes Matching: Bevorzuge Konstellationen, die bei einer Person bisher funktioniert haben – Gegenüber, die den Typen ähneln, die sie wiedersehen wollte oder von denen sie wiedersehen gewollt wurde.
+- Gemeinsame oder sich ergänzende Gesprächsthemen helfen; Lebensentwürfe sollen nicht offensichtlich kollidieren (z. B. Kinderwunsch).
 - Berücksichtige Hinweise aus früherem Feedback und die Lernnotizen.
+Beziehungsziel und Werte sind vertraulich: Erwähne sie nicht in der Begründung.
 Antworte im vorgegebenen JSON-Format.`;
+
+/** „2× humorvoll & gesellig [4/2/1/3], 1× ruhig & tiefgründig [2/4/4/2]“ */
+function summarize(types: TypeSnapshot[]) {
+  const counts = new Map<string, number>();
+  for (const t of types) {
+    const key = `${t.typ ?? "?"}${t.axes ? ` [${t.axes.join("/")}]` : ""}`;
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
+  return [...counts].map(([k, n]) => `${n}× ${k}`).join(", ");
+}
 
 function describe(p: Person, label: string) {
   const axes = AXES.map((name, i) => `${name} ${p.axes[i]}/5`).join(", ");
+  const v = p.values;
   return [
     `${label} (${p.gender === "frau" ? "Frau" : "Mann"}, ${p.age})`,
     `  Achsen: ${axes}; Typ: ${p.typ}`,
     `  Kurzprofil: ${p.summary}`,
     `  Themen: ${p.topics.join(", ") || "–"}; Rauchen: ${p.smoker ?? "–"}; Kinderwunsch: ${p.childWish ?? "–"}`,
+    `  Beziehungsziel: ${p.goal ?? "–"}; Werte Glaube/Politik/Familie (1–3): ${v.glaube ?? "–"}/${v.politik ?? "–"}/${v.familie ?? "–"}`,
+    ...(p.history.liked.length ? [`  Wollte bisher wiedersehen: ${summarize(p.history.liked)}`] : []),
+    ...(p.history.likedBy.length ? [`  Wurde bisher wiedersehen gewollt von: ${summarize(p.history.likedBy)}`] : []),
     ...(p.notes.length ? [`  Feedback nach früheren Abenden: ${p.notes.join(" | ")}`] : []),
   ].join("\n");
 }
@@ -67,22 +84,26 @@ async function chooseRound(rounds: Person[][], learnings: string | null) {
   return { index: 0, reason: "Bestbewertete Runde nach Persönlichkeitsmix, Wartezeit und Altersspannen." };
 }
 
-/** Bereits belegte Tische je „lokalId|YYYY-MM-DD“ */
+/** Bereits belegte Tische je „lokalId|YYYY-MM-DD“ und wann jedes Lokal zuletzt dran war (für die Rotation) */
 async function busyMap(db: Db) {
   const dinners = must(
     await db
       .from("dinners")
-      .select("restaurant_id, starts_at")
-      .in("status", ["inviting", "confirmed"])
-      .gte("starts_at", new Date().toISOString()),
+      .select("restaurant_id, starts_at, status")
+      .in("status", ["inviting", "confirmed", "completed"])
+      .gte("starts_at", new Date(Date.now() - 120 * DAY).toISOString()),
     "Belegte Tische laden",
-  ) as Pick<Dinner, "restaurant_id" | "starts_at">[];
+  ) as Pick<Dinner, "restaurant_id" | "starts_at" | "status">[];
   const busy = new Map<string, number>();
+  const lastUsed = new Map<string, number>();
   for (const d of dinners) {
+    const at = new Date(d.starts_at).getTime();
+    lastUsed.set(d.restaurant_id, Math.max(lastUsed.get(d.restaurant_id) ?? 0, at));
+    if (d.status === "completed" || at < Date.now()) continue;
     const key = `${d.restaurant_id}|${dateKey(viennaDate(new Date(d.starts_at)))}`;
     busy.set(key, (busy.get(key) ?? 0) + 1);
   }
-  return busy;
+  return { busy, lastUsed };
 }
 
 /** Legt das Dinner an und verschickt die Einladungen (48 Stunden Zeit, spätestens bis zur Entscheidung). */
@@ -130,7 +151,7 @@ export async function matchTables(db: Db, deadline: number) {
   if (!restaurants.length) {
     await notifyAdmin(
       db,
-      adminMail("Kein Stammlokal eingetragen", [
+      adminMail("Kein Partnerlokal eingetragen", [
         `${pool.length} Personen warten auf einen Tisch, aber es ist noch kein aktives Lokal eingetragen.`,
         "Bitte im Adminbereich unter „Lokale“ ein Lokal anlegen: /admin/lokale",
       ]),
@@ -140,7 +161,7 @@ export async function matchTables(db: Db, deadline: number) {
     return { created: 0, pool: pool.length };
   }
 
-  const busy = await busyMap(db);
+  const { busy, lastUsed } = await busyMap(db);
   const learnings =
     ((await db.from("learnings").select("notes").order("created_at", { ascending: false }).limit(1).maybeSingle()).data as { notes: string } | null)
       ?.notes ?? null;
@@ -152,6 +173,7 @@ export async function matchTables(db: Db, deadline: number) {
     await createDinner(db, people, slot, reason);
     const key = `${slot.restaurant.id}|${slot.dateKey}`;
     busy.set(key, (busy.get(key) ?? 0) + 1);
+    lastUsed.set(slot.restaurant.id, slot.startsAt.getTime());
     for (const p of people) used.add(p.id);
     created++;
   };
@@ -162,7 +184,7 @@ export async function matchTables(db: Db, deadline: number) {
       pool.filter((p) => !used.has(p.id)),
       now,
     )
-      .map((people) => ({ people, slot: pickSlot(people, restaurants, busy, new Date(now), options) }))
+      .map((people) => ({ people, slot: pickSlot(people, restaurants, busy, new Date(now), { ...options, lastUsed }) }))
       .filter((r): r is { people: Person[]; slot: Slot } => r.slot !== null);
 
   // Wer am längsten wartet, kommt zuerst an die Reihe

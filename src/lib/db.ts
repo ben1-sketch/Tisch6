@@ -40,6 +40,7 @@ export type Application = {
   referral_rewarded_at: string | null;
   magic_token: string;
   admin_note: string | null;
+  rejected_at: string | null;
   consent_version: string;
   consent_at: string;
 };
@@ -71,7 +72,13 @@ export type Dinner = {
   reserved_count: number | null;
   feedback_sent_at: string | null;
   wrapped_up_at: string | null;
+  decided_at: string | null;
+  conversation_card: ConversationCard | null;
+  moved_at: string | null;
 };
+
+/** Gesprächskarte für den ganzen Tisch: drei Runden, von leicht bis tief */
+export type ConversationCard = { runden: { name: string; fragen: string[] }[] };
 
 export type SeatStatus =
   | "invited"
@@ -110,6 +117,7 @@ export type Seat = {
   payment_id: string | null;
   package_id: string | null;
   discount_id: string | null;
+  /** früher: Eisbrecher-Karte je Person – ersetzt durch die Gesprächskarte am Tisch (dinners.conversation_card) */
   icebreaker: { fragen: string[] } | null;
 };
 

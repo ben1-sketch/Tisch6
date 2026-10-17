@@ -31,6 +31,10 @@ export const TABLE = {
   defaultTablesPerEvening: 1,
   /** Dauer eines Abends für Kalendereinträge (Stunden) */
   durationHours: 3,
+  /** Ab so vielen bestätigten Gästen findet ein Tisch statt */
+  minGuests: 5,
+  /** Temperament (ruhig–extrovertiert) am Tisch ähnlich: größter Abstand auf der Skala 1–5 */
+  maxEnergySpread: 2,
 };
 
 export const TIMING = {
@@ -45,10 +49,17 @@ export const TIMING = {
   /** Frühester und spätester Termin nach Tischbildung (Tage) */
   leadDaysMin: 6,
   leadDaysMax: 21,
-  /** So lange vorher fällt die Entscheidung: Dinner findet statt oder wird verschoben (Stunden) */
-  decisionHoursBefore: 72,
+  /** So lange vorher fällt die Entscheidung: ab fünf Zusagen findet der Tisch statt, sonst Absage (Stunden) */
+  decisionHoursBefore: 24,
   /** Danach werden keine Nachrücker mehr gesucht (Stunden vor Beginn) */
   lastReplacementHoursBefore: 14,
+  /** Tischplanung nachts, in diesem Zeitfenster (Stunde in Wien, von–bis) */
+  matchingFromHour: 1,
+  matchingToHour: 6,
+  /** Am Tag des Tisches: Gesprächskarte per E-Mail und Notfallnummer per SMS ab dieser Uhrzeit (Wien) */
+  dayOfHour: 9,
+  /** Abgelehnte Bewerbungen werden so lange aufbewahrt und dann gelöscht (Tage) */
+  rejectedRetentionDays: 30,
   /** Bis so lange vorher ist eine Absage kostenlos (Stunden) */
   freeCancelHoursBefore: 48,
   /** Wiedersehen-Abfrage „am Tag danach“ (Stunden nach Beginn) */

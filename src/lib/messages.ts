@@ -15,7 +15,7 @@ type Layout = {
   title: string;
   paragraphs: string[];
   details?: [string, string][];
-  list?: { title: string; items: string[] };
+  lists?: { title: string; items: string[] }[];
   cta?: { label: string; url: string };
   after?: string[];
 };
@@ -31,11 +31,14 @@ function layout(o: Layout): EmailContent {
         )
         .join("")}</table>`
     : "";
-  const list = o.list
-    ? `<div style="margin:6px 0 18px;padding:16px 18px;border:1px solid #e88fa3;border-radius:14px;"><div style="${font}font-size:13px;color:#f4b6c2;font-weight:bold;margin-bottom:8px;">${esc(o.list.title)}</div>${o.list.items
-        .map((item, i) => `<div style="${font}font-size:15px;line-height:1.5;color:#eef0fa;margin:6px 0;">${i + 1}. ${esc(item)}</div>`)
-        .join("")}</div>`
-    : "";
+  const list = (o.lists ?? [])
+    .map(
+      (l) =>
+        `<div style="margin:6px 0 14px;padding:16px 18px;border:1px solid #e88fa3;border-radius:14px;"><div style="${font}font-size:13px;color:#f4b6c2;font-weight:bold;margin-bottom:8px;">${esc(l.title)}</div>${l.items
+          .map((item, i) => `<div style="${font}font-size:15px;line-height:1.5;color:#eef0fa;margin:6px 0;">${i + 1}. ${esc(item)}</div>`)
+          .join("")}</div>`,
+    )
+    .join("");
   const cta = o.cta
     ? `<div style="margin:22px 0 8px;"><a href="${esc(o.cta.url)}" style="${font}display:inline-block;background:#f4b6c2;color:#0a1128;text-decoration:none;font-weight:bold;font-size:16px;padding:14px 26px;border-radius:999px;">${esc(o.cta.label)}</a></div>`
     : "";
@@ -49,7 +52,7 @@ function layout(o: Layout): EmailContent {
 <h1 style="${font}font-size:24px;line-height:1.3;margin:22px 0 14px;color:#eef0fa;">${esc(o.title)}</h1>
 ${o.paragraphs.map(p).join("")}${details}${list}${cta}${(o.after ?? []).map(p).join("")}
 </td></tr>
-<tr><td style="${font}padding:12px 28px 26px;font-size:12px;line-height:1.5;color:#7d84a8;">Tisch6 · KI-kuratierte Dating-Dinner · Pilot in Wien<br><a href="${siteUrl()}" style="color:#7d84a8;">${esc(siteUrl().replace(/^https?:\/\//, ""))}</a></td></tr>
+<tr><td style="${font}padding:12px 28px 26px;font-size:12px;line-height:1.5;color:#7d84a8;">Fragen? Antworte einfach auf diese E-Mail – hier antwortet ein Mensch, keine Warteschleife.<br>Tisch6 · KI-kuratierte Dating-Dinner · Pilot in Wien<br><a href="${siteUrl()}" style="color:#7d84a8;">${esc(siteUrl().replace(/^https?:\/\//, ""))}</a></td></tr>
 </table></td></tr></table></body></html>`;
 
   const text = [
@@ -57,10 +60,11 @@ ${o.paragraphs.map(p).join("")}${details}${list}${cta}${(o.after ?? []).map(p).j
     "",
     ...o.paragraphs,
     ...(o.details ?? []).map(([k, v]) => `${k}: ${v}`),
-    ...(o.list ? ["", o.list.title, ...o.list.items.map((item, i) => `${i + 1}. ${item}`)] : []),
+    ...(o.lists ?? []).flatMap((l) => ["", l.title, ...l.items.map((item, i) => `${i + 1}. ${item}`)]),
     ...(o.cta ? ["", `${o.cta.label}: ${o.cta.url}`] : []),
     ...(o.after?.length ? ["", ...o.after] : []),
     "",
+    "Fragen? Antworte einfach auf diese E-Mail – hier antwortet ein Mensch.",
     "Tisch6 · KI-kuratierte Dating-Dinner",
   ].join("\n");
 
@@ -86,9 +90,37 @@ export const rejoinUrl = (magicToken: string) => link(`/de/weiter/${magicToken}`
 export const icsUrl = (token: string) => link(`/api/seat/${token}/ics`);
 const accountUrl = () => link("/de/konto");
 
+/** Reservierungsname im Lokal */
+export const RESERVATION_NAME = "Tisch6";
+const BILL_NOTE = "Essen und Getränke zahlt ihr direkt im Lokal – die Rechnung wird am Ende einfach gleichmäßig geteilt, niemand muss rechnen.";
+
 // ---------------------------------------------------------------------------
 // Bewerbung
 // ---------------------------------------------------------------------------
+
+export function receivedMail(name: string): EmailContent {
+  return layout({
+    subject: "Deine Bewerbung ist da",
+    title: `Danke, ${name} – deine Bewerbung ist da!`,
+    paragraphs: [
+      "Schön, dass du dabei sein willst. Wir schauen uns deine Bewerbung jetzt an – innerhalb von 24 Stunden bekommst du eine Antwort per E-Mail.",
+      "Wie es dann weitergeht: Unsere KI stellt einen Tisch mit fünf Menschen zusammen, die zu dir passen. Bezahlt wird erst, wenn dein Tisch steht.",
+    ],
+    cta: { label: "Mein Konto", url: accountUrl() },
+  });
+}
+
+export function rejectedMail(name: string): EmailContent {
+  return layout({
+    subject: "Deine Bewerbung bei Tisch6",
+    title: `Danke für deine Bewerbung, ${name}`,
+    paragraphs: [
+      "Wir haben uns deine Bewerbung genau angesehen und können dich diesmal leider nicht an einen unserer Tische einladen.",
+      "Das ist kein Urteil über dich als Mensch – wir stellen jeden Tisch sehr bewusst zusammen, damit der Abend für alle sechs passt.",
+      `Deine Angaben und dein Foto löschen wir in ${TIMING.rejectedRetentionDays} Tagen automatisch – sofort geht es in deinem Konto unter „Profil löschen“.`,
+    ],
+  });
+}
 
 export function acceptedMail(name: string, fromWaitlist = false): EmailContent {
   return layout({
@@ -174,7 +206,8 @@ export function invitationMail(o: {
     ],
     cta: { label: "Einladung ansehen", url: seatUrl(o.token) },
     after: [
-      `Bitte sag bis ${formatDateTime(o.deadline)} zu – erst mit der Zahlung ist dein Platz fix. Essen und Getränke zahlt jede Person selbst im Lokal.`,
+      `Bitte sag bis ${formatDateTime(o.deadline)} zu – erst mit der Zahlung ist dein Platz fix.`,
+      BILL_NOTE,
     ],
   });
 }
@@ -196,9 +229,26 @@ export function confirmedMail(o: { name: string; dinner: DinnerInfo; token: stri
     ],
     cta: { label: "In den Kalender eintragen", url: icsUrl(o.token) },
     after: [
-      "Vor dem Dinner bekommst du Erinnerungen und deine Eisbrecher-Karte mit zwei Fragen für den Abend.",
+      "Vor dem Abend bekommst du Erinnerungen – und am Tag selbst eure Gesprächskarte mit Fragen für den Tisch.",
+      BILL_NOTE,
       `Falls etwas dazwischenkommt: Bis ${formatDateTime(freeUntil)} kannst du kostenlos absagen – über deine Einladung: ${seatUrl(o.token)}`,
     ],
+  });
+}
+
+/** Alle sechs haben bezahlt */
+export function tableCompleteMail(o: { name: string; dinner: DinnerInfo; token: string }): EmailContent {
+  return layout({
+    subject: `Euer Tisch ist komplett – ${formatDate(o.dinner.startsAt)}`,
+    title: `Alle sechs sind dabei, ${o.name}!`,
+    paragraphs: ["Alle Plätze an deinem Tisch sind bestätigt. Jetzt fehlt nur noch der Abend."],
+    details: [
+      ["Wann", formatDateTime(o.dinner.startsAt)],
+      ["Wo", o.dinner.restaurant],
+      ["Adresse", o.dinner.address],
+      ["Reserviert auf", RESERVATION_NAME],
+    ],
+    cta: { label: "Deine Einladung", url: seatUrl(o.token) },
   });
 }
 
@@ -246,48 +296,102 @@ export function reminder3dMail(o: { name: string; dinner: DinnerInfo; token: str
   });
 }
 
-export function reminder1dMail(o: { name: string; dinner: DinnerInfo; token: string; icebreaker: string[] }): EmailContent {
+export function reminder1dMail(o: { name: string; dinner: DinnerInfo; token: string }): EmailContent {
   return layout({
     subject: "Morgen ist dein Tisch6-Abend",
     title: `Morgen ist es so weit, ${o.name}!`,
-    paragraphs: [`Morgen um ${formatTime(o.dinner.startsAt)} Uhr im ${o.dinner.restaurant}, ${o.dinner.address}.`],
-    list: o.icebreaker.length ? { title: "Deine Eisbrecher-Karte – zwei Fragen für den Abend", items: o.icebreaker } : undefined,
+    paragraphs: [
+      `Morgen um ${formatTime(o.dinner.startsAt)} Uhr im ${o.dinner.restaurant}, ${o.dinner.address}. Reserviert ist auf den Namen „${RESERVATION_NAME}“.`,
+      "Am Tag selbst bekommst du eure Gesprächskarte – drei Runden Fragen, vom Aperitif bis zum Dessert.",
+    ],
     cta: { label: "Deine Einladung", url: seatUrl(o.token) },
     after: ["Tipp: Einfach da sein und neugierig bleiben. Den Rest macht der Abend."],
   });
 }
 
-export function reminder1dSms(o: { dinner: DinnerInfo; token: string }) {
-  return `Tisch6: Morgen um ${formatTime(o.dinner.startsAt)} Uhr im ${o.dinner.restaurant}, ${o.dinner.address}. Wir freuen uns auf dich! Deine Eisbrecher-Karte: ${seatUrl(o.token)}`;
-}
+const FIRST_ARRIVAL = `Als Erste:r da? Sag einfach, dass du zu „${RESERVATION_NAME}“ gehörst – der Tisch ist auf diesen Namen reserviert. Setz dich ruhig schon hin und bestell dir etwas zu trinken, die anderen kommen gleich.`;
 
 export function reminder2hMail(o: { name: string; dinner: DinnerInfo; token: string }): EmailContent {
   return layout({
     subject: "In zwei Stunden geht's los",
     title: `Gleich geht's los, ${o.name}!`,
-    paragraphs: [`Um ${formatTime(o.dinner.startsAt)} Uhr im ${o.dinner.restaurant}, ${o.dinner.address}. Schönen Abend!`],
+    paragraphs: ["In zwei Stunden sitzt du am Tisch. Hier alles für den Weg:"],
+    details: [
+      ["Wann", `${formatTime(o.dinner.startsAt)} Uhr`],
+      ["Wo", o.dinner.restaurant],
+      ["Adresse", o.dinner.address],
+      ["Reserviert auf", RESERVATION_NAME],
+    ],
+    after: [FIRST_ARRIVAL, "Schönen Abend!"],
     cta: { label: "Deine Einladung", url: seatUrl(o.token) },
   });
 }
 
 export function reminder2hSms(o: { dinner: DinnerInfo }) {
-  return `Tisch6: In 2 Stunden geht's los - ${formatTime(o.dinner.startsAt)} Uhr im ${o.dinner.restaurant}, ${o.dinner.address}. Schönen Abend!`;
+  return `Tisch6: In 2 Std. geht's los! ${formatTime(o.dinner.startsAt)} Uhr, ${o.dinner.restaurant}, ${o.dinner.address}. Reserviert auf ${RESERVATION_NAME} - als Erste/r da? Einfach nach ${RESERVATION_NAME} fragen und Platz nehmen.`;
+}
+
+/** Am Tag des Tisches: Gesprächskarte (und Notfallnummer, falls hinterlegt) */
+export function dayOfMail(o: {
+  name: string;
+  dinner: DinnerInfo;
+  token: string;
+  card: { runden: { name: string; fragen: string[] }[] };
+  emergency: string | null;
+}): EmailContent {
+  return layout({
+    subject: "Heute Abend: eure Gesprächskarte",
+    title: `Heute ist euer Abend, ${o.name}!`,
+    paragraphs: [
+      `Um ${formatTime(o.dinner.startsAt)} Uhr im ${o.dinner.restaurant}, ${o.dinner.address} – reserviert auf „${RESERVATION_NAME}“.`,
+      "Damit das Gespräch von selbst läuft, bekommt euer Tisch diese Karte. Drei Runden – vom leichten Aperitif bis zur tiefen Dessertfrage:",
+    ],
+    lists: o.card.runden.map((r) => ({ title: r.name, items: r.fragen })),
+    after: [
+      ...CARD_RULES,
+      ...(o.emergency ? [`Falls heute etwas ist – Verspätung, Lokal nicht gefunden, ungutes Gefühl: Unsere Notfallnummer ist ${o.emergency}.`] : []),
+    ],
+    cta: { label: "Deine Einladung", url: seatUrl(o.token) },
+  });
+}
+
+/** Die zwei Regeln auf jeder Gesprächskarte */
+export const CARD_RULES = ["Jeder am Tisch antwortet, dann kommt die nächste Frage.", "Frag nach. Das wirkt mehr als jede Geschichte."];
+
+export function emergencySms(o: { dinner: DinnerInfo; phone: string }) {
+  return `Tisch6: Heute ist dein Abend! Falls unterwegs etwas ist (Verspätung, Lokal nicht gefunden, ungutes Gefühl): Notfallnummer ${o.phone}. Wir sind für dich da.`;
 }
 
 // ---------------------------------------------------------------------------
 // Verschiebung, Absage
 // ---------------------------------------------------------------------------
 
-export function postponedMail(o: { name: string; dinner: DinnerInfo; refund: string | null }): EmailContent {
+/** Gezahlt wurde schon: Die Tischteilnahme bleibt als Guthaben erhalten. */
+export function creditKeptText() {
+  return "Deine Tischteilnahme bleibt dir als Guthaben erhalten – bei deiner nächsten Einladung sagst du einfach mit einem Klick zu. Lieber das Geld zurück? Antworte kurz auf diese E-Mail.";
+}
+
+export function dinnerMovedMail(o: { name: string; before: DinnerInfo; after: DinnerInfo; token: string; wasConfirmed: boolean }): EmailContent {
   return layout({
-    subject: "Dein Tisch wird verschoben",
-    title: `Dein Tisch wird verschoben, ${o.name}`,
-    paragraphs: [
-      `Für den Abend am ${formatDate(o.dinner.startsAt)} haben leider nicht genug Gäste zugesagt. Lieber verschieben wir, als einen halben Tisch zu decken.`,
-      ...(o.refund ? [o.refund] : ["Die Einladung ist damit hinfällig – du musst nichts tun."]),
-      "Wir stellen dir so bald wie möglich einen neuen Tisch zusammen.",
+    subject: `Neuer Termin für deinen Tisch – ${formatDate(o.after.startsAt)}`,
+    title: `Euer Tisch wurde verschoben, ${o.name}`,
+    paragraphs: ["Wir mussten euren Abend leider verschieben – das tut uns leid! Hier der neue Termin:"],
+    details: [
+      ["Neu", formatDateTime(o.after.startsAt)],
+      ["Wo", place(o.after)],
+      ["Statt", formatDateTime(o.before.startsAt)],
     ],
+    after: [
+      o.wasConfirmed
+        ? "Dein Platz bleibt für den neuen Termin reserviert. Passt er dir nicht, sag einfach über deine Einladung ab – das kostet dich nichts, du bekommst alles zurück."
+        : "Deine Einladung gilt für den neuen Termin.",
+    ],
+    cta: { label: "Deine Einladung", url: seatUrl(o.token) },
   });
+}
+
+export function dinnerMovedSms(o: { before: DinnerInfo; after: DinnerInfo }) {
+  return `Tisch6: Euer Tisch am ${formatShortDate(o.before.startsAt)} wurde verschoben auf ${formatShortDate(o.after.startsAt)}, ${formatTime(o.after.startsAt)} Uhr, ${o.after.restaurant}. Passt es nicht, kannst du kostenlos absagen. Infos per E-Mail.`;
 }
 
 export function cancelledMail(o: { name: string; dinner: DinnerInfo; refund: string | null }): EmailContent {
@@ -320,18 +424,30 @@ export function seatRemovedMail(o: { name: string; dinner: DinnerInfo; refund: s
   });
 }
 
-/** Das ganze Dinner fällt aus (vom Team abgesagt) */
-export function dinnerCancelledMail(o: { name: string; dinner: DinnerInfo; refund: string | null; wasConfirmed: boolean }): EmailContent {
+/** Das ganze Dinner fällt aus – vom Team abgesagt oder 24 Stunden vorher zu wenige Zusagen */
+export function dinnerCancelledMail(o: {
+  name: string;
+  dinner: DinnerInfo;
+  refund: string | null;
+  wasConfirmed: boolean;
+  reason: "team" | "zu_wenige";
+}): EmailContent {
   return layout({
     subject: "Dein Tisch fällt leider aus",
     title: `Dein Tisch fällt leider aus, ${o.name}`,
     paragraphs: [
-      `Den Abend am ${formatDate(o.dinner.startsAt)} im ${place(o.dinner)} müssen wir leider absagen. Das tut uns sehr leid!`,
+      o.reason === "zu_wenige"
+        ? `Für den Abend am ${formatDate(o.dinner.startsAt)} haben bis 24 Stunden vorher leider weniger als fünf Personen zugesagt. Lieber sagen wir ab, als einen halben Tisch zu decken.`
+        : `Den Abend am ${formatDate(o.dinner.startsAt)} im ${place(o.dinner)} müssen wir leider absagen. Das tut uns sehr leid!`,
       ...(o.wasConfirmed ? [o.refund ?? "Für dich fallen dadurch keine Kosten an."] : ["Die Einladung ist damit hinfällig – du musst nichts tun."]),
       "Wir stellen dir so bald wie möglich einen neuen Tisch zusammen.",
     ],
     cta: { label: "Mein Konto", url: accountUrl() },
   });
+}
+
+export function dinnerCancelledSms(o: { dinner: DinnerInfo; wasConfirmed: boolean }) {
+  return `Tisch6: Euer Tisch am ${formatShortDate(o.dinner.startsAt)} muss leider ausfallen.${o.wasConfirmed ? " Deine Tischteilnahme bleibt dir erhalten." : ""} Alle Infos per E-Mail.`;
 }
 
 export function blockedMail(o: { name: string; refund: string | null }): EmailContent {
@@ -481,9 +597,13 @@ export function reservationMail(o: { dinner: DinnerInfo; count: number; kitchen:
     details: [
       ["Datum", formatDateTime(o.dinner.startsAt)],
       ["Personen", String(o.count)],
+      ["Reserviert auf", RESERVATION_NAME],
       ["Hinweise für die Küche", o.kitchen.length ? o.kitchen.join(", ") : "keine"],
     ],
-    after: ["Die Gäste bestellen und zahlen Essen und Getränke selbst. Vielen Dank – wir freuen uns auf den Abend bei euch!"],
+    after: [
+      "Eine Bitte: Teilt die Rechnung am Ende einfach automatisch gleichmäßig durch alle Gäste am Tisch (in der Regel sechs). Die Gäste bestellen und zahlen Essen und Getränke selbst.",
+      "Vielen Dank – wir freuen uns auf den Abend bei euch!",
+    ],
   });
 }
 

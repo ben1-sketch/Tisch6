@@ -6,8 +6,9 @@ import { requireAdmin } from "@/lib/admin/auth";
 import { DINNER_STATUS, relative, when } from "@/lib/admin/format";
 import { FOUNDER, TABLE, euro } from "@/lib/config";
 import { type AdminLog, type DinnerStatus, db } from "@/lib/db";
-import { DAY, HOUR, viennaDate, viennaToUtc } from "@/lib/time";
-import { tickAction } from "../actions";
+import { DAY, HOUR, WEEKDAY_CODES, addDays, viennaDate, viennaToUtc, weekdayOf } from "@/lib/time";
+import { TIMING } from "@/lib/config";
+import { planTablesAction, tickAction } from "../actions";
 
 export const metadata: Metadata = { title: "Übersicht" };
 // „Durchlauf jetzt starten“ darf so lange laufen wie der automatische Durchlauf
@@ -17,7 +18,7 @@ type AppRow = { status: string; under_review: boolean; available_since: string |
 type DinnerRow = { id: string; starts_at: string; status: DinnerStatus; restaurants: { name: string } | null; seats: { status: string }[] };
 type PaymentRow = { amount_cents: number; status: string; created_at: string };
 
-function setupChecks(activeRestaurants: number, lastTick: string | null, migrated: boolean) {
+function setupChecks(activeRestaurants: number, lastTick: string | null, migrated: boolean, migratedV4: boolean) {
   const env = process.env;
   const twilio = Boolean(env.TWILIO_ACCOUNT_SID && env.TWILIO_AUTH_TOKEN && (env.TWILIO_MESSAGING_SERVICE_SID || env.TWILIO_FROM));
   const tickRunning = lastTick !== null && new Date(lastTick).getTime() > Date.now();
@@ -25,6 +26,7 @@ function setupChecks(activeRestaurants: number, lastTick: string | null, migrate
   const ranEver = lastTick !== null && new Date(lastTick).getTime() > 0;
   return [
     { label: "Datenbank Etappe 3 (0005_etappe3_admin.sql)", ok: migrated },
+    { label: "Datenbank Brief v4 (0006_brief_v4.sql)", ok: migratedV4 },
     { label: "Claude API (ANTHROPIC_API_KEY)", ok: Boolean(env.ANTHROPIC_API_KEY) },
     { label: "Foto-Verschlüsselung (PHOTO_ENCRYPTION_KEY)", ok: (env.PHOTO_ENCRYPTION_KEY ?? "").length >= 32 },
     { label: "E-Mails (RESEND_API_KEY)", ok: Boolean(env.RESEND_API_KEY), hint: env.RESEND_API_KEY ? undefined : "ohne: E-Mails werden nur protokolliert" },
@@ -33,9 +35,10 @@ function setupChecks(activeRestaurants: number, lastTick: string | null, migrate
     { label: "Zahlungen (STRIPE_SECRET_KEY)", ok: Boolean(env.STRIPE_SECRET_KEY), hint: env.STRIPE_SECRET_KEY?.startsWith("sk_test_") ? "Testmodus" : undefined },
     { label: "Stripe-Webhook (STRIPE_WEBHOOK_SECRET)", ok: Boolean(env.STRIPE_WEBHOOK_SECRET) },
     { label: "SMS (Twilio)", ok: twilio, hint: twilio ? undefined : "ohne: SMS werden nur protokolliert" },
+    { label: "Notfallnummer am Abend (EMERGENCY_PHONE)", ok: Boolean(env.EMERGENCY_PHONE), hint: env.EMERGENCY_PHONE ? undefined : "ohne: keine Notfall-SMS am Tag des Tisches" },
     { label: "Schutz des Durchlaufs (CRON_SECRET)", ok: Boolean(env.CRON_SECRET) },
     { label: "Adresse der Website (NEXT_PUBLIC_SITE_URL)", ok: Boolean(env.NEXT_PUBLIC_SITE_URL) },
-    { label: "Aktives Stammlokal", ok: activeRestaurants > 0, href: "/admin/lokale" },
+    { label: "Aktives Partnerlokal", ok: activeRestaurants > 0, href: "/admin/lokale" },
     {
       label: "Automatischer Durchlauf alle 10 Minuten",
       ok: tickRunning || (tickAge !== null && ranEver && tickAge < 30 * 60_000),
@@ -50,8 +53,9 @@ async function loadOverview() {
   const now = Date.now();
   const iso = (ms: number) => new Date(ms).toISOString();
   const today = viennaDate(new Date(now));
-  const monthStart = viennaToUtc({ year: today.year, month: today.month, day: 1 }, "00:00").getTime();
-  const [apps, dinners, reports, payments, founders, matches, failed, tick, restaurants, log, failedLogins] = await Promise.all([
+  // Woche ab Montag 0 Uhr (Wien)
+  const weekStart = viennaToUtc(addDays(today, -((WEEKDAY_CODES.indexOf(weekdayOf(today)) + 6) % 7)), "00:00").getTime();
+  const [apps, dinners, reports, payments, founders, matches, failed, tick, restaurants, log, failedLogins, v4] = await Promise.all([
     client.from("applications").select("status, under_review, available_since, gender:profile->>geschlecht, created_at"),
     client
       .from("dinners")
@@ -73,13 +77,14 @@ async function loadOverview() {
       .select("id", { count: "exact", head: true })
       .eq("action", "Anmeldung fehlgeschlagen")
       .gte("created_at", iso(now - DAY)),
+    client.from("affinities").select("id", { count: "exact", head: true }),
   ]);
-  return { now, monthStart, apps, dinners, reports, payments, founders, matches, failed, tick, restaurants, log, failedLogins };
+  return { now, weekStart, apps, dinners, reports, payments, founders, matches, failed, tick, restaurants, log, failedLogins, v4 };
 }
 
 export default async function AdminHome() {
   await requireAdmin();
-  const { now, monthStart, apps, dinners, reports, payments, founders, matches, failed, tick, restaurants, log, failedLogins } = await loadOverview();
+  const { now, weekStart, apps, dinners, reports, payments, founders, matches, failed, tick, restaurants, log, failedLogins, v4 } = await loadOverview();
 
   const errors = [apps, dinners, reports, payments, founders, matches, failed, tick, restaurants]
     .map((r) => r.error?.message)
@@ -92,9 +97,10 @@ export default async function AdminHome() {
   const review = count((a) => a.under_review && a.status !== "blocked");
   const pays = (payments.data ?? []) as PaymentRow[];
   const net = pays.filter((p) => p.status === "paid").reduce((sum, p) => sum + p.amount_cents, 0);
-  const month = pays.filter((p) => p.status === "paid" && new Date(p.created_at).getTime() >= monthStart).reduce((sum, p) => sum + p.amount_cents, 0);
+  const week = pays.filter((p) => p.status === "paid" && new Date(p.created_at).getTime() >= weekStart).reduce((sum, p) => sum + p.amount_cents, 0);
+  const waitlisted = (g: string) => count((a) => a.status === "waitlist" && a.gender === g);
   const upcoming = (dinners.data ?? []) as unknown as DinnerRow[];
-  const checks = setupChecks(restaurants.count ?? 0, (tick.data as { locked_until: string } | null)?.locked_until ?? null, !log.error);
+  const checks = setupChecks(restaurants.count ?? 0, (tick.data as { locked_until: string } | null)?.locked_until ?? null, !log.error, !v4.error);
   const missing = checks.filter((c) => !c.ok).length;
 
   return (
@@ -131,7 +137,12 @@ export default async function AdminHome() {
           hint={`${waiting("frau")} Frauen · ${waiting("mann")} Männer`}
           href="/admin/bewerbungen?filter=wartet"
         />
-        <Stat label="Angenommen" value={accepted()} hint={`${accepted("frau")} Frauen · ${accepted("mann")} Männer`} href="/admin/bewerbungen?filter=angenommen" />
+        <Stat
+          label="Frauen : Männer"
+          value={`${accepted("frau")} : ${accepted("mann")}`}
+          hint={`angenommen · Warteliste ${waitlisted("frau")} : ${waitlisted("mann")}`}
+          href="/admin/bewerbungen?filter=angenommen"
+        />
         <Stat
           label="Warten auf Antwort"
           value={count((a) => a.status === "submitted")}
@@ -145,16 +156,16 @@ export default async function AdminHome() {
           href="/admin/bewerbungen"
         />
         <Stat label="Gründungsmitglieder" value={`${founders.count ?? 0} / ${FOUNDER.limit}`} href="/admin/zahlungen" />
-        <Stat label="Umsatz (netto)" value={euro(net)} hint={`diesen Monat ${euro(month)}`} href="/admin/zahlungen" />
+        <Stat label="Umsatz diese Woche" value={euro(week)} hint={`gesamt netto ${euro(net)}`} href="/admin/zahlungen" />
         <Stat label="Wiedersehen" value={matches.count ?? 0} hint="gegenseitige Matches" href="/admin/wiedersehen" />
-        <Stat label="Kommende Dinner" value={upcoming.length} href="/admin/dinner" />
+        <Stat label="Geplante Tische" value={upcoming.length} href="/admin/tische" />
       </div>
 
-      <div className="mt-6 grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+      <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
         <div className="space-y-4">
-          <Card title="Nächste Dinner" aside={<Link href="/admin/dinner" className="text-sm text-rose-300 hover:underline">alle</Link>}>
+          <Card title="Nächste Tische" aside={<Link href="/admin/tische" className="text-sm text-rose-300 hover:underline">alle</Link>}>
             {upcoming.length === 0 ? (
-              <Empty>Noch kein Dinner geplant. Sobald drei Frauen und drei Männer zusammenpassen, plant die KI den Tisch.</Empty>
+              <Empty>Noch kein Tisch geplant. Sobald drei Frauen und drei Männer zusammenpassen, plant die KI den Tisch – jede Nacht.</Empty>
             ) : (
               <ul className="divide-y divide-white/5">
                 {upcoming.map((d) => {
@@ -162,7 +173,7 @@ export default async function AdminHome() {
                   const open = d.seats.filter((s) => s.status === "invited" || s.status === "offered").length;
                   return (
                     <li key={d.id}>
-                      <Link href={`/admin/dinner/${d.id}`} className="flex flex-wrap items-center justify-between gap-2 py-3 hover:text-rose-200">
+                      <Link href={`/admin/tische/${d.id}`} className="flex flex-wrap items-center justify-between gap-2 py-3 hover:text-rose-200">
                         <span className="min-w-0">
                           <span className="block font-medium">{when(d.starts_at)}</span>
                           <span className="text-sm text-mist">{d.restaurants?.name ?? "–"}</span>
@@ -200,8 +211,8 @@ export default async function AdminHome() {
                         </Link>
                       )}
                       {entry.dinner_id && (
-                        <Link href={`/admin/dinner/${entry.dinner_id}`} className="ml-2 text-rose-300 hover:underline">
-                          Dinner
+                        <Link href={`/admin/tische/${entry.dinner_id}`} className="ml-2 text-rose-300 hover:underline">
+                          Tisch
                         </Link>
                       )}
                     </span>
@@ -220,6 +231,16 @@ export default async function AdminHome() {
               dem Wiedersehen. Läuft alle 10 Minuten von selbst – hier kannst du ihn sofort starten.
             </p>
             <ActionForm action={tickAction} submit="Durchlauf jetzt starten" tone="primary" className="mt-4" />
+            <p className="mt-4 text-sm text-mist">
+              Neue Tische plant die KI jede Nacht zwischen {TIMING.matchingFromHour} und {TIMING.matchingToHour} Uhr – die Einladungen liegen morgens im
+              Postfach. Brauchst du sie früher:
+            </p>
+            <ActionForm
+              action={planTablesAction}
+              submit="Tische jetzt planen"
+              confirm="Jetzt Tische planen? Passende Runden bekommen sofort ihre Einladungen."
+              className="mt-2"
+            />
           </Card>
 
           <Card title="Einrichtung" aside={missing ? <Chip tone="amber">{missing} offen</Chip> : <Chip tone="green">alles bereit</Chip>}>

@@ -15,6 +15,6 @@ export default async function InvitationPage({ params, searchParams }: PageProps
   const view = await seatView(db(), token);
   if (!view) notFound();
   const dict = await getDictionary(lang);
-  const { bezahlt } = await searchParams;
-  return <SeatPage view={view} t={dict.seat} lang={lang} paid={bezahlt === "1"} />;
+  const { bezahlt, melden } = await searchParams;
+  return <SeatPage view={view} t={dict.seat} lang={lang} paid={bezahlt === "1"} openReport={melden === "1"} />;
 }

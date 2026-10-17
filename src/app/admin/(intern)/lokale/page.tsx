@@ -77,7 +77,7 @@ export default async function RestaurantsPage() {
 
   return (
     <>
-      <PageTitle title="Lokale" sub="Stammlokale, die kurzfristig einen Sechsertisch reservieren können. Die KI legt Termine nur an den angehakten Tagen an." />
+      <PageTitle title="Lokale" sub="Vier bis fünf Partnerlokale, die einen Sechsertisch auf „Tisch6“ reservieren und die Rechnung durch sechs teilen. Die KI wechselt sie ab und legt Termine nur an den angehakten Tagen an." />
       {error && <Notice tone="red">Datenbank: {error.message}</Notice>}
 
       <div className="space-y-4">
@@ -108,7 +108,7 @@ export default async function RestaurantsPage() {
                 hidden={{ id: r.id }}
                 submit="Lokal löschen"
                 tone="danger"
-                confirm={`${r.name} löschen? Geht nur, solange dort noch kein Dinner geplant war.`}
+                confirm={`${r.name} löschen? Geht nur, solange dort noch kein Tisch geplant war.`}
                 className="mt-4 border-t border-white/5 pt-4"
               />
             </details>

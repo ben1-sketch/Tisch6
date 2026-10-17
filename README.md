@@ -8,8 +8,9 @@ KI-kuratierte Dating-Dinner für Singles – sechs Menschen, ein Tisch. Pilot in
 | Etappe | Inhalt | Status |
 |---|---|---|
 | 1 | Öffentliche Website, Bewerbung (auch zu zweit), SMS- & Foto-Verifizierung, KI-Onboarding, Einladungslink, Rechtstexte, Profil löschen | ✅ |
-| 2 | Bewertung, E-Mails & SMS, KI-Matching, Terminfestlegung, Nachrücker, Stripe & Gründungspaket, Erinnerungen, Eisbrecher-Karte, Meldeknopf, Wiedersehen & Feedback, Rabatte, Folgeeinladungen | ✅ |
-| 3 | Adminbereich unter `/admin`: Bewerbungen mit Foto, Profile, Warteliste, Dinner, Zahlungen, Matches, Feedback, Meldungen, Lokale, Versand, Protokoll – mit Eingriffen | ✅ |
+| 2 | Bewertung, E-Mails & SMS, KI-Matching, Terminfestlegung, Nachrücker, Stripe & Gründungspaket, Erinnerungen, Meldeknopf, Wiedersehen & Feedback, Rabatte, Folgeeinladungen | ✅ |
+| 3 | Adminbereich unter `/admin`: Bewerbungen mit Foto, Profile, Warteliste, Tische, Zahlungen, Wiedersehen & Feedback, Meldungen, Lokale, Versand, Protokoll – mit Eingriffen | ✅ |
+| Brief v4 | Beziehungsziel & Werte im Onboarding, Temperament am Tisch ähnlich, lernendes Matching aus den Wiedersehen-Antworten, nächtliche Tischplanung, Lokal-Rotation, Gesprächskarte (drei Runden, auch zum Ausdrucken), ab 5 Gästen fix, 24-Stunden-Regel mit Guthaben, Notfall-SMS, Verschieben/Absagen, „Was Tisch6 auszeichnet“, „Für Männer“ | ✅ |
 
 Einrichtung: **[Etappe 1](docs/SETUP-ETAPPE-1.md)** · **[Etappe 2](docs/SETUP-ETAPPE-2.md)** · **[Etappe 3](docs/SETUP-ETAPPE-3.md)**
 
@@ -17,9 +18,9 @@ Einrichtung: **[Etappe 1](docs/SETUP-ETAPPE-1.md)** · **[Etappe 2](docs/SETUP-E
 
 - **Next.js 16** (App Router, TypeScript, Tailwind CSS 4) – Hosting auf Vercel
 - **Supabase** (EU/Frankfurt) – Datenbank, Login per Handynummer (SMS-Code)
-- **Claude API** – Kennenlern-Chat, Profil-Auswertung, Bewertung, Tischwahl, Eisbrecher-Karten, Lernnotizen
+- **Claude API** – Kennenlern-Chat, Profil-Auswertung, Bewertung, Tischwahl, Gesprächskarten, Lernnotizen
 - **Stripe** – Zahlungen (Checkout + Webhook), **Resend** – E-Mails, **Twilio** – SMS
-- **Automatischer Durchlauf** alle 10 Minuten (`/api/cron/tick`, ausgelöst von Supabase pg_cron)
+- **Automatischer Durchlauf** alle 10 Minuten (`/api/cron/tick`, ausgelöst von Supabase pg_cron) – neue Tische plant die KI nachts zwischen 1 und 6 Uhr
 - Mehrsprachig vorbereitet: Texte in `src/i18n/dictionaries/`, URLs mit Sprachpräfix (`/de/...`)
 
 ## Struktur
@@ -32,15 +33,15 @@ src/app/api/account/       Konto-Überblick, Verfügbarkeit, Profil endgültig l
 src/app/api/cron/tick/     Automatischer Durchlauf (Bewertung, Matching, Fristen, Erinnerungen, Abschluss)
 src/app/api/seat/…         Einladung: bezahlen, Paket, absagen, melden, Feedback, Kalender
 src/app/api/stripe/webhook Zahlungen verbuchen
-src/app/admin/             Adminbereich (Passwort-Login, Übersicht, Bewerbungen, Dinner, Zahlungen …)
+src/app/admin/             Adminbereich (Passwort-Login, Übersicht, Bewerbungen, Tische, Gesprächskarte zum Drucken …)
 src/app/admin/actions.ts   Alle Eingriffe des Teams – jede Aktion prüft die Anmeldung selbst
 src/components/            Header, Footer, Logo, ApplyFlow (Bewerbung + Chat), Account
 src/lib/config.ts          Alle Spielregeln: Preise, Fristen, Tischregeln
 src/lib/onboarding.ts      Interview-Prompt, Antwort- und Profil-Schema
 src/lib/evaluation.ts      Bewertung der Bewerbungen, Warteliste, Geschlechterverhältnis
 src/lib/matching*.ts       Tischregeln, Kandidatenrunden, KI-Wahl, Terminfindung
-src/lib/seats.ts           Einladen, Zusagen, Absagen, Nachrücker, Entscheidung 72 h vorher
-src/lib/dinners.ts         Erinnerungen, Eisbrecher, Wiedersehen, Abschluss, Lebenszeichen, Lernen
+src/lib/seats.ts           Einladen, Zusagen, Absagen, Nachrücker, Entscheidung 24 h vorher, Guthaben
+src/lib/dinners.ts         Erinnerungen, Gesprächskarte, Tag des Tisches, Wiedersehen, Abschluss, Lebenszeichen, Lernen
 src/lib/messages.ts        Alle E-Mail- und SMS-Texte
 src/lib/tick.ts            Der automatische Durchlauf (Cron und Knopf im Adminbereich)
 src/lib/admin/             Admin-Anmeldung, Eingriffe (sperren, stornieren, erstatten …), Anzeige-Texte

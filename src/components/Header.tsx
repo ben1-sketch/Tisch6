@@ -16,6 +16,9 @@ export function Header({ lang, dict }: { lang: string; dict: Dictionary }) {
           <Link href={`/${lang}#sicher-fuer-frauen`} className="hidden rounded-full px-3 py-2 text-mist hover:text-cloud lg:inline">
             {dict.nav.women}
           </Link>
+          <Link href={`/${lang}#fuer-maenner`} className="hidden rounded-full px-3 py-2 text-mist hover:text-cloud xl:inline">
+            {dict.nav.men}
+          </Link>
           <Link href={`/${lang}#preise`} className="hidden rounded-full px-3 py-2 text-mist hover:text-cloud md:inline">
             {dict.nav.prices}
           </Link>

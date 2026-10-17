@@ -2,11 +2,12 @@ const de = {
   meta: {
     title: "Tisch6 – KI-kuratierte Dating-Dinner in Wien",
     description:
-      "Kein Wischen, kein Ghosting, echte Menschen am Tisch. Tisch6 stellt mit KI sechs Singles an einen Tisch – drei Frauen, drei Männer, ein Abend in einem Wiener Stammlokal.",
+      "Kein Wischen, kein Ghosting, echte Menschen am Tisch. Tisch6 stellt mit KI sechs Singles an einen Tisch – drei Frauen, drei Männer, ein Abend in einem Wiener Partnerlokal.",
   },
   nav: {
     how: "So funktioniert's",
     women: "Sicher für Frauen",
+    men: "Für Männer",
     prices: "Preise",
     faq: "FAQ",
     apply: "Jetzt bewerben",
@@ -48,16 +49,36 @@ const de = {
       { title: "Bewerben", text: "Kein Anmelden mit drei Klicks – du bewirbst dich. Allein oder mit „Bring eine Freundin mit“." },
       { title: "Verifizieren", text: "SMS-Code und ein Foto, das nur unser Team zur Prüfung sieht – nie die anderen Gäste. Keine Fake-Profile, keine Bots." },
       { title: "Kennenlern-Chat", text: "Unsere KI-Gastgeberin stellt dir Fragen zu Fakten, Lebensstil und Persönlichkeit – in höchstens zehn Minuten." },
-      { title: "Antwort in 24 h", text: "Du erfährst innerhalb eines Tages, ob du dabei bist oder auf der Warteliste stehst. Dauert es länger, melden wir uns nach sieben Tagen." },
-      { title: "Einladung", text: "Sobald dein Tisch beisammen ist, legt die KI den Termin nach euren Wunschtagen fest. Erst mit der Zahlung ist dein Platz fix." },
-      { title: "Eisbrecher-Karte", text: "Vor dem Dinner bekommst du zwei Gesprächsfragen für den Abend – damit niemand ins Schweigen fällt." },
+      { title: "Antwort in 24 h", text: "Innerhalb eines Tages erfährst du, ob du dabei bist. Dauert es bis zu deinem Tisch länger, melden wir uns nach sieben Tagen." },
+      { title: "Einladung", text: "Jede Nacht stellt die KI neue Tische zusammen und legt den Termin nach euren Wunschtagen fest. Erst mit der Zahlung ist dein Platz fix." },
+      { title: "Gesprächskarte", text: "Am Tag eures Abends bekommt euer Tisch eine Karte mit drei Runden Fragen – vom leichten Aperitif bis zur tiefen Dessertfrage." },
       { title: "Wiedersehen", text: "Am Tag danach markierst du anonym, wen du wiedersehen willst. Bei Gegenseitigkeit teilen wir den Kontakt. Dazu drei kurze Feedback-Fragen." },
       { title: "Nächster Tisch", text: "Kein Match dabei? Am dritten Tag kommt eine Einladung zum nächsten Termin – Zusage mit einem Klick." },
     ],
   },
+  distinct: {
+    title: "Was Tisch6 auszeichnet",
+    items: [
+      { title: "Bewerben statt anmelden.", text: "Jede Bewerbung wird geprüft, mit Verifizierungsfoto. Am Tisch sitzen wirklich die Richtigen." },
+      { title: "Du zahlst erst, wenn dein Tisch steht.", text: "Kein Abo, keine Vorkasse ins Blaue." },
+      { title: "Maximal zehn Jahre Altersspanne am Tisch.", text: "Niemand fühlt sich fehl am Platz." },
+      { title: "Ehrlich Dating.", text: "Drei Frauen, drei Männer, alle wissen, warum sie da sind." },
+      { title: "Ausgewählte Lokale.", text: "Ruhig genug zum Reden, gut genug zum Genießen." },
+      { title: "Hinter jeder Nachricht steht ein Mensch.", text: "Echte Antwort, keine Warteschleife." },
+      { title: "Das Gegenteil von Wischen.", text: "Zwei Stunden mit einem echten Menschen statt Fehlersuche im Profil." },
+      { title: "Absagen hat Konsequenzen.", text: "Wer am Tisch sitzt, meint es ernst." },
+      { title: "Ein Preis, keine versteckten Extras.", text: "35 € pro Tischteilnahme. Keine Boosts, kein Abo-Zwang." },
+    ],
+  },
+  men: {
+    eyebrow: "Für Männer",
+    title: "Keine Konkurrenz am Tisch.",
+    lead: "Bei Tisch6 gibt es keine Konkurrenz am Tisch. Drei Frauen, drei Männer, niemand muss um Aufmerksamkeit kämpfen. Ob jemand dich wiedersehen will, erfährst du am nächsten Tag privat, nie vor anderen. Kein öffentliches Nein, kein Auftritt, einfach ein gutes Abendessen.",
+    points: ["Drei Frauen, drei Männer – niemand kämpft um Aufmerksamkeit", "Wiedersehen privat am nächsten Tag, nie vor anderen", "Kein öffentliches Nein, kein Auftritt"],
+  },
   table: {
     title: "Wie die KI deinen Tisch deckt",
-    lead: "Aus deinen Antworten im Kennenlern-Chat entsteht ein Typ auf vier Achsen. Am Tisch werden die Achsen gemischt – damit sich die Leute ergänzen.",
+    lead: "Aus deinen Antworten im Kennenlern-Chat entsteht ein Typ auf vier Achsen. Beim Temperament – eher ruhig oder eher extrovertiert – sitzen ähnliche Menschen zusammen, die anderen drei Achsen dürfen sich mischen. Und wer etwas Ernstes sucht, sitzt mit Menschen, die das auch wollen.",
     axes: [
       ["ruhig", "extrovertiert"],
       ["spontan", "strukturiert"],
@@ -67,8 +88,10 @@ const de = {
     rules: [
       { k: "6", v: "Personen pro Tisch – drei Frauen, drei Männer" },
       { k: "≤ 10", v: "Jahre Altersspanne am Tisch" },
-      { k: "4", v: "Persönlichkeitsachsen, bewusst gemischt" },
-      { k: "0", v: "Kompromisse: Passt es nicht, verschieben wir lieber, als einen schlechten Tisch zu machen" },
+      { k: "4", v: "Persönlichkeitsachsen – beim Temperament ähnlich, sonst gern gemischt" },
+      { k: "1", v: "Beziehungsziel am Tisch: ernsthaft oder erstmal schauen – möglichst gleich" },
+      { k: "+", v: "Lernend: Aus jedem Wiedersehen lernt die KI, wer zu dir passt" },
+      { k: "0", v: "Kompromisse: Passt es nicht, warten wir lieber, als einen schlechten Tisch zu machen" },
     ],
   },
   buddy: {
@@ -83,7 +106,7 @@ const de = {
       name: "Tischteilnahme",
       price: "35 €",
       unit: "pro Tischteilnahme",
-      points: ["Platz an einem kuratierten Tisch", "Eisbrecher-Karte vorab", "Wiedersehen-Funktion danach"],
+      points: ["Platz an einem kuratierten Tisch", "Gesprächskarte am Abend", "Wiedersehen-Funktion danach"],
     },
     founder: {
       badge: "Nur für die ersten 300 in Wien",
@@ -93,7 +116,7 @@ const de = {
       unit: "für drei Tischteilnahmen",
       points: ["3 Tischteilnahmen im Paket", "12 Monate gültig", "Abzeichen „Gründungsmitglied“ in deinem Profil"],
     },
-    note: "Essen und Getränke zahlt jede Person selbst im Lokal.",
+    note: "Ein Preis, keine versteckten Extras, keine Boosts. Essen und Getränke zahlt ihr im Lokal – die Rechnung wird einfach gleichmäßig geteilt.",
     referral: {
       title: "Empfehlen lohnt sich",
       text: "Jede Person hat einen persönlichen Einladungslink. Wird jemand, den du eingeladen hast, angenommen und sitzt an einem Tisch, kostet deine nächste Tischteilnahme nur 20 € statt 35 €.",
@@ -101,7 +124,7 @@ const de = {
   },
   places: {
     title: "Wo gegessen wird",
-    text: "Dinner sind an jedem Tag möglich. Sobald ein passender Tisch beisammen ist, legt die KI den Termin nach euren Wunschtagen fest. Unsere Wiener Stammlokale halten dafür kurzfristig einen Sechsertisch frei. Die Adresse steht in der Einladung und in den Erinnerungen.",
+    text: "Wir wechseln zwischen vier bis fünf ausgewählten Wiener Lokalen – ruhig genug zum Reden, gut genug zum Genießen. Du sitzt nie zweimal hintereinander im selben Lokal. Reserviert ist immer auf den Namen „Tisch6“; die Adresse steht in der Bestätigung und in den Erinnerungen.",
   },
   women: {
     eyebrow: "Sicher für Frauen",
@@ -109,10 +132,10 @@ const de = {
     lead: "Viele Frauen sagen uns: Online-Dating fühlt sich unsicher an. Deshalb ist Sicherheit bei Tisch6 kein Zusatz, sondern Teil des Konzepts.",
     items: [
       { title: "Jede Person ist geprüft", text: "Handynummer per SMS-Code und ein Foto, das unser Team mit der Person abgleicht. Fake-Profile haben keine Chance." },
-      { title: "Öffentlicher Ort, ganze Gruppe", text: "Ihr trefft euch in einem Wiener Stammlokal, zu sechst. Kein Zweierdate, keine Wohnung, kein Abholen." },
+      { title: "Öffentlicher Ort, ganze Gruppe", text: "Ihr trefft euch in einem Wiener Partnerlokal, zu sechst. Kein Zweierdate, keine Wohnung, kein Abholen." },
       { title: "Deine Nummer bleibt bei dir", text: "Niemand am Tisch bekommt deine Kontaktdaten – außer ihr wollt euch beide wiedersehen." },
-      { title: "Diskreter Meldeknopf", text: "Fühlst du dich unwohl, meldest du eine Person während oder nach dem Dinner mit einem Tipp. Wir prüfen das Profil und sperren bei Bedarf. Niemand erfährt, wer gemeldet hat." },
-      { title: "Bring eine Freundin mit", text: "Ihr bewerbt euch zu zweit und seid am selben Abend im selben Lokal – an verschiedenen Tischen." },
+      { title: "Diskreter Meldeknopf", text: "Fühlst du dich unwohl, meldest du eine Person während oder nach dem Dinner mit einem Tipp – in deinem Profil. Wir prüfen das Profil und sperren bei Bedarf. Niemand erfährt, wer gemeldet hat." },
+      { title: "Notfallnummer am Abend", text: "Am Tag eures Tisches bekommst du per SMS eine Nummer, unter der wir erreichbar sind – falls unterwegs oder am Tisch etwas ist." },
       { title: "Klare Regeln", text: "Respekt ist Teilnahmebedingung. Wer sich danebenbenimmt oder zweimal ohne Absage fehlt, wird gesperrt." },
     ],
   },
@@ -121,7 +144,7 @@ const de = {
     items: [
       {
         q: "Was kostet eine Tischteilnahme?",
-        a: "35 Euro. Für die ersten 300 in Wien gibt es das Gründungspaket: drei Tischteilnahmen für 79 Euro statt 105 Euro, zwölf Monate gültig. Essen und Getränke zahlt jede Person selbst im Lokal.",
+        a: "35 Euro. Für die ersten 300 in Wien gibt es das Gründungspaket: drei Tischteilnahmen für 79 Euro statt 105 Euro, zwölf Monate gültig. Essen und Getränke zahlt ihr im Lokal – die Rechnung wird einfach gleichmäßig geteilt. Ein Preis, keine versteckten Extras.",
       },
       {
         q: "Wer kann sich bewerben?",
@@ -137,7 +160,7 @@ const de = {
       },
       {
         q: "Wann und wo finden die Dinner statt?",
-        a: "An jedem Tag möglich – die KI legt den Termin fest, sobald dein Tisch beisammen ist, und richtet sich nach euren Wunschtagen. Gegessen wird in unseren Wiener Stammlokalen. Die Adresse bekommst du mit der Einladung und mit den Erinnerungen drei Tage, einen Tag und zwei Stunden vorher.",
+        a: "An jedem Tag möglich – jede Nacht stellt die KI neue Tische zusammen und legt den Termin nach euren Wunschtagen fest. Gegessen wird in vier bis fünf ausgewählten Wiener Lokalen, nie zweimal hintereinander im selben. Reserviert ist auf „Tisch6“; die Adresse bekommst du mit der Bestätigung und mit den Erinnerungen drei Tage, einen Tag und zwei Stunden vorher.",
       },
       {
         q: "Wofür brauche ich ein Foto?",
@@ -145,7 +168,7 @@ const de = {
       },
       {
         q: "Was, wenn ich mich am Tisch unwohl fühle?",
-        a: "Über den diskreten Meldeknopf kannst du während oder nach dem Dinner eine Person melden. Wir prüfen das Profil und sperren es bei Bedarf. Die gemeldete Person erfährt nicht, wer gemeldet hat.",
+        a: "Über den diskreten Meldeknopf in deinem Profil kannst du während oder nach dem Dinner eine Person melden. Wir prüfen das Profil und sperren es bei Bedarf. Die gemeldete Person erfährt nicht, wer gemeldet hat. Am Tag des Tisches bekommst du außerdem eine Notfallnummer per SMS.",
       },
       {
         q: "Bekomme ich etwas, wenn ich Tisch6 weiterempfehle?",
@@ -157,11 +180,19 @@ const de = {
       },
       {
         q: "Und wenn jemand anderer ausfällt?",
-        a: "Dann läuft das Dinner zu fünft – und alle am Tisch bekommen Rabatt auf die nächste Tischteilnahme.",
+        a: "Ab fünf bestätigten Personen findet der Abend statt – fehlt jemand, bekommt ihr alle Rabatt auf die nächste Tischteilnahme. Sind 24 Stunden vorher weniger als fünf bestätigt, sagen wir den Tisch ab. Deine Tischteilnahme bleibt dir dann als Guthaben erhalten.",
+      },
+      {
+        q: "Was ist die Gesprächskarte?",
+        a: "Am Tag eures Abends bekommt euer Tisch eine Karte mit drei Runden: leicht zum Aperitif, persönlicher zum Hauptgang, tief zum Dessert. Jeder antwortet, dann kommt die nächste Frage. Die KI wählt die Fragen passend zu eurer Runde aus.",
+      },
+      {
+        q: "Lernt Tisch6 dazu?",
+        a: "Ja. Nach jedem Abend sagst du anonym, wen du wiedersehen möchtest. Daraus lernt die KI, welche Typen bei dir funktionieren – und stellt deinen nächsten Tisch noch treffsicherer zusammen.",
       },
       {
         q: "Was passiert mit meinen Antworten?",
-        a: "Sie dienen ausschließlich dazu, passende Tische zusammenzustellen. Andere Gäste sehen deine Antworten nicht. Du kannst dein Profil jederzeit vollständig löschen.",
+        a: "Sie dienen ausschließlich dazu, passende Tische zusammenzustellen. Andere Gäste sehen deine Antworten nicht – dein Beziehungsziel und deine Werte nutzt nur die KI fürs Matching, sie werden nirgends angezeigt. Du kannst dein Profil jederzeit vollständig löschen.",
       },
     ],
   },
@@ -194,7 +225,7 @@ const de = {
       terms: "Ich akzeptiere die {terms}.",
       termsLink: "AGB",
       sensitive:
-        "Ich willige ausdrücklich ein, dass Angaben zu meiner Partnersuche (wen ich kennenlernen möchte) und zu Essens-Unverträglichkeiten verarbeitet werden, um passende Tische zusammenzustellen (Art. 9 Abs. 2 lit. a DSGVO). Widerruf jederzeit möglich.",
+        "Ich willige ausdrücklich ein, dass Angaben zu meiner Partnersuche (wen ich kennenlernen möchte), zu meinen Werten (wie wichtig mir Glaube und Politik sind) und zu Essens-Unverträglichkeiten verarbeitet werden, um passende Tische zusammenzustellen (Art. 9 Abs. 2 lit. a DSGVO). Diese Angaben sieht niemand am Tisch. Widerruf jederzeit möglich.",
       next: "Weiter",
     },
     phone: {
@@ -279,6 +310,7 @@ const de = {
     buddyLinked: "Du bist mit einer Begleitung verknüpft – ihr kommt an verschiedene Tische.",
     continue: "Chat fortsetzen",
     logout: "Abmelden",
+    report: "Etwas vorgefallen? Diskret eine Person melden",
     deleteTitle: "Profil löschen",
     deleteText: "Löscht dein Profil, dein Foto, deine Chat-Antworten und deinen Login endgültig. Offene Einladungen werden abgesagt – bis 48 Stunden vor einem Dinner mit Erstattung. Das kann nicht rückgängig gemacht werden.",
     deleteConfirm: "Willst du dein Profil wirklich endgültig löschen?",
@@ -343,16 +375,18 @@ const de = {
     founderTitle: "Gründungsmitglied werden",
     founderText: "3 Tischteilnahmen für 79 € statt 105 €, 12 Monate gültig – mit Abzeichen in deinem Profil. Nur für die ersten 300 in Wien.",
     founderButton: "Gründungspaket kaufen & zusagen",
-    foodNote: "Essen und Getränke zahlt jede Person selbst im Lokal.",
+    foodNote: "Essen und Getränke zahlt ihr im Lokal – die Rechnung wird einfach gleichmäßig geteilt.",
     paymentsOff: "Die Bezahlung wird gerade eingerichtet – bitte versuch es etwas später nochmal.",
     decline: "Leider keine Zeit",
     declineConfirm: "Möchtest du diese Einladung wirklich absagen?",
     confirming: "Deine Zahlung wird bestätigt …",
     calendar: "In den Kalender eintragen",
-    icebreakerTitle: "Deine Eisbrecher-Karte",
-    icebreakerSoon: "Einen Tag vor dem Dinner findest du hier deine Eisbrecher-Karte mit zwei Fragen für den Abend.",
+    cardTitle: "Eure Gesprächskarte",
+    cardSoon: "Am Tag eures Abends findest du hier eure Gesprächskarte – drei Runden Fragen, vom Aperitif bis zum Dessert. Sie kommt auch per E-Mail.",
+    cardRules: ["Jeder am Tisch antwortet, dann kommt die nächste Frage.", "Frag nach. Das wirkt mehr als jede Geschichte."],
     cancelTitle: "Absagen",
     cancelFree: "Bis {date} kannst du kostenlos absagen – du bekommst dein Geld bzw. dein Guthaben zurück.",
+    cancelMoved: "Wir haben euren Tisch verschoben – passt dir der neue Termin nicht, kannst du kostenlos absagen.",
     cancelLate: "Weniger als 48 Stunden vorher verfällt die Gebühr leider. Sag trotzdem bitte ab – dann kann vielleicht jemand nachrücken.",
     cancel: "Platz absagen",
     cancelConfirm: "Möchtest du deinen Platz wirklich absagen?",
