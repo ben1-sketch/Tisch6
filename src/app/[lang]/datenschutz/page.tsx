@@ -19,9 +19,11 @@ export default function Datenschutz() {
       <h2>2. Welche Daten wir verarbeiten</h2>
       <ul>
         <li>Bewerbungsdaten: Vorname, E-Mail-Adresse, Handynummer (zur Verifizierung per SMS-Code und für Erinnerungen vor dem Dinner).</li>
-        <li>Angaben aus dem Kennenlern-Chat: Alter, Geschlecht, wen du kennenlernen möchtest, gewünschte Altersspanne, Lebensstil (Rauchen, Kinder/Kinderwunsch, Beruf grob, Ausgehverhalten, Essensvorlieben, Ernährungsform und Unverträglichkeiten) sowie deine Antworten auf Situationsfragen zur Persönlichkeit.</li>
+        <li>Ein Verifizierungsfoto. Es wird bereits in deinem Browser verkleinert und von Metadaten (z. B. Standort) befreit, auf unserem Server mit AES-256 verschlüsselt und in einem privaten Speicher in der EU abgelegt. Nur das Tisch6-Team kann es zur Prüfung entschlüsseln; andere Teilnehmer sehen es nie. Es wird nicht biometrisch ausgewertet.</li>
+        <li>Angaben aus dem Kennenlern-Chat: Alter, Geschlecht, wen du kennenlernen möchtest, gewünschte Altersspanne, Wunschtage für Dinner, Lebensstil (Rauchen, Kinder/Kinderwunsch, Beruf grob, Ausgehverhalten, Essensvorlieben, Ernährungsform und Unverträglichkeiten) sowie deine Antworten auf Situationsfragen zur Persönlichkeit.</li>
         <li>Ein daraus abgeleitetes Profil (Persönlichkeitstyp auf vier Achsen, Gesprächsthemen), das ausschließlich zur Tischzusammenstellung und für die Eisbrecher-Karte dient.</li>
-        <li>Bei „Bring eine Freundin mit“: die Verknüpfung mit der Person, über deren Einladungslink du dich beworben hast.</li>
+        <li>Wenn du dich über einen Einladungslink bewirbst: wer dich eingeladen hat (für das Empfehlungsprogramm) und – bei „Bring eine Freundin mit“ – die Verknüpfung als Duo.</li>
+        <li>Meldungen über das Verhalten am Tisch: wer wen wann gemeldet hat und die Beschreibung. Die gemeldete Person erfährt nicht, wer gemeldet hat.</li>
         <li>Nach dem Dinner: deine anonymen Wiedersehen-Angaben und dein freiwilliges Feedback.</li>
         <li>Teilnahmen, Absagen und Nichterscheinen sowie Zahlungsinformationen (die Zahlungsdaten selbst verarbeitet nur Stripe).</li>
         <li>Zeitpunkt und Version deiner Einwilligungen.</li>
@@ -32,8 +34,8 @@ export default function Datenschutz() {
       <ul>
         <li>Prüfung deiner Bewerbung und Zusammenstellung passender Tische – Art. 6 Abs. 1 lit. a und b DSGVO (Einwilligung, Vertragsanbahnung).</li>
         <li>Angaben, aus denen sich deine sexuelle Orientierung ergeben kann (wen du kennenlernen möchtest), sowie Unverträglichkeiten (Gesundheitsdaten) verarbeiten wir nur mit deiner ausdrücklichen Einwilligung – Art. 9 Abs. 2 lit. a DSGVO.</li>
-        <li>Verifizierung per SMS zum Schutz aller Teilnehmer vor Fake-Profilen – Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an Sicherheit).</li>
-        <li>Einladungen, Erinnerungen (drei Tage, einen Tag und zwei Stunden vor dem Dinner), Nachrücker-Angebote, Wiedersehen-Abfrage und Folgeeinladungen per E-Mail und SMS – Art. 6 Abs. 1 lit. b DSGVO. Folgeeinladungen werden seltener, wenn du nicht buchst (nach zweimaligem Nichtbuchen höchstens einmal im Monat), und lassen sich jederzeit abbestellen.</li>
+        <li>Verifizierung per SMS und Foto sowie die Bearbeitung von Meldungen zum Schutz aller Teilnehmer vor Fake-Profilen und Fehlverhalten – Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an Sicherheit).</li>
+        <li>Einladungen, ein Lebenszeichen nach sieben Tagen ohne Tisch, Erinnerungen (drei Tage, einen Tag und zwei Stunden vor dem Dinner), Nachrücker-Angebote, Wiedersehen-Abfrage und Folgeeinladungen per E-Mail und SMS – Art. 6 Abs. 1 lit. b DSGVO. Folgeeinladungen werden seltener, wenn du nicht buchst (nach zweimaligem Nichtbuchen höchstens einmal im Monat), und lassen sich jederzeit abbestellen.</li>
         <li>Feedback nach dem Dinner zur Verbesserung der Tischzusammenstellung – Art. 6 Abs. 1 lit. f DSGVO.</li>
         <li>Technischer Betrieb und Sicherheit der Website – Art. 6 Abs. 1 lit. f DSGVO.</li>
       </ul>
@@ -46,9 +48,15 @@ export default function Datenschutz() {
         einem Menschen überprüft wird (Art. 22 Abs. 3 DSGVO) – schreib uns einfach.
       </p>
 
-      <h2>5. Empfänger und Auftragsverarbeiter</h2>
+      <h2>5. Speicherung des Fotos</h2>
+      <p>
+        Das Verifizierungsfoto speichern wir, solange dein Profil besteht, damit wir bei Meldungen erneut prüfen können. Beim Löschen deines Profils
+        wird es sofort mitgelöscht.
+      </p>
+
+      <h2>6. Empfänger und Auftragsverarbeiter</h2>
       <ul>
-        <li>Supabase Inc. – Datenbank und Login, Serverstandort EU (Frankfurt).</li>
+        <li>Supabase Inc. – Datenbank, Login und verschlüsselter Fotospeicher, Serverstandort EU (Frankfurt).</li>
         <li>Vercel Inc. – Hosting der Website (USA; Datenübermittlung auf Grundlage des EU-US Data Privacy Framework bzw. Standardvertragsklauseln).</li>
         <li>Anthropic PBC – KI-Kennenlern-Chat (USA; Standardvertragsklauseln). Daten werden laut Anthropic nicht zum Training von Modellen verwendet.</li>
         <li><Todo>SMS-Anbieter, z. B. Twilio Inc.</Todo> – Versand von Bestätigungscode, Erinnerungen und Nachrücker-Angeboten.</li>
@@ -56,20 +64,20 @@ export default function Datenschutz() {
       </ul>
       <p>Andere Gäste sehen deine Chat-Antworten und dein Profil nicht. Kontaktdaten werden nur bei gegenseitigem Wiedersehen-Wunsch geteilt.</p>
 
-      <h2>6. Speicherdauer</h2>
+      <h2>7. Speicherdauer</h2>
       <p>
         Wir speichern deine Daten, solange du ein Profil bei Tisch6 hast. Du kannst dein Profil jederzeit unter „Mein Konto“ selbst endgültig löschen.
         Gesetzliche Aufbewahrungspflichten (z. B. für Rechnungen, 7 Jahre) bleiben unberührt.
       </p>
 
-      <h2>7. Deine Rechte</h2>
+      <h2>8. Deine Rechte</h2>
       <p>
         Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch sowie das Recht,
         erteilte Einwilligungen jederzeit mit Wirkung für die Zukunft zu widerrufen. Wende dich dazu an <Todo>datenschutz@tisch6.at</Todo>. Du kannst dich
         außerdem bei der Österreichischen Datenschutzbehörde beschweren (<a href="https://www.dsb.gv.at">www.dsb.gv.at</a>).
       </p>
 
-      <h2>8. Cookies</h2>
+      <h2>9. Cookies</h2>
       <p>Wir verwenden ausschließlich technisch notwendige Cookies für den Login. Es gibt kein Tracking und keine Werbe-Cookies.</p>
     </LegalPage>
   );

@@ -6,9 +6,9 @@ import { createClient } from "@/lib/supabase/client";
 import type { Dictionary } from "@/i18n/get-dictionary";
 
 type T = Dictionary["apply"];
-type Step = "loading" | "intro" | "phone" | "code" | "chat" | "done";
+type Step = "loading" | "intro" | "phone" | "code" | "photo" | "chat" | "done";
 type Msg = { role: "user" | "assistant"; content: string };
-type Application = { status: string; first_name: string; transcript: Msg[]; invite_code: string };
+type Application = { status: string; first_name: string; transcript: Msg[]; invite_code: string; photo_path: string | null };
 
 /** Ersetzt {platzhalter} in einem Text durch React-Elemente. */
 function fill(text: string, parts: Record<string, ReactNode>) {
@@ -39,6 +39,7 @@ export function ApplyFlow({ lang, t, invitedBy }: { lang: string; t: T; invitedB
   const [busy, setBusy] = useState(false);
 
   const [form, setForm] = useState({ firstName: "", email: "", adult: false, privacy: false, terms: false, sensitive: false });
+  const [together, setTogether] = useState(true);
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
   const [messages, setMessages] = useState<Msg[]>([]);
@@ -50,7 +51,7 @@ export function ApplyFlow({ lang, t, invitedBy }: { lang: string; t: T; invitedB
     setMessages(app.transcript);
     setStatus(app.status);
     setOwnInvite(app.invite_code);
-    setStep(app.status === "onboarding" ? "chat" : "done");
+    setStep(app.status !== "onboarding" ? "done" : app.photo_path ? "chat" : "photo");
   }
 
   useEffect(() => {
@@ -77,6 +78,7 @@ export function ApplyFlow({ lang, t, invitedBy }: { lang: string; t: T; invitedB
         email: form.email,
         locale: lang,
         inviteCode: invitedBy,
+        together: Boolean(invitedBy) && together,
         consent: { adult: form.adult, privacy: form.privacy, terms: form.terms, sensitive: form.sensitive },
       }),
     });
@@ -127,12 +129,12 @@ export function ApplyFlow({ lang, t, invitedBy }: { lang: string; t: T; invitedB
     });
   };
 
-  const stepIndex = { loading: 0, intro: 0, phone: 1, code: 2, chat: 3, done: 3 }[step];
+  const stepIndex = { loading: 0, intro: 0, phone: 1, code: 2, photo: 3, chat: 4, done: 4 }[step];
 
   return (
     <div className="mx-auto w-full max-w-2xl px-4 py-10 sm:px-6 sm:py-16">
       {step !== "done" && (
-        <ol className="mb-8 grid grid-cols-4 gap-2" aria-label="Fortschritt">
+        <ol className="mb-8 grid grid-cols-5 gap-2" aria-label="Fortschritt">
           {t.steps.map((label, i) => (
             <li key={label} className="text-xs text-mist">
               <div className={`mb-2 h-1 rounded-full ${i <= stepIndex ? "bg-rose-400" : "bg-white/10"}`} />
@@ -156,7 +158,13 @@ export function ApplyFlow({ lang, t, invitedBy }: { lang: string; t: T; invitedB
             <h1 className="font-display text-2xl font-semibold sm:text-3xl">{t.intro.title}</h1>
             <p className="mt-2 text-mist">{t.intro.lead}</p>
             {invitedBy && (
-              <p className="mt-4 rounded-xl border border-rose-400/30 bg-rose-400/10 px-4 py-3 text-sm text-rose-300">{t.intro.invited}</p>
+              <div className="mt-4 rounded-xl border border-rose-400/30 bg-rose-400/10 px-4 py-3 text-sm text-rose-300">
+                <p>{t.intro.invited}</p>
+                <label className="mt-3 flex gap-3 text-cloud">
+                  <input type="checkbox" className="mt-0.5 h-4 w-4 flex-none accent-rose-400" checked={together} onChange={(e) => setTogether(e.target.checked)} />
+                  <span>{t.intro.together}</span>
+                </label>
+              </div>
             )}
           </div>
           <label className="block">
@@ -239,6 +247,8 @@ export function ApplyFlow({ lang, t, invitedBy }: { lang: string; t: T; invitedB
           </button>
         </form>
       )}
+
+      {step === "photo" && <PhotoStep t={t.photo} onDone={() => setStep("chat")} />}
 
       {step === "chat" && (
         <Chat
@@ -392,5 +402,88 @@ export function InviteBox({ t, lang, code }: { t: T["buddy"]; lang: string; code
         </button>
       </div>
     </div>
+  );
+}
+
+/** Verkleinert das Foto im Browser und speichert es neu als JPEG – entfernt dabei auch Metadaten wie GPS. */
+async function toJpeg(file: File, maxSide = 1280): Promise<Blob> {
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.round(bitmap.width * scale);
+  canvas.height = Math.round(bitmap.height * scale);
+  canvas.getContext("2d")!.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+  return new Promise((resolve, reject) =>
+    canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error("toBlob"))), "image/jpeg", 0.85),
+  );
+}
+
+/** Das eine Pflichtfoto – nur für die Verifizierung durch das Tisch6-Team. */
+function PhotoStep({ t, onDone }: { t: T["photo"]; onDone: () => void }) {
+  const [blob, setBlob] = useState<Blob | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => () => {
+    if (preview) URL.revokeObjectURL(preview);
+  }, [preview]);
+
+  async function pick(file: File | undefined) {
+    if (!file) return;
+    setError(null);
+    try {
+      const jpeg = await toJpeg(file);
+      setBlob(jpeg);
+      setPreview(URL.createObjectURL(jpeg));
+    } catch {
+      setError(t.unreadable);
+    }
+  }
+
+  async function upload(e: FormEvent) {
+    e.preventDefault();
+    if (!blob) return;
+    setBusy(true);
+    setError(null);
+    const body = new FormData();
+    body.append("photo", blob, "foto.jpg");
+    const res = await fetch("/api/photo", { method: "POST", body });
+    const json = await res.json().catch(() => ({}));
+    setBusy(false);
+    if (!res.ok) return setError(json.error ?? t.unreadable);
+    onDone();
+  }
+
+  return (
+    <form onSubmit={upload} className="glass space-y-5 rounded-3xl p-6 sm:p-8">
+      <div>
+        <h1 className="font-display text-2xl font-semibold sm:text-3xl">{t.title}</h1>
+        <p className="mt-2 text-mist">{t.lead}</p>
+      </div>
+      <ul className="space-y-1.5 text-sm text-mist">
+        {t.points.map((point) => (
+          <li key={point} className="flex gap-2">
+            <span className="text-rose-400">✓</span>
+            {point}
+          </li>
+        ))}
+      </ul>
+      <label className="flex cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-white/15 p-6 text-center transition hover:border-rose-400/60">
+        {preview ? (
+          // eslint-disable-next-line @next/next/no-img-element -- lokale Vorschau (blob:-URL)
+          <img src={preview} alt={t.previewAlt} className="h-48 w-48 rounded-2xl object-cover" />
+        ) : (
+          <span className="flex h-20 w-20 items-center justify-center rounded-full bg-night-700 text-3xl text-rose-400">+</span>
+        )}
+        <span className="text-sm font-medium">{preview ? t.change : t.choose}</span>
+        <input type="file" accept="image/*" className="sr-only" onChange={(e) => pick(e.target.files?.[0])} />
+      </label>
+      {error && <p role="alert" className="text-sm text-rose-300">{error}</p>}
+      <button type="submit" disabled={!blob || busy} className={buttonClass}>
+        {busy ? t.uploading : t.upload}
+      </button>
+    </form>
   );
 }

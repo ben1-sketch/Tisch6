@@ -6,6 +6,7 @@ const de = {
   },
   nav: {
     how: "So funktioniert's",
+    women: "Sicher für Frauen",
     prices: "Preise",
     faq: "FAQ",
     apply: "Jetzt bewerben",
@@ -45,10 +46,10 @@ const de = {
     lead: "Von der Bewerbung bis zum Wiedersehen – alles läuft automatisch, du musst nur kommen.",
     steps: [
       { title: "Bewerben", text: "Kein Anmelden mit drei Klicks – du bewirbst dich. Allein oder mit „Bring eine Freundin mit“." },
-      { title: "Verifizieren", text: "Du bestätigst deine Handynummer per SMS-Code. Keine Fake-Profile, keine Bots." },
+      { title: "Verifizieren", text: "SMS-Code und ein Foto, das nur unser Team zur Prüfung sieht – nie die anderen Gäste. Keine Fake-Profile, keine Bots." },
       { title: "Kennenlern-Chat", text: "Unsere KI-Gastgeberin stellt dir Fragen zu Fakten, Lebensstil und Persönlichkeit – in höchstens zehn Minuten." },
-      { title: "Antwort in 24 h", text: "Du erfährst innerhalb eines Tages, ob du dabei bist oder auf der Warteliste stehst." },
-      { title: "Einladung", text: "Du bekommst eine Einladung zu einer konkreten Tischteilnahme. Erst mit der Zahlung ist dein Platz fix." },
+      { title: "Antwort in 24 h", text: "Du erfährst innerhalb eines Tages, ob du dabei bist oder auf der Warteliste stehst. Dauert es länger, melden wir uns nach sieben Tagen." },
+      { title: "Einladung", text: "Sobald dein Tisch beisammen ist, legt die KI den Termin nach euren Wunschtagen fest. Erst mit der Zahlung ist dein Platz fix." },
       { title: "Eisbrecher-Karte", text: "Vor dem Dinner bekommst du zwei Gesprächsfragen für den Abend – damit niemand ins Schweigen fällt." },
       { title: "Wiedersehen", text: "Am Tag danach markierst du anonym, wen du wiedersehen willst. Bei Gegenseitigkeit teilen wir den Kontakt. Dazu drei kurze Feedback-Fragen." },
       { title: "Nächster Tisch", text: "Kein Match dabei? Am dritten Tag kommt eine Einladung zum nächsten Termin – Zusage mit einem Klick." },
@@ -93,20 +94,26 @@ const de = {
       points: ["3 Tischteilnahmen im Paket", "12 Monate gültig", "Abzeichen „Gründungsmitglied“ in deinem Profil"],
     },
     note: "Essen und Getränke zahlt jede Person selbst im Lokal.",
+    referral: {
+      title: "Empfehlen lohnt sich",
+      text: "Jede Person hat einen persönlichen Einladungslink. Wird jemand, den du eingeladen hast, angenommen und sitzt an einem Tisch, kostet deine nächste Tischteilnahme nur 20 € statt 35 €.",
+    },
   },
   places: {
     title: "Wo gegessen wird",
-    text: "Tisch6 hat feste Stammlokale in Wien mit reserviertem Tisch an festen Tagen – donnerstags und samstags. Die Adresse steht in deiner Einladung und in den Erinnerungen.",
+    text: "Dinner sind an jedem Tag möglich. Sobald ein passender Tisch beisammen ist, legt die KI den Termin nach euren Wunschtagen fest. Unsere Wiener Stammlokale halten dafür kurzfristig einen Sechsertisch frei. Die Adresse steht in der Einladung und in den Erinnerungen.",
   },
-  safety: {
-    title: "Sicherheit & Respekt",
+  women: {
+    eyebrow: "Sicher für Frauen",
+    title: "Du sollst dich vom ersten Moment an wohlfühlen.",
+    lead: "Viele Frauen sagen uns: Online-Dating fühlt sich unsicher an. Deshalb ist Sicherheit bei Tisch6 kein Zusatz, sondern Teil des Konzepts.",
     items: [
-      "Jede Person ist per Handynummer verifiziert.",
-      "Ihr trefft euch in öffentlichen Stammlokalen.",
-      "Gruppe statt Zweierdate – kein Druck, kein Verhör.",
-      "Kontaktdaten werden nur bei gegenseitigem Interesse geteilt.",
-      "Wer zweimal ohne Absage nicht erscheint, wird gesperrt.",
-      "Deine Daten bleiben in der EU und du kannst dein Profil jederzeit löschen.",
+      { title: "Jede Person ist geprüft", text: "Handynummer per SMS-Code und ein Foto, das unser Team mit der Person abgleicht. Fake-Profile haben keine Chance." },
+      { title: "Öffentlicher Ort, ganze Gruppe", text: "Ihr trefft euch in einem Wiener Stammlokal, zu sechst. Kein Zweierdate, keine Wohnung, kein Abholen." },
+      { title: "Deine Nummer bleibt bei dir", text: "Niemand am Tisch bekommt deine Kontaktdaten – außer ihr wollt euch beide wiedersehen." },
+      { title: "Diskreter Meldeknopf", text: "Fühlst du dich unwohl, meldest du eine Person während oder nach dem Dinner mit einem Tipp. Wir prüfen das Profil und sperren bei Bedarf. Niemand erfährt, wer gemeldet hat." },
+      { title: "Bring eine Freundin mit", text: "Ihr bewerbt euch zu zweit und seid am selben Abend im selben Lokal – an verschiedenen Tischen." },
+      { title: "Klare Regeln", text: "Respekt ist Teilnahmebedingung. Wer sich danebenbenimmt oder zweimal ohne Absage fehlt, wird gesperrt." },
     ],
   },
   faq: {
@@ -130,7 +137,19 @@ const de = {
       },
       {
         q: "Wann und wo finden die Dinner statt?",
-        a: "In unseren Wiener Stammlokalen, donnerstags und samstags. Die Adresse bekommst du mit der Einladung und nochmal mit den Erinnerungen drei Tage, einen Tag und zwei Stunden vorher.",
+        a: "An jedem Tag möglich – die KI legt den Termin fest, sobald dein Tisch beisammen ist, und richtet sich nach euren Wunschtagen. Gegessen wird in unseren Wiener Stammlokalen. Die Adresse bekommst du mit der Einladung und mit den Erinnerungen drei Tage, einen Tag und zwei Stunden vorher.",
+      },
+      {
+        q: "Wofür brauche ich ein Foto?",
+        a: "Nur zur Verifizierung: Unser Team prüft, dass hinter jedem Profil ein echter Mensch steht. Andere Gäste sehen dein Foto nie. Es wird verschlüsselt gespeichert und mit deinem Profil gelöscht.",
+      },
+      {
+        q: "Was, wenn ich mich am Tisch unwohl fühle?",
+        a: "Über den diskreten Meldeknopf kannst du während oder nach dem Dinner eine Person melden. Wir prüfen das Profil und sperren es bei Bedarf. Die gemeldete Person erfährt nicht, wer gemeldet hat.",
+      },
+      {
+        q: "Bekomme ich etwas, wenn ich Tisch6 weiterempfehle?",
+        a: "Ja. Wird jemand über deinen persönlichen Einladungslink angenommen und nimmt an einem Tisch teil, kostet deine nächste Tischteilnahme 20 € statt 35 €.",
       },
       {
         q: "Was, wenn ich absagen muss?",
@@ -160,11 +179,12 @@ const de = {
   },
   apply: {
     title: "Bewerbung",
-    steps: ["Über dich", "Handynummer", "Code", "Kennenlern-Chat"],
+    steps: ["Über dich", "Handynummer", "Code", "Foto", "Chat"],
     intro: {
       title: "Schön, dass du dabei sein willst.",
-      lead: "Zuerst das Wichtigste – danach verifizierst du deine Handynummer und unsere KI-Gastgeberin führt ein kurzes Gespräch mit dir.",
-      invited: "Du wurdest eingeladen und bewirbst dich zu zweit. Ihr kommt am selben Abend – an verschiedene Tische.",
+      lead: "Zuerst das Wichtigste – danach verifizierst du deine Handynummer, lädst ein Foto zur Prüfung hoch und unsere KI-Gastgeberin führt ein kurzes Gespräch mit dir.",
+      invited: "Schön, du wurdest zu Tisch6 eingeladen!",
+      together: "Wir bewerben uns zu zweit („Bring eine Freundin mit“) – gleicher Abend, verschiedene Tische.",
       firstName: "Vorname",
       email: "E-Mail-Adresse",
       emailHint: "Hierhin schicken wir Antwort und Einladungen.",
@@ -192,6 +212,21 @@ const de = {
       verify: "Bestätigen",
       resend: "Andere Nummer verwenden",
     },
+    photo: {
+      title: "Ein Foto von dir",
+      lead: "Damit an jedem Tisch nur echte Menschen sitzen, prüft unser Team jedes Profil mit einem Foto.",
+      points: [
+        "Nur für die Verifizierung – andere Gäste sehen es nie.",
+        "Verschlüsselt gespeichert und mit deinem Profil gelöscht.",
+        "Am besten ein aktuelles Foto, auf dem dein Gesicht gut zu sehen ist.",
+      ],
+      choose: "Foto aufnehmen oder auswählen",
+      change: "Anderes Foto wählen",
+      previewAlt: "Vorschau deines Fotos",
+      upload: "Foto hochladen & weiter",
+      uploading: "Wird verschlüsselt hochgeladen …",
+      unreadable: "Das Foto konnte nicht gelesen werden. Bitte versuch ein anderes.",
+    },
     chat: {
       title: "Kennenlern-Chat",
       lead: "Antworte so, wie du am Tisch reden würdest. Es gibt keine falschen Antworten.",
@@ -207,11 +242,11 @@ const de = {
       home: "Zur Startseite",
     },
     buddy: {
-      title: "Bring eine Freundin mit",
-      text: "Schick diesen Link an eine Freundin oder einen Freund. Wer sich darüber bewirbt, kommt am selben Abend wie du – an einen anderen Tisch.",
+      title: "Dein Einladungslink",
+      text: "Bring eine Freundin mit: Wer sich über diesen Link bewirbt, kann am selben Abend wie du kommen – an einen anderen Tisch. Und wird jemand über deinen Link angenommen und sitzt an einem Tisch, kostet deine nächste Tischteilnahme nur 20 € statt 35 €.",
       share: "Link teilen",
       copied: "Kopiert!",
-      shareText: "Komm mit zu Tisch6 – KI-kuratierte Dating-Dinner in Wien. Wir bewerben uns zu zweit:",
+      shareText: "Komm mit zu Tisch6 – KI-kuratierte Dating-Dinner in Wien:",
     },
     errors: {
       generic: "Da ist etwas schiefgelaufen. Bitte versuch es nochmal.",

@@ -26,11 +26,12 @@ export async function POST(request: Request) {
   const admin = createAdminClient();
   const { data: app, error } = await admin
     .from("applications")
-    .select("status, first_name, transcript, user_turns")
+    .select("status, first_name, transcript, user_turns, photo_path")
     .eq("id", user.id)
     .maybeSingle();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   if (!app) return NextResponse.json({ error: "keine Bewerbung gefunden" }, { status: 404 });
+  if (!app.photo_path) return NextResponse.json({ error: "Bitte zuerst dein Foto hochladen." }, { status: 409 });
   if (app.status !== "onboarding") {
     return NextResponse.json({ error: "Das Gespräch ist bereits abgeschlossen." }, { status: 409 });
   }

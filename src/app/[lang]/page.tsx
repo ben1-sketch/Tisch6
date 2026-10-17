@@ -73,6 +73,29 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         </ol>
       </section>
 
+      {/* Sicher für Frauen */}
+      <section id="sicher-fuer-frauen" className="scroll-mt-20 relative overflow-hidden border-y border-rose-400/15 bg-gradient-to-b from-night-800/80 to-night-900">
+        <div className="absolute -left-32 top-10 h-80 w-80 rounded-full bg-rose-500/15 blur-3xl" />
+        <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+          <p className="text-sm font-semibold tracking-wide text-rose-400 uppercase">{t.women.eyebrow}</p>
+          <h2 className="mt-3 max-w-3xl font-display text-3xl font-semibold tracking-tight sm:text-4xl">{t.women.title}</h2>
+          <p className="mt-4 max-w-2xl leading-relaxed text-mist">{t.women.lead}</p>
+          <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {t.women.items.map((item) => (
+              <li key={item.title} className="glass rounded-2xl p-6">
+                <div className="flex items-center gap-3">
+                  <svg viewBox="0 0 20 20" className="h-5 w-5 flex-none text-rose-400" aria-hidden="true">
+                    <path fill="currentColor" d="M10 1.5 3 4.3v5c0 4.2 3 7.9 7 9.2 4-1.3 7-5 7-9.2v-5L10 1.5Zm-1.3 12.1L5.5 10.4l1.2-1.2 2 2 4.6-4.6 1.2 1.2-5.8 5.8Z" />
+                  </svg>
+                  <h3 className="font-display font-semibold">{item.title}</h3>
+                </div>
+                <p className="mt-3 text-sm leading-relaxed text-mist">{item.text}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
       {/* Matching-Regeln & Persönlichkeitsachsen */}
       <section className="border-y border-white/5 bg-night-950/60">
         <div className="mx-auto grid max-w-6xl gap-12 px-4 py-16 sm:px-6 lg:grid-cols-2">
@@ -155,26 +178,15 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
           </article>
         </div>
         <p className="mt-6 text-sm text-mist">{t.prices.note}</p>
-      </section>
-
-      {/* Sicherheit & Stammlokale */}
-      <section id="sicherheit" className="scroll-mt-20 mx-auto grid max-w-6xl gap-5 px-4 pb-16 sm:px-6 lg:grid-cols-[2fr_1fr]">
-        <div className="glass rounded-3xl p-8 sm:p-10">
-          <h2 className="font-display text-3xl font-semibold tracking-tight">{t.safety.title}</h2>
-          <ul className="mt-8 grid gap-4 sm:grid-cols-2">
-            {t.safety.items.map((item) => (
-              <li key={item} className="flex gap-3 text-mist">
-                <svg viewBox="0 0 20 20" className="mt-0.5 h-5 w-5 flex-none text-rose-400" aria-hidden="true">
-                  <path fill="currentColor" d="M8.2 13.6 4.6 10l-1.2 1.2 4.8 4.8 9-9-1.2-1.2z" />
-                </svg>
-                {item}
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="rounded-3xl border border-white/10 bg-night-800/60 p-8 sm:p-10">
-          <h2 className="font-display text-2xl font-semibold">{t.places.title}</h2>
-          <p className="mt-4 leading-relaxed text-mist">{t.places.text}</p>
+        <div className="mt-10 grid gap-5 md:grid-cols-2">
+          <div className="rounded-3xl border border-rose-400/25 bg-rose-400/5 p-8">
+            <h3 className="font-display text-xl font-semibold">{t.prices.referral.title}</h3>
+            <p className="mt-3 leading-relaxed text-mist">{t.prices.referral.text}</p>
+          </div>
+          <div className="rounded-3xl border border-white/10 bg-night-800/60 p-8">
+            <h3 className="font-display text-xl font-semibold">{t.places.title}</h3>
+            <p className="mt-3 leading-relaxed text-mist">{t.places.text}</p>
+          </div>
         </div>
       </section>
 

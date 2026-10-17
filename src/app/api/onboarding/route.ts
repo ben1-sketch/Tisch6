@@ -7,7 +7,7 @@ import { CONSENT_VERSION } from "@/lib/consent";
 
 export const dynamic = "force-dynamic";
 
-const STATE_COLUMNS = "status, first_name, transcript, user_turns, submitted_at, invite_code, buddy_id";
+const STATE_COLUMNS = "status, first_name, transcript, user_turns, submitted_at, invite_code, buddy_id, photo_path";
 
 /** Aktueller Stand der eigenen Bewerbung (oder null). */
 export async function GET() {
@@ -30,6 +30,8 @@ const StartSchema = z.object({
   locale: z.string().max(5).default("de"),
   // Einladungscode einer Freundin/eines Freundes ("Bring eine Freundin mit")
   inviteCode: z.string().regex(/^[a-z0-9]{8}$/).optional(),
+  // true = "Bring eine Freundin mit" (Duo, verschiedene Tische); sonst nur Empfehlung
+  together: z.boolean().default(false),
   consent: z.object({
     adult: z.literal(true),
     privacy: z.literal(true),
@@ -47,7 +49,7 @@ export async function POST(request: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Bitte alle Felder ausfüllen und zustimmen." }, { status: 400 });
   }
-  const { firstName, email, locale, inviteCode } = parsed.data;
+  const { firstName, email, locale, inviteCode, together } = parsed.data;
   const admin = createAdminClient();
 
   const { data: existing } = await admin
@@ -74,20 +76,29 @@ export async function POST(request: Request) {
     .single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  if (inviteCode) await linkBuddy(admin, user.id, inviteCode);
+  if (inviteCode) await linkInviter(admin, user.id, inviteCode, together);
   return NextResponse.json({ application: data });
 }
 
-/** Verknüpft zwei Bewerbungen als Duo – nur wenn die Einladende noch frei ist. */
-async function linkBuddy(admin: ReturnType<typeof createAdminClient>, userId: string, inviteCode: string) {
+/**
+ * Einladungslink: merkt sich immer, wer eingeladen hat (Empfehlungsrabatt).
+ * Mit together zusätzlich Duo-Verknüpfung – nur wenn die Einladende noch kein Duo hat.
+ */
+async function linkInviter(
+  admin: ReturnType<typeof createAdminClient>,
+  userId: string,
+  inviteCode: string,
+  together: boolean,
+) {
   const { data: host } = await admin
     .from("applications")
-    .select("id")
+    .select("id, buddy_id")
     .eq("invite_code", inviteCode)
-    .is("buddy_id", null)
     .neq("id", userId)
     .maybeSingle();
   if (!host) return;
+  await admin.from("applications").update({ referred_by: host.id }).eq("id", userId);
+  if (!together || host.buddy_id) return;
   const { data: claimed } = await admin
     .from("applications")
     .update({ buddy_id: userId })

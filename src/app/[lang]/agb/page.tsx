@@ -11,7 +11,7 @@ export default function Agb() {
 
       <h2>2. Leistung</h2>
       <p>
-        Tisch6 stellt mithilfe künstlicher Intelligenz Tischgruppen von sechs Singles (drei Frauen, drei Männer) zusammen und organisiert Dinner an festen Tischen in Wiener Stammlokalen. Tisch6
+        Tisch6 stellt mithilfe künstlicher Intelligenz Tischgruppen von sechs Singles (drei Frauen, drei Männer) zusammen und organisiert Dinner in Wiener Stammlokalen. Tisch6
         schuldet keinen Erfolg im Sinne einer Partnerschaft und keine bestimmte Tischbesetzung.
       </p>
 
@@ -20,19 +20,26 @@ export default function Agb() {
         <li>Teilnehmen können Singles ab 18 Jahren. Die Bewerbung ist kostenlos und begründet keinen Anspruch auf eine Einladung.</li>
         <li>Über Annahme oder Warteliste wird automatisiert innerhalb von 24 Stunden entschieden. Dabei wird unter anderem auf ein ausgewogenes Verhältnis von Frauen und Männern geachtet.</li>
         <li>Die Angaben in der Bewerbung müssen wahrheitsgemäß sein. Falsche Angaben berechtigen zum Ausschluss.</li>
-        <li>Pro Person ist nur ein Profil erlaubt; die Handynummer wird per SMS-Code verifiziert.</li>
+        <li>Pro Person ist nur ein Profil erlaubt. Zur Verifizierung sind eine per SMS-Code bestätigte Handynummer und genau ein aktuelles Foto erforderlich. Das Foto dient ausschließlich der Prüfung durch Tisch6 und wird anderen Teilnehmern nie gezeigt.</li>
         <li>„Bring eine Freundin mit“: Wer sich über den Einladungslink einer anderen Person bewirbt, wird mit ihr verknüpft. Beide werden nach Möglichkeit zum selben Termin, aber stets an verschiedene Tische eingeladen. Jede Person bewirbt sich und zahlt selbst.</li>
       </ul>
 
       <h2>4. Tischteilnahme, Preise und Zahlung</h2>
       <ul>
-        <li>Angenommene Personen erhalten per E-Mail Einladungen zu einer konkreten Tischteilnahme (Datum, Uhrzeit, Stammlokal).</li>
+        <li>Dinner sind an jedem Tag möglich. Tisch6 legt den Termin fest, sobald ein passender Tisch zusammengestellt ist, und berücksichtigt dabei die angegebenen Wunschtage. Angenommene Personen erhalten per E-Mail eine Einladung zu dieser konkreten Tischteilnahme (Datum, Uhrzeit, Stammlokal).</li>
         <li>Eine Tischteilnahme kostet 35 Euro. Sie umfasst den Platz an einem kuratierten Tisch, die Eisbrecher-Karte und die Wiedersehen-Funktion. Speisen und Getränke bezahlt jede Person selbst im Lokal.</li>
         <li>Der Platz ist erst nach vollständiger Zahlung über unseren Zahlungsanbieter (Stripe) verbindlich reserviert. Bis dahin kann der Platz anderweitig vergeben werden.</li>
         <li>Gründungsangebot „Gründungsmitglied Tisch6“: Für die ersten 300 Käuferinnen und Käufer in Wien gibt es drei Tischteilnahmen im Paket für 79 Euro statt 105 Euro. Das Paket ist ab Kauf zwölf Monate gültig; nicht genutzte Tischteilnahmen verfallen danach. Das Paket ist persönlich und nicht übertragbar. Käufer erhalten das Abzeichen „Gründungsmitglied“ im Profil.</li>
       </ul>
 
-      <h2>5. Absagen, Nachrücker und Nichterscheinen</h2>
+      <h2>5. Empfehlungsprogramm</h2>
+      <ul>
+        <li>Jede Person erhält einen persönlichen Einladungslink.</li>
+        <li>Wird eine über diesen Link eingeladene Person angenommen und nimmt sie an einem Dinner teil, kostet die nächste Tischteilnahme der einladenden Person 20 Euro statt 35 Euro. Der Rabatt wird automatisch bei der nächsten Einladung verrechnet, ist nicht auszahlbar und nicht mit dem Gründungspaket kombinierbar.</li>
+        <li>Mehrfachprofile oder Selbsteinladungen führen zum Verlust aller Rabatte und zum Ausschluss.</li>
+      </ul>
+
+      <h2>6. Absagen, Nachrücker und Nichterscheinen</h2>
       <ul>
         <li>Absage bis 48 Stunden vor Beginn: kostenlos. Die Gebühr wird erstattet bzw. die Tischteilnahme dem Paket wieder gutgeschrieben. Der Platz geht automatisch an die erste passende Person auf der Warteliste.</li>
         <li>Nachrücker werden per E-Mail und SMS benachrichtigt und haben zwölf Stunden Zeit, zuzusagen und zu bezahlen. Danach geht das Angebot an die nächste passende Person.</li>
@@ -42,25 +49,25 @@ export default function Agb() {
         <li>Kommt ein Tisch mangels passender Teilnehmer nicht zustande, wird der Termin verschoben. Du kannst dann einen neuen Termin wählen oder erhältst den vollen Betrag zurück.</li>
       </ul>
 
-      <h2>6. Rücktrittsrecht</h2>
+      <h2>7. Rücktrittsrecht</h2>
       <p>
         Bei Dienstleistungen im Zusammenhang mit Freizeitbetätigungen, die zu einem bestimmten Termin erbracht werden, besteht gemäß § 18 Abs. 1 Z 10
         FAGG kein Rücktrittsrecht. Für das Gründungspaket ohne festen Termin gilt das gesetzliche Rücktrittsrecht von 14 Tagen. <Todo>Rechtlich prüfen lassen</Todo>
       </p>
 
-      <h2>7. Verhalten</h2>
-      <p>Wir erwarten respektvolles Verhalten gegenüber allen Gästen und dem Restaurant. Bei Belästigung oder grobem Fehlverhalten wird die Person dauerhaft ausgeschlossen.</p>
+      <h2>8. Verhalten</h2>
+      <p>Wir erwarten respektvolles Verhalten gegenüber allen Gästen und dem Lokal. Wer sich unwohl fühlt, kann während oder nach dem Dinner über den Meldeknopf eine Person melden. Tisch6 prüft jede Meldung und sperrt das Profil bei Bedarf, bei Belästigung oder grobem Fehlverhalten dauerhaft. Die gemeldete Person erfährt nicht, wer gemeldet hat.</p>
 
-      <h2>8. Nach dem Dinner</h2>
+      <h2>9. Nach dem Dinner</h2>
       <p>
         Am Tag nach dem Dinner kannst du anonym angeben, wen du wiedersehen möchtest. Kontaktdaten werden ausschließlich bei gegenseitigem Interesse
         geteilt. Ein kurzes Feedback ist freiwillig. Ohne Match erhältst du am dritten Tag eine Einladung zum nächsten Termin.
       </p>
 
-      <h2>9. Haftung</h2>
+      <h2>10. Haftung</h2>
       <p>Tisch6 haftet nur für Vorsatz und grobe Fahrlässigkeit; dies gilt nicht für Personenschäden. Für Leistungen der Lokale (Speisen, Getränke, Service) haftet das jeweilige Lokal.</p>
 
-      <h2>10. Schlussbestimmungen</h2>
+      <h2>11. Schlussbestimmungen</h2>
       <p>Es gilt österreichisches Recht unter Ausschluss der Verweisungsnormen. Zwingende Verbraucherschutzbestimmungen bleiben unberührt.</p>
 
       <p className="!mt-10 !text-sm">Hinweis: Entwurf – vor dem Livegang juristisch prüfen lassen.</p>

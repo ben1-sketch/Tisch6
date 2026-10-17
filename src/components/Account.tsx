@@ -83,11 +83,10 @@ export function Account({ lang, t, buddyT }: { lang: string; t: T; buddyT: Dicti
             </div>
           </section>
           {invite && status !== "rejected" && (
-            invite.linked ? (
-              <p className="glass rounded-3xl p-6 text-mist">{t.buddyLinked}</p>
-            ) : (
+            <>
+              {invite.linked && <p className="glass rounded-3xl p-6 text-mist">{t.buddyLinked}</p>}
               <InviteBox t={buddyT} lang={lang} code={invite.code} />
-            )
+            </>
           )}
           <section className="rounded-3xl border border-rose-500/30 p-6">
             <h2 className="font-display text-lg font-semibold">{t.deleteTitle}</h2>

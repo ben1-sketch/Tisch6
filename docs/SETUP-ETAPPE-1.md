@@ -14,6 +14,7 @@ Reihenfolge einhalten – jeder Schritt liefert Werte, die der nächste braucht.
 2. Links **SQL Editor** → **New query** → nacheinander den kompletten Inhalt dieser Dateien einfügen und jeweils **Run** klicken:
    1. `supabase/migrations/0001_etappe1_bewerbungen.sql`
    2. `supabase/migrations/0002_bring_eine_freundin_mit.sql`
+   3. `supabase/migrations/0003_foto_und_empfehlung.sql` (legt auch den privaten Fotospeicher `verification-photos` an)
 3. Links **Project Settings → API** (bzw. „API Keys“) und drei Werte notieren:
    - `Project URL` → wird `NEXT_PUBLIC_SUPABASE_URL`
    - `anon` / `publishable` key → wird `NEXT_PUBLIC_SUPABASE_ANON_KEY`
@@ -60,6 +61,12 @@ Empfehlung: **Twilio** (wird von Supabase direkt unterstützt und in Etappe 2 au
    | `SUPABASE_SERVICE_ROLE_KEY` | aus Schritt 1.3 |
    | `ANTHROPIC_API_KEY` | aus Schritt 3.2 |
    | `NEXT_PUBLIC_SITE_URL` | `https://tisch6.at` |
+   | `PHOTO_ENCRYPTION_KEY` | eine zufällige Passphrase mit mind. 32 Zeichen (siehe unten) |
+
+   **Foto-Schlüssel:** Damit werden die Verifizierungsfotos verschlüsselt. Erzeuge ihn z. B. mit dem
+   Passwort-Generator deines iPhones (Einstellungen → Passwörter → „+“ → „Starkes Passwort“ zweimal hintereinander kopieren)
+   oder auf bitwarden.com/password-generator mit Länge 40. **Bewahre ihn sicher auf und ändere ihn nie** –
+   ohne diesen Schlüssel sind die gespeicherten Fotos nicht mehr lesbar.
 
 4. **Deploy** klicken. Nach ca. 1–2 Minuten ist die Seite unter `tisch6-xxx.vercel.app` erreichbar.
 5. **Settings → Functions**: Region **Frankfurt (fra1)** wählen (kürzere Wege zur EU-Datenbank).
@@ -88,17 +95,21 @@ Auf den Seiten **Impressum**, **Datenschutz** und **AGB** sind alle offenen Anga
 ## 7. Testen
 
 1. `https://tisch6.at/de/bewerben` öffnen.
-2. Formular ausfüllen → Test-Handynummer aus 2.5 → Code `123456`.
+2. Formular ausfüllen → Test-Handynummer aus 2.5 → Code `123456` → Foto aufnehmen oder auswählen.
 3. Mit der KI-Gastgeberin chatten bis zum Ende.
 4. In Supabase → **Table Editor → applications**: Die Bewerbung steht mit `status = submitted`,
-   dem Chat-Verlauf (`transcript`) und dem ausgewerteten `profile`.
+   dem Chat-Verlauf (`transcript`), dem ausgewerteten `profile` (inkl. `wunschtage` und den vier Achsen) und `photo_path`.
+   Unter **Storage → verification-photos** liegt eine Datei `….jpg.enc` – sie ist verschlüsselt und lässt sich
+   absichtlich nicht als Bild öffnen. Angezeigt wird sie erst im Adminbereich (Etappe 3).
 5. Am Ende erscheint dein Einladungslink („Bring eine Freundin mit“). In einem privaten Browserfenster öffnen und
-   mit einer zweiten Testnummer bewerben → in `applications` sind beide Einträge über `buddy_id` verknüpft.
+   mit einer zweiten Testnummer bewerben. Mit Häkchen „Wir bewerben uns zu zweit“ sind beide Einträge über `buddy_id`
+   verknüpft; in jedem Fall steht beim zweiten Eintrag in `referred_by` die einladende Person (Empfehlungsprogramm).
 6. Unter `/de/konto` den Status ansehen und die Löschfunktion testen.
 
 ---
 
 **Was Etappe 1 noch nicht macht** (kommt in Etappe 2): automatische Bewertung (angenommen/Warteliste, inkl. Steuerung
 des Geschlechterverhältnisses), E-Mails über Resend, Matching und Tische, Stripe-Zahlung inkl. Gründungspaket,
-Nachrücker, Eisbrecher-Karte, Erinnerungen per E-Mail und SMS, Wiedersehen-Abfrage, Feedback und Folgeeinladungen.
+Terminfestlegung nach Wunschtagen, Nachrücker, Lebenszeichen nach sieben Tagen, Eisbrecher-Karte, Erinnerungen per
+E-Mail und SMS, Meldeknopf, Wiedersehen-Abfrage, Feedback, Folgeeinladungen und Empfehlungsrabatt.
 Resend und Stripe brauchst du deshalb erst in Etappe 2 einzurichten.

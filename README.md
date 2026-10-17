@@ -7,8 +7,8 @@ KI-kuratierte Dating-Dinner für Singles – sechs Menschen, ein Tisch. Pilot in
 
 | Etappe | Inhalt | Status |
 |---|---|---|
-| 1 | Öffentliche Website, Bewerbung (auch zu zweit), SMS-Verifizierung, KI-Onboarding, Rechtstexte, Profil löschen | ✅ |
-| 2 | Bewertung, E-Mails & SMS, Matching & Tische, Nachrücker, Stripe, Eisbrecher-Karte, Wiedersehen & Feedback | offen |
+| 1 | Öffentliche Website, Bewerbung (auch zu zweit), SMS- & Foto-Verifizierung, KI-Onboarding, Einladungslink, Rechtstexte, Profil löschen | ✅ |
+| 2 | Bewertung, E-Mails & SMS, Matching, Terminfestlegung, Nachrücker, Stripe, Eisbrecher-Karte, Meldeknopf, Wiedersehen & Feedback, Empfehlungsrabatt | offen |
 | 3 | Adminbereich | offen |
 
 Einrichtung: **[docs/SETUP-ETAPPE-1.md](docs/SETUP-ETAPPE-1.md)**
@@ -25,6 +25,7 @@ Einrichtung: **[docs/SETUP-ETAPPE-1.md](docs/SETUP-ETAPPE-1.md)**
 ```
 src/app/[lang]/            Seiten (Start, bewerben, konto, impressum, datenschutz, agb)
 src/app/api/onboarding/    Bewerbung anlegen, Chat-Nachrichten
+src/app/api/photo/         Verifizierungsfoto (AES-256-verschlüsselt, privat)
 src/app/api/account/       Profil endgültig löschen (DSGVO)
 src/components/            Header, Footer, Logo, ApplyFlow (Bewerbung + Chat), Account
 src/lib/onboarding.ts      Interview-Prompt, Antwort- und Profil-Schema
