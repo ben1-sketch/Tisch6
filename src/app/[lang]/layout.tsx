@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Prom
       siteName: "Tisch6",
       locale: "de_AT",
       type: "website",
-      images: [{ url: ogBild, width: 1200, height: 630, alt: dict.hero.imageAlt }],
+      images: [{ url: ogBild, width: 1200, height: 630, alt: dict.meta.imageAlt }],
     },
     twitter: { card: "summary_large_image" },
   };

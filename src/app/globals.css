@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* Tisch6 · Mitternachtsblau mit Rosé – "KI-zukunftsmäßig, aber romantisch" */
+/* Tisch6 · Mitternachtsblau mit Rosé – "futuristisch, aber romantisch" */
 @theme {
   --color-night-950: #050a1c;
   --color-night-900: #0a1128;
@@ -53,7 +53,396 @@ body {
   border: 1px solid rgb(167 174 208 / 0.14);
   backdrop-filter: blur(12px);
 }
+.glass-strong {
+  background: rgb(10 17 40 / 0.76);
+  border: 1px solid rgb(167 174 208 / 0.16);
+  backdrop-filter: blur(14px);
+}
 
+/* ---------- Buttons: Glühen beim Darüberfahren, Hero-Button pulsiert leicht ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  padding: 0.9rem 1.75rem;
+  font-weight: 600;
+  text-align: center;
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.4s ease,
+    transform 0.25s ease;
+}
+.btn-sm {
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+}
+.btn-primary {
+  background: var(--color-rose-400);
+  color: var(--color-night-950);
+  box-shadow: 0 0 1.2rem rgb(232 143 163 / 0.2);
+}
+.btn-primary:hover {
+  background: var(--color-rose-300);
+  box-shadow:
+    0 0 2rem rgb(232 143 163 / 0.55),
+    0 0 4rem rgb(232 143 163 / 0.25);
+  transform: translateY(-1px);
+}
+.btn-ghost {
+  border: 1px solid rgb(238 240 250 / 0.15);
+  color: var(--color-cloud);
+  font-weight: 500;
+}
+.btn-ghost:hover {
+  border-color: rgb(244 182 194 / 0.6);
+  box-shadow: 0 0 1.6rem rgb(232 143 163 / 0.3);
+}
+.btn-pulse {
+  animation: pulse-glow 2.8s ease-in-out infinite;
+}
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 0 rgb(232 143 163 / 0.4),
+      0 0 1.2rem rgb(232 143 163 / 0.25);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow:
+      0 0 0 0.55rem rgb(232 143 163 / 0),
+      0 0 2.4rem rgb(232 143 163 / 0.5);
+    transform: scale(1.03);
+  }
+}
+
+/* ---------- Einblenden beim Scrollen (ScrollReveal setzt data-visible) ---------- */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.8s cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+[data-reveal][data-visible="true"] {
+  opacity: 1;
+  transform: none;
+}
+@media (scripting: none) {
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Einstieg des Hero-Textes beim Laden */
+.enter {
+  animation: rise-in 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- Karten: kippen beim Darüberfahren leicht nach vorne, Rand leuchtet rosé ---------- */
+.card-tilt {
+  transform-origin: 50% 100%;
+  transition:
+    opacity 0.8s cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 0.4s ease,
+    box-shadow 0.4s ease,
+    border-color 0.4s ease;
+}
+@media (hover: hover) {
+  .card-tilt:hover {
+    transform: perspective(900px) rotateX(-6deg) translateY(-4px);
+    border-color: rgb(244 182 194 / 0.65);
+    box-shadow:
+      0 0 0 1px rgb(244 182 194 / 0.3),
+      0 24px 48px -24px rgb(232 143 163 / 0.5),
+      0 0 48px -8px rgb(232 143 163 / 0.35);
+  }
+}
+
+/* ---------- Partikel im Hintergrund ---------- */
+.particle {
+  position: absolute;
+  border-radius: 9999px;
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: drift var(--duration) linear var(--delay) infinite;
+}
+.particle-rose {
+  background: var(--color-rose-400);
+  box-shadow: 0 0 6px 1px rgb(244 182 194 / 0.5);
+}
+.particle-cloud {
+  background: var(--color-mist);
+  box-shadow: 0 0 4px rgb(167 174 208 / 0.5);
+}
+@keyframes drift {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0;
+  }
+  12% {
+    opacity: var(--opacity);
+  }
+  88% {
+    opacity: var(--opacity);
+  }
+  100% {
+    transform: translate3d(var(--drift), -45vh, 0);
+    opacity: 0;
+  }
+}
+
+/* ---------- 3D-Tisch mit sechs Stühlen (reines CSS) ---------- */
+.scene3d {
+  position: relative;
+  width: 22em;
+  height: 17em;
+  margin: 0 auto;
+  font-size: clamp(11px, 2.8vw, 18px);
+  perspective: 62em;
+  perspective-origin: 50% 28%;
+}
+.stage3d {
+  position: absolute;
+  left: 50%;
+  top: 56%;
+  width: 22em;
+  height: 22em;
+  margin: -11em 0 0 -11em;
+  transform-style: preserve-3d;
+  transform: rotateX(62deg);
+}
+.spin3d {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  animation: spin3d 34s linear infinite;
+}
+@keyframes spin3d {
+  to {
+    transform: rotateZ(360deg);
+  }
+}
+.spin3d > *,
+.chair > * {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform-style: preserve-3d;
+}
+.floor-glow {
+  width: 19em;
+  height: 19em;
+  margin: -9.5em;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(232 143 163 / 0.28), rgb(232 143 163 / 0.06) 45%, transparent 70%);
+  transform: translateZ(0.01em);
+}
+.floor-ring {
+  width: 19.6em;
+  height: 19.6em;
+  margin: -9.8em;
+  border-radius: 50%;
+  border: 1px dashed rgb(167 174 208 / 0.35);
+  transform: translateZ(0.02em);
+}
+.table-base {
+  width: 3.6em;
+  height: 3.6em;
+  margin: -1.8em;
+  border-radius: 50%;
+  background: rgb(17 26 58 / 0.95);
+  border: 1px solid rgb(167 174 208 / 0.3);
+  transform: translateZ(0.05em);
+}
+.table-col {
+  width: 4.2em;
+  height: 0.9em;
+  margin: -0.45em 0 0 0;
+  transform-origin: left center;
+  background: linear-gradient(90deg, rgb(26 37 80 / 0.95), rgb(38 51 106 / 0.9));
+  border: 1px solid rgb(167 174 208 / 0.25);
+}
+.table-col-a {
+  transform: rotateY(-90deg);
+}
+.table-col-b {
+  transform: rotateZ(90deg) rotateY(-90deg);
+}
+.table-edge,
+.table-top {
+  width: 10.8em;
+  height: 10.8em;
+  margin: -5.4em;
+  border-radius: 50%;
+}
+.table-edge {
+  background: rgb(10 17 40 / 0.92);
+  border: 1px solid rgb(244 182 194 / 0.3);
+  transform: translateZ(4.2em);
+}
+.table-top {
+  background: radial-gradient(circle at 42% 38%, rgb(48 64 120 / 0.95), rgb(17 26 58 / 0.98) 70%);
+  border: 1.5px solid rgb(244 182 194 / 0.6);
+  box-shadow:
+    0 0 2.4em rgb(232 143 163 / 0.25),
+    inset 0 0 1.6em rgb(244 182 194 / 0.12);
+  transform: translateZ(4.6em);
+}
+.table-top::after {
+  content: "";
+  position: absolute;
+  inset: 0.8em;
+  border-radius: 50%;
+  border: 1px solid rgb(238 240 250 / 0.08);
+}
+.chair {
+  width: 0;
+  height: 0;
+  transform: rotateZ(var(--a)) translateX(7.6em);
+}
+.chair-seat {
+  width: 2.2em;
+  height: 2.2em;
+  margin: -1.1em;
+  border-radius: 0.35em;
+  border: 1px solid;
+  transform: translateZ(2.5em);
+}
+.chair-back {
+  width: 3.1em;
+  height: 2.2em;
+  margin: -1.1em 0 0 1.05em;
+  border-radius: 0 0.35em 0.35em 0;
+  border: 1px solid;
+  transform-origin: left center;
+  transform: translateZ(2.5em) rotateY(-90deg);
+}
+.chair-rose .chair-seat {
+  background: rgb(232 143 163 / 0.88);
+  border-color: rgb(249 205 214 / 0.9);
+}
+.chair-rose .chair-back {
+  background: linear-gradient(90deg, rgb(232 143 163 / 0.75), rgb(232 143 163 / 0.35));
+  border-color: rgb(249 205 214 / 0.7);
+}
+.chair-cloud .chair-seat {
+  background: rgb(238 240 250 / 0.85);
+  border-color: rgb(238 240 250 / 0.95);
+}
+.chair-cloud .chair-back {
+  background: linear-gradient(90deg, rgb(238 240 250 / 0.7), rgb(238 240 250 / 0.3));
+  border-color: rgb(238 240 250 / 0.7);
+}
+.chair-leg {
+  width: 2.5em;
+  height: 0.12em;
+  margin: -0.06em 0 0 0;
+  transform-origin: left center;
+  background: rgb(167 174 208 / 0.75);
+}
+.chair-leg-1 {
+  transform: translate(-0.95em, -0.95em) rotateY(-90deg);
+}
+.chair-leg-2 {
+  transform: translate(0.95em, -0.95em) rotateY(-90deg);
+}
+.chair-leg-3 {
+  transform: translate(-0.95em, 0.95em) rotateY(-90deg);
+}
+.chair-leg-4 {
+  transform: translate(0.95em, 0.95em) rotateY(-90deg);
+}
+
+/* ---------- Kleine Animationen zu den drei Schritten (starten bei data-visible) ---------- */
+.step-art .anim-line {
+  transform-box: fill-box;
+  transform-origin: left center;
+  transform: scaleX(0);
+}
+.step-art .anim-check,
+.step-art .anim-ring {
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(0);
+  opacity: 0;
+}
+.step-art .anim-card {
+  transform: translateY(30px);
+  opacity: 0;
+}
+.step-art .anim-dot {
+  opacity: 0;
+}
+.step-art .anim-chair {
+  transform: translateX(34px);
+  opacity: 0;
+}
+[data-visible="true"] .step-art .anim-line {
+  animation: grow-x 0.9s 0.4s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+[data-visible="true"] .step-art .anim-check {
+  animation: pop 0.55s 1.3s cubic-bezier(0.2, 1.4, 0.4, 1) forwards;
+}
+[data-visible="true"] .step-art .anim-card {
+  animation: card-up 1s 0.4s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+[data-visible="true"] .step-art .anim-dot {
+  animation: blink 1.6s 1.4s ease-in-out infinite;
+}
+[data-visible="true"] .step-art .anim-chair {
+  animation: chair-in 1.1s 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+[data-visible="true"] .step-art .anim-ring {
+  animation: pop 0.8s 1.5s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+@keyframes grow-x {
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes pop {
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes card-up {
+  to {
+    transform: translateY(-8px);
+    opacity: 1;
+  }
+}
+@keyframes chair-in {
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ---------- Rechtstexte ---------- */
 .prose-legal h2 {
   font-family: var(--font-display);
   font-size: 1.15rem;
@@ -82,33 +471,35 @@ body {
   padding: 0 4px;
 }
 
-@keyframes flicker {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
-}
-.animate-flicker {
-  animation: flicker 3.2s ease-in-out infinite;
-}
-
-@keyframes orbit {
-  to {
-    transform: rotate(360deg);
-  }
-}
-.animate-orbit {
-  animation: orbit 60s linear infinite;
-}
+/* ---------- Weniger Bewegung, wenn gewünscht ---------- */
 @media (prefers-reduced-motion: reduce) {
-  .animate-orbit,
-  .animate-flicker {
-    animation: none;
-  }
   html {
     scroll-behavior: auto;
+  }
+  .spin3d,
+  .btn-pulse,
+  .particle,
+  .enter {
+    animation: none;
+  }
+  .particle {
+    opacity: var(--opacity);
+  }
+  .enter,
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .step-art .anim-line {
+    transform: none;
+  }
+  .step-art .anim-check,
+  .step-art .anim-ring,
+  .step-art .anim-card,
+  .step-art .anim-dot,
+  .step-art .anim-chair {
+    transform: none;
+    opacity: 1;
   }
 }
