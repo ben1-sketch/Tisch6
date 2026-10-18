@@ -2,12 +2,15 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
-import { SetTable } from "@/components/SetTable";
+import { Foto } from "@/components/Foto";
+import { bilder } from "@/lib/bilder";
 
 export default async function Home({ params }: PageProps<"/[lang]">) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
   const t = await getDictionary(lang);
+  // Fotos der Strecke „Der Abend“ – gleiche Reihenfolge wie die Texte in t.evening.photos
+  const abend = [bilder.lokal, bilder.gedeckt, bilder.anstossen];
 
   return (
     <>
@@ -42,7 +45,20 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
             </div>
             <p className="mt-4 text-sm text-mist/80">{t.hero.note}</p>
           </div>
-          <SetTable label={t.hero.imageAlt} />
+          <div className="relative mx-auto w-full max-w-md">
+            <div className="absolute -inset-6 rounded-[2.5rem] bg-rose-500/20 blur-3xl" aria-hidden="true" />
+            <Foto
+              src={bilder.hero.src}
+              alt={t.hero.imageAlt}
+              sizes="(min-width: 768px) 28rem, 100vw"
+              preload
+              className="aspect-[4/3] rounded-3xl border border-white/10 shadow-2xl shadow-night-950/60 sm:aspect-[4/5]"
+            />
+            <p className="glass absolute inset-x-4 bottom-4 flex items-center gap-3 rounded-2xl px-4 py-3 text-sm">
+              <span className="h-2 w-2 flex-none rounded-full bg-rose-400" aria-hidden="true" />
+              {t.hero.imageBadge}
+            </p>
+          </div>
         </div>
       </section>
 
@@ -56,6 +72,23 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
             </article>
           ))}
         </div>
+      </section>
+
+      {/* Der Abend – Fotos */}
+      <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
+        <p className="text-sm font-semibold tracking-wide text-rose-400 uppercase">{t.evening.eyebrow}</p>
+        <h2 className="mt-3 max-w-3xl font-display text-3xl font-semibold tracking-tight sm:text-4xl">{t.evening.title}</h2>
+        <ul className="mt-10 grid gap-4 sm:grid-cols-3">
+          {t.evening.photos.map((p, i) => (
+            <li key={p.title} className="relative overflow-hidden rounded-3xl border border-white/10">
+              <Foto src={abend[i].src} alt={p.alt} sizes="(min-width: 640px) 22rem, 100vw" className="aspect-[16/10] sm:aspect-[4/5]" />
+              <div className="absolute inset-x-0 bottom-0 p-6">
+                <h3 className="font-display text-lg font-semibold">{p.title}</h3>
+                <p className="mt-1 text-sm leading-relaxed text-mist">{p.text}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
       </section>
 
       {/* Ablauf */}
@@ -218,9 +251,12 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
             <h3 className="font-display text-xl font-semibold">{t.prices.referral.title}</h3>
             <p className="mt-3 leading-relaxed text-mist">{t.prices.referral.text}</p>
           </div>
-          <div className="rounded-3xl border border-white/10 bg-night-800/60 p-8">
-            <h3 className="font-display text-xl font-semibold">{t.places.title}</h3>
-            <p className="mt-3 leading-relaxed text-mist">{t.places.text}</p>
+          <div className="overflow-hidden rounded-3xl border border-white/10 bg-night-800/60">
+            <Foto src={bilder.interieur.src} alt={t.places.imageAlt} sizes="(min-width: 768px) 36rem, 100vw" className="aspect-[16/9]" />
+            <div className="p-8">
+              <h3 className="font-display text-xl font-semibold">{t.places.title}</h3>
+              <p className="mt-3 leading-relaxed text-mist">{t.places.text}</p>
+            </div>
           </div>
         </div>
       </section>

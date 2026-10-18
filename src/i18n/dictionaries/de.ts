@@ -22,7 +22,29 @@ const de = {
     cta: "Jetzt bewerben",
     secondary: "So funktioniert's",
     note: "Bewerbung in max. 10 Minuten · Antwort innerhalb von 24 Stunden",
-    imageAlt: "Ein gedeckter runder Tisch mit sechs Plätzen, von oben gesehen",
+    imageAlt: "Gedeckter Tisch in einem edlen Restaurant bei gedämpftem Licht",
+    imageBadge: "Reserviert auf „Tisch6“ · ein Tisch, sechs Plätze",
+  },
+  evening: {
+    eyebrow: "Der Abend",
+    title: "Ruhig genug zum Reden, gut genug zum Genießen.",
+    photos: [
+      {
+        title: "Ausgewählte Wiener Lokale",
+        text: "Vier bis fünf Stammlokale – nie zweimal hintereinander dasselbe.",
+        alt: "Gedämpft beleuchtetes Lokal am Abend mit Bar und Tischen",
+      },
+      {
+        title: "Gedeckt für sechs",
+        text: "Drei Frauen, drei Männer – reserviert auf „Tisch6“.",
+        alt: "Gedeckter Tisch mit Weingläsern in einem Restaurant",
+      },
+      {
+        title: "Echte Menschen statt Profile",
+        text: "Zwei Stunden Gespräch – kein Wischen, kein Ghosting.",
+        alt: "Drei Weingläser stoßen an, dahinter weiche Lichter",
+      },
+    ],
   },
   pillars: [
     {
@@ -125,6 +147,7 @@ const de = {
   places: {
     title: "Wo gegessen wird",
     text: "Wir wechseln zwischen vier bis fünf ausgewählten Wiener Lokalen – ruhig genug zum Reden, gut genug zum Genießen. Du sitzt nie zweimal hintereinander im selben Lokal. Reserviert ist immer auf den Namen „Tisch6“; die Adresse steht in der Bestätigung und in den Erinnerungen.",
+    imageAlt: "Ruhiges, gedämpft beleuchtetes Restaurant am Abend",
   },
   women: {
     eyebrow: "Sicher für Frauen",

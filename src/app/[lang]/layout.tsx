@@ -8,6 +8,7 @@ import { getDictionary } from "@/i18n/get-dictionary";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { configuredSiteUrl } from "@/lib/site";
+import { ogBild } from "@/lib/bilder";
 
 export function generateStaticParams() {
   return locales.map((lang) => ({ lang }));
@@ -23,7 +24,15 @@ export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Prom
     metadataBase: new URL(configuredSiteUrl() ?? "https://tisch6.at"),
     title: { default: dict.meta.title, template: "%s · Tisch6" },
     description: dict.meta.description,
-    openGraph: { title: dict.meta.title, description: dict.meta.description, siteName: "Tisch6", locale: "de_AT", type: "website" },
+    openGraph: {
+      title: dict.meta.title,
+      description: dict.meta.description,
+      siteName: "Tisch6",
+      locale: "de_AT",
+      type: "website",
+      images: [{ url: ogBild, width: 1200, height: 630, alt: dict.hero.imageAlt }],
+    },
+    twitter: { card: "summary_large_image" },
   };
 }
 
