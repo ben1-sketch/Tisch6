@@ -15,6 +15,9 @@ Reihenfolge einhalten – jeder Schritt liefert Werte, die der nächste braucht.
    1. `supabase/migrations/0001_etappe1_bewerbungen.sql`
    2. `supabase/migrations/0002_bring_eine_freundin_mit.sql`
    3. `supabase/migrations/0003_foto_und_empfehlung.sql` (legt auch den privaten Fotospeicher `verification-photos` an)
+   
+   **Einfacher:** Statt der einzelnen Dateien einmal den Inhalt von `supabase/alles-in-einem.sql` einfügen und **Run** –
+   das richtet die Datenbank für alle Etappen auf einmal ein. Am Ende steht „Fertig – die Datenbank ist komplett eingerichtet“.
 3. Die Zugangsdaten überträgt am einfachsten die Supabase-Vercel-Integration (Schritt 4.5). Von Hand findest du sie
    unter **Project Settings → Data API** bzw. **API Keys**:
    - `Project URL` → `NEXT_PUBLIC_SUPABASE_URL`
