@@ -88,7 +88,8 @@ echte Zahlungen laufen (Etappe 2), brauchst du den Pro-Tarif (ca. 20 $ im Monat)
      `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` und `SUPABASE_SECRET_KEY` da sind (weitere Einträge wie `POSTGRES_…` stören nicht).
    - Findest du die Integration nicht: die drei Werte aus Schritt 1.3 von Hand unter **Environment Variables** eintragen.
 6. Einmal neu bauen, damit die Website die neuen Werte übernimmt: **Deployments** → beim obersten Eintrag „⋯“ → **Redeploy**.
-7. Die Server-Region Frankfurt (`fra1`, nah an der EU-Datenbank) ist über `vercel.json` bereits voreingestellt.
+7. Die Server-Region Frankfurt (`fra1`, nah an der EU-Datenbank), das Framework (Next.js), Install- und Build-Befehl
+   sowie die Node-Version sind über `vercel.json` und `package.json` fest eingestellt – in Vercel musst du dafür nichts ändern.
 
 ## 5. GoDaddy (Domain tisch6.at auf Vercel zeigen lassen)
 
