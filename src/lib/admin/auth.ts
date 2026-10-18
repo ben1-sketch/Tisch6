@@ -2,6 +2,7 @@ import "server-only";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
+import { checkDatabase } from "./health";
 import { ADMIN_COOKIE, verifySessionToken } from "./session";
 
 /** Ist die aktuelle Anfrage im Adminbereich angemeldet? (pro Render nur einmal geprüft) */
@@ -13,6 +14,8 @@ export const isAdmin = cache(async () => verifySessionToken((await cookies()).ge
  */
 export async function requireAdmin() {
   if (!(await isAdmin())) redirect("/admin/login");
+  // Ohne funktionierende Datenbank zeigt der Adminbereich statt eines Absturzes, was fehlt
+  if (!(await checkDatabase()).ok) redirect("/admin/datenbank");
 }
 
 export const sessionCookie = {
