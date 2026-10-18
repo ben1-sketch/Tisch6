@@ -7,6 +7,7 @@ import { locales, isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { configuredSiteUrl } from "@/lib/site";
 
 export function generateStaticParams() {
   return locales.map((lang) => ({ lang }));
@@ -19,7 +20,7 @@ export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Prom
   if (!isLocale(lang)) return {};
   const dict = await getDictionary(lang);
   return {
-    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://tisch6.at"),
+    metadataBase: new URL(configuredSiteUrl() ?? "https://tisch6.at"),
     title: { default: dict.meta.title, template: "%s · Tisch6" },
     description: dict.meta.description,
     openGraph: { title: dict.meta.title, description: dict.meta.description, siteName: "Tisch6", locale: "de_AT", type: "website" },

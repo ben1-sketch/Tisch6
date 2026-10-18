@@ -6,6 +6,7 @@ import { requireAdmin } from "@/lib/admin/auth";
 import { DINNER_STATUS, relative, when } from "@/lib/admin/format";
 import { FOUNDER, TABLE, euro } from "@/lib/config";
 import { type AdminLog, type DinnerStatus, db } from "@/lib/db";
+import { configuredSiteUrl } from "@/lib/site";
 import { DAY, HOUR, WEEKDAY_CODES, addDays, viennaDate, viennaToUtc, weekdayOf } from "@/lib/time";
 import { TIMING } from "@/lib/config";
 import { planTablesAction, tickAction } from "../actions";
@@ -37,7 +38,7 @@ function setupChecks(activeRestaurants: number, lastTick: string | null, migrate
     { label: "SMS (Twilio)", ok: twilio, hint: twilio ? undefined : "ohne: SMS werden nur protokolliert" },
     { label: "Notfallnummer am Abend (EMERGENCY_PHONE)", ok: Boolean(env.EMERGENCY_PHONE), hint: env.EMERGENCY_PHONE ? undefined : "ohne: keine Notfall-SMS am Tag des Tisches" },
     { label: "Schutz des Durchlaufs (CRON_SECRET)", ok: Boolean(env.CRON_SECRET) },
-    { label: "Adresse der Website (NEXT_PUBLIC_SITE_URL)", ok: Boolean(env.NEXT_PUBLIC_SITE_URL) },
+    { label: "Adresse der Website (NEXT_PUBLIC_SITE_URL)", ok: Boolean(configuredSiteUrl()), hint: env.NEXT_PUBLIC_SITE_URL && !configuredSiteUrl() ? "Adresse ungültig" : undefined },
     { label: "Aktives Partnerlokal", ok: activeRestaurants > 0, href: "/admin/lokale" },
     {
       label: "Automatischer Durchlauf alle 10 Minuten",
