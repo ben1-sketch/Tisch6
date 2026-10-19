@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 /**
- * Foto mit Mitternachtsblau-Schleier, damit es zum dunklen Design passt und Text darüber lesbar bleibt.
+ * Foto, gedämpft und warm getönt, damit es leise im Hintergrund bleibt und Text darüber lesbar ist.
  * Der Wrapper braucht Position und Größe (z. B. "relative aspect-[4/5]" oder "absolute inset-0") – das Bild füllt ihn aus.
  */
 export function Foto({
@@ -12,6 +12,7 @@ export function Foto({
   preload = false,
   verlauf = true,
   tint = "soft",
+  zoom = false,
 }: {
   src: string;
   /** Beschreibung fürs Vorlesen; "" für rein dekorative Hintergrundbilder */
@@ -24,21 +25,26 @@ export function Foto({
   /** dunkler Verlauf am unteren Rand (für Bildunterschriften) */
   verlauf?: boolean;
   /**
-   * soft: leichter Blauschleier (Fotos, die man anschauen soll)
+   * soft: leichter Schleier (Fotos, die man anschauen soll)
    * strong: dunkler, mit weichen Rändern oben und unten (Hintergrund hinter Text)
-   * hero: wie strong, zusätzlich links dunkler – für den Seitenanfang mit Text links
+   * hero: dunkel mit Vignette – für den Seitenanfang mit Text in der Mitte
    */
   tint?: "soft" | "strong" | "hero";
+  /** langsamer Zoom beim Laden */
+  zoom?: boolean;
 }) {
-  const dark = tint !== "soft";
   return (
     <div className={`overflow-hidden bg-night-800 ${className}`}>
-      <Image src={src} alt={alt} fill sizes={sizes} preload={preload} className="object-cover" />
-      {/* Blauschleier: nimmt dem Foto die Fremdfarben */}
-      <div className={`absolute inset-0 ${tint === "strong" ? "bg-night-900/60" : tint === "hero" ? "bg-night-900/40" : "bg-night-900/25"}`} aria-hidden="true" />
-      {dark && <div className="absolute inset-0 bg-gradient-to-b from-night-900/90 via-night-900/10 to-night-900" aria-hidden="true" />}
-      {tint === "hero" && <div className="absolute inset-0 bg-gradient-to-r from-night-900 via-night-900/45 to-transparent" aria-hidden="true" />}
-      {verlauf && <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-night-950/85 via-night-950/30 to-transparent" aria-hidden="true" />}
+      <Image src={src} alt={alt} fill sizes={sizes} preload={preload} className={`img-dezent object-cover ${zoom ? "kenburns" : ""}`} />
+      {/* warmer Kerzenlicht-Ton, darüber ein Mitternachtsschleier */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gold-600/15 via-transparent to-night-950/30 mix-blend-multiply" aria-hidden="true" />
+      <div
+        className={`absolute inset-0 ${tint === "strong" ? "bg-night-950/65" : tint === "hero" ? "bg-night-950/55" : "bg-night-950/20"}`}
+        aria-hidden="true"
+      />
+      {tint !== "soft" && <div className="absolute inset-0 bg-gradient-to-b from-night-950/80 via-transparent to-night-900" aria-hidden="true" />}
+      {tint === "hero" && <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,rgb(6_9_19/0.75)_100%)]" aria-hidden="true" />}
+      {verlauf && <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-night-950/80 via-night-950/25 to-transparent" aria-hidden="true" />}
     </div>
   );
 }

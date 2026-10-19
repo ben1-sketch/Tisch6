@@ -1,5 +1,5 @@
 /**
- * Fotos der Website – edles Restaurant-Ambiente, dunkel gehalten, passend zu Mitternachtsblau und Rosé.
+ * Fotos der Website – edles Restaurant-Ambiente, dunkel gehalten, passend zu Mitternachtsblau und Champagner-Gold.
  *
  * Alle Fotos stammen von Unsplash (Unsplash-Lizenz: kostenlos, auch kommerziell nutzbar, keine Namensnennung nötig).
  * Sie werden über next/image geladen und optimiert – erlaubt ist nur der Host images.unsplash.com (siehe next.config.ts).

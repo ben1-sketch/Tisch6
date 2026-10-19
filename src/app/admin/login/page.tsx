@@ -19,7 +19,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/admin/logi
         <div className="flex items-center gap-2 font-display text-xl font-semibold">
           <LogoMark />
           <span>
-            Tisch<span className="text-rose-400">6</span>
+            Tisch<span className="text-gold-400">6</span>
           </span>
           <span className="text-base font-normal text-mist">Admin</span>
         </div>

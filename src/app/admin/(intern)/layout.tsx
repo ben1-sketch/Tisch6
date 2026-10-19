@@ -29,7 +29,7 @@ export default async function InternLayout({ children }: { children: React.React
             <Link href="/admin" className="flex items-center gap-2 font-display font-semibold">
               <LogoMark className="h-7 w-7" />
               <span>
-                Tisch<span className="text-rose-400">6</span>
+                Tisch<span className="text-gold-400">6</span>
               </span>
               <span className="text-sm font-normal text-mist">Admin</span>
             </Link>

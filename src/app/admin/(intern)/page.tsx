@@ -186,7 +186,7 @@ export default async function AdminHome() {
 
       <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
         <div className="space-y-4">
-          <Card title="Nächste Tische" aside={<Link href="/admin/tische" className="text-sm text-rose-300 hover:underline">alle</Link>}>
+          <Card title="Nächste Tische" aside={<Link href="/admin/tische" className="text-sm text-gold-300 hover:underline">alle</Link>}>
             {upcoming.length === 0 ? (
               <Empty>Noch kein Tisch geplant. Sobald drei Frauen und drei Männer zusammenpassen, plant die KI den Tisch – jede Nacht.</Empty>
             ) : (
@@ -196,7 +196,7 @@ export default async function AdminHome() {
                   const open = d.seats.filter((s) => s.status === "invited" || s.status === "offered").length;
                   return (
                     <li key={d.id}>
-                      <Link href={`/admin/tische/${d.id}`} className="flex flex-wrap items-center justify-between gap-2 py-3 hover:text-rose-200">
+                      <Link href={`/admin/tische/${d.id}`} className="flex flex-wrap items-center justify-between gap-2 py-3 hover:text-gold-200">
                         <span className="min-w-0">
                           <span className="block font-medium">{when(d.starts_at)}</span>
                           <span className="text-sm text-mist">{d.restaurants?.name ?? "–"}</span>
@@ -216,7 +216,7 @@ export default async function AdminHome() {
             )}
           </Card>
 
-          <Card title="Letzte Eingriffe" aside={<Link href="/admin/protokoll" className="text-sm text-rose-300 hover:underline">Protokoll</Link>}>
+          <Card title="Letzte Eingriffe" aside={<Link href="/admin/protokoll" className="text-sm text-gold-300 hover:underline">Protokoll</Link>}>
             {log.error ? (
               <Empty>Das Protokoll gibt es nach dem Ausführen von 0005_etappe3_admin.sql.</Empty>
             ) : (log.data ?? []).length === 0 ? (
@@ -229,12 +229,12 @@ export default async function AdminHome() {
                       {entry.action}
                       {entry.detail && <span className="text-mist"> · {entry.detail}</span>}
                       {entry.application_id && (
-                        <Link href={`/admin/bewerbungen/${entry.application_id}`} className="ml-2 text-rose-300 hover:underline">
+                        <Link href={`/admin/bewerbungen/${entry.application_id}`} className="ml-2 text-gold-300 hover:underline">
                           Profil
                         </Link>
                       )}
                       {entry.dinner_id && (
-                        <Link href={`/admin/tische/${entry.dinner_id}`} className="ml-2 text-rose-300 hover:underline">
+                        <Link href={`/admin/tische/${entry.dinner_id}`} className="ml-2 text-gold-300 hover:underline">
                           Tisch
                         </Link>
                       )}

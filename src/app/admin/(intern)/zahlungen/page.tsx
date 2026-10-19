@@ -85,7 +85,7 @@ export default async function PaymentsPage({ searchParams }: PageProps<"/admin/z
                   {p.stripe_payment_intent && (
                     <>
                       {" · "}
-                      <a href={`${stripeBase}${p.stripe_payment_intent}`} target="_blank" rel="noreferrer" className="text-rose-300 hover:underline">
+                      <a href={`${stripeBase}${p.stripe_payment_intent}`} target="_blank" rel="noreferrer" className="text-gold-300 hover:underline">
                         in Stripe ↗
                       </a>
                     </>

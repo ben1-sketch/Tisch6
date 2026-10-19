@@ -12,7 +12,7 @@ import type { SeatView } from "@/lib/views";
 type T = Dictionary["seat"];
 
 const primary =
-  "w-full rounded-full bg-rose-400 px-6 py-3.5 text-center font-semibold text-night-950 transition hover:bg-rose-300 disabled:cursor-not-allowed disabled:opacity-50";
+  "btn btn-primary w-full disabled:transform-none disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none";
 const secondary =
   "w-full rounded-full border border-white/15 px-6 py-3 text-center font-medium transition hover:border-white/30 disabled:opacity-50";
 
@@ -69,7 +69,7 @@ export function SeatPage({ view, t, lang, paid, openReport = false }: { view: Se
               {view.restaurant.mapsUrl && (
                 <>
                   {" · "}
-                  <a href={view.restaurant.mapsUrl} target="_blank" rel="noreferrer" className="text-rose-400 underline">
+                  <a href={view.restaurant.mapsUrl} target="_blank" rel="noreferrer" className="text-gold-400 underline">
                     {t.map}
                   </a>
                 </>
@@ -84,7 +84,7 @@ export function SeatPage({ view, t, lang, paid, openReport = false }: { view: Se
   return (
     <div className="mx-auto w-full max-w-2xl space-y-6 px-4 py-10 sm:px-6 sm:py-16">
       <section className="glass rounded-3xl p-6 sm:p-8">
-        <span className="inline-flex rounded-full border border-rose-400/30 bg-rose-400/10 px-3 py-1 text-xs font-medium text-rose-300">
+        <span className="inline-flex rounded-full border border-gold-400/30 bg-gold-400/10 px-3 py-1 text-xs font-medium text-gold-300">
           {t.chips[view.status]}
         </span>
         <h1 className="mt-4 font-display text-2xl font-semibold sm:text-3xl">{fill(t.titles[view.status], { name: view.firstName })}</h1>
@@ -100,7 +100,7 @@ export function SeatPage({ view, t, lang, paid, openReport = false }: { view: Se
         </dl>
 
         {error && (
-          <p role="alert" className="mt-4 rounded-xl border border-rose-500/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-300">
+          <p role="alert" className="mt-4 rounded-xl border border-gold-500/40 bg-gold-500/10 px-4 py-3 text-sm text-gold-300">
             {error}
           </p>
         )}
@@ -128,11 +128,11 @@ export function SeatPage({ view, t, lang, paid, openReport = false }: { view: Se
                   <p className="text-center text-xs text-mist line-through">{fill(t.insteadOf, { price: euro(PRICES.seat) })}</p>
                 )}
                 {view.offer.founderAvailable && (
-                  <div className="rounded-2xl border border-rose-400/40 bg-rose-400/5 p-4">
+                  <div className="rounded-2xl border border-gold-400/40 bg-gold-400/5 p-4">
                     <p className="font-display font-semibold">{t.founderTitle}</p>
                     <p className="mt-1 text-sm text-mist">{t.founderText}</p>
                     <button
-                      className={`${secondary} mt-3 border-rose-400/60 text-rose-300`}
+                      className={`${secondary} mt-3 border-gold-400/60 text-gold-300`}
                       disabled={busy || !view.paymentsEnabled}
                       onClick={() => act("checkout", { package: true })}
                     >
@@ -140,7 +140,7 @@ export function SeatPage({ view, t, lang, paid, openReport = false }: { view: Se
                     </button>
                   </div>
                 )}
-                {!view.paymentsEnabled && <p className="text-sm text-rose-300">{t.paymentsOff}</p>}
+                {!view.paymentsEnabled && <p className="text-sm text-gold-300">{t.paymentsOff}</p>}
               </>
             )}
             <p className="text-center text-xs text-mist">{t.foodNote}</p>
@@ -171,13 +171,13 @@ export function SeatPage({ view, t, lang, paid, openReport = false }: { view: Se
       </section>
 
       {(view.card || view.cardSoon) && (
-        <section className="rounded-3xl border border-rose-400/30 p-6 sm:p-8">
+        <section className="rounded-3xl border border-gold-400/30 p-6 sm:p-8">
           <h2 className="font-display text-lg font-semibold">{t.cardTitle}</h2>
           {view.card ? (
             <>
               {view.card.runden.map((r) => (
                 <div key={r.name} className="mt-4">
-                  <h3 className="text-sm font-semibold text-rose-300">{r.name}</h3>
+                  <h3 className="text-sm font-semibold text-gold-300">{r.name}</h3>
                   <ol className="mt-1.5 list-decimal space-y-1.5 pl-5 text-cloud">
                     {r.fragen.map((q) => (
                       <li key={q}>{q}</li>
@@ -277,7 +277,7 @@ function ReportBox({ t, token, members, initiallyOpen }: { t: T; token: string; 
               className="w-full rounded-xl border border-white/15 bg-night-950/60 px-4 py-3 text-cloud"
             />
           </label>
-          {state === "error" && <p className="text-sm text-rose-300">{t.error}</p>}
+          {state === "error" && <p className="text-sm text-gold-300">{t.error}</p>}
           <button className={primary} disabled={!who || state === "busy"} onClick={send}>
             {t.reportSend}
           </button>

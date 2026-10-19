@@ -11,7 +11,7 @@ const TONES: Record<Tone, string> = {
   amber: "border-amber-400/30 bg-amber-400/10 text-amber-200",
   blue: "border-sky-400/30 bg-sky-400/10 text-sky-200",
   red: "border-red-400/40 bg-red-500/10 text-red-300",
-  rose: "border-rose-400/30 bg-rose-400/10 text-rose-300",
+  gold: "border-gold-400/30 bg-gold-400/10 text-gold-300",
   mist: "border-white/10 bg-white/5 text-mist",
 };
 
@@ -61,7 +61,7 @@ export function Stat({ label, value, hint, href, tone }: { label: string; value:
   );
   const cls = "glass block rounded-2xl p-4";
   return href ? (
-    <Link href={href} className={`${cls} transition hover:border-rose-400/40`}>
+    <Link href={href} className={`${cls} transition hover:border-gold-400/40`}>
       {body}
     </Link>
   ) : (
@@ -100,7 +100,7 @@ export function Tabs({ items, active }: { items: { key: string; label: string; h
           key={item.key}
           href={item.href}
           className={`flex-none rounded-full border px-3.5 py-1.5 text-sm transition ${
-            item.key === active ? "border-rose-400 bg-rose-400 font-medium text-night-950" : "border-white/10 text-mist hover:border-white/25 hover:text-cloud"
+            item.key === active ? "border-gold-400 bg-gold-400 font-medium text-night-950" : "border-white/10 text-mist hover:border-white/25 hover:text-cloud"
           }`}
         >
           {item.label}
@@ -144,7 +144,7 @@ export function Axis({ left, right, value }: { left: string; right: string; valu
       </div>
       <div className="mt-1 grid grid-cols-5 gap-1">
         {[1, 2, 3, 4, 5].map((n) => (
-          <span key={n} className={`h-2 rounded-full ${n === v ? "bg-rose-400" : "bg-white/10"}`} />
+          <span key={n} className={`h-2 rounded-full ${n === v ? "bg-gold-400" : "bg-white/10"}`} />
         ))}
       </div>
     </div>
@@ -154,7 +154,7 @@ export function Axis({ left, right, value }: { left: string; right: string; valu
 export function PersonLink({ id, name }: { id: string | null; name: string | null | undefined }) {
   if (!id) return <span className="text-mist">gelöscht</span>;
   return (
-    <Link href={`/admin/bewerbungen/${id}`} className="text-rose-300 underline-offset-2 hover:underline">
+    <Link href={`/admin/bewerbungen/${id}`} className="text-gold-300 underline-offset-2 hover:underline">
       {name || "Profil"}
     </Link>
   );

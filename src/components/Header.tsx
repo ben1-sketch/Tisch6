@@ -4,29 +4,29 @@ import { Logo } from "./Logo";
 
 export function Header({ lang, dict }: { lang: string; dict: Dictionary }) {
   const items = [
-    { href: `/${lang}#so-gehts`, label: dict.nav.how, show: "md:inline" },
-    { href: `/${lang}#auszeichnet`, label: dict.nav.distinct, show: "xl:inline" },
-    { href: `/${lang}#ambiente`, label: dict.nav.ambiente, show: "xl:inline" },
-    { href: `/${lang}#sicher`, label: dict.nav.safe, show: "lg:inline" },
-    { href: `/${lang}#gruendungspaket`, label: dict.nav.founder, show: "md:inline" },
-    { href: `/${lang}#faq`, label: dict.nav.faq, show: "md:inline" },
+    { href: `/${lang}#so-gehts`, label: dict.nav.how, show: "lg:inline" },
+    { href: `/${lang}#ambiente`, label: dict.nav.ambiente, show: "lg:inline" },
+    { href: `/${lang}#sicher`, label: dict.nav.safe, show: "xl:inline" },
+    { href: `/${lang}#gruendungspaket`, label: dict.nav.founder, show: "xl:inline" },
+    { href: `/${lang}#faq`, label: dict.nav.faq, show: "lg:inline" },
   ];
+  const linkClass = "px-2.5 py-2 text-[0.68rem] font-medium tracking-[0.18em] whitespace-nowrap text-mist uppercase transition hover:text-gold-300";
   return (
-    <header className="sticky top-0 z-40 border-b border-white/5 bg-night-900/80 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
-        <Link href={`/${lang}`} aria-label="Tisch6 Startseite">
+    <header className="sticky top-0 z-40 border-b border-gold-400/10 bg-night-950/80 backdrop-blur-md">
+      <div className="mx-auto flex h-[4.5rem] max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
+        <Link href={`/${lang}`} aria-label="Tisch6 Startseite" className="shrink-0">
           <Logo />
         </Link>
-        <nav className="flex items-center gap-1 text-sm sm:gap-2">
+        <nav className="flex items-center gap-1 sm:gap-2">
           {items.map((item) => (
-            <Link key={item.href} href={item.href} className={`hidden rounded-full px-3 py-2 text-mist transition hover:text-cloud ${item.show}`}>
+            <Link key={item.href} href={item.href} className={`hidden ${linkClass} ${item.show}`}>
               {item.label}
             </Link>
           ))}
-          <Link href={`/${lang}/konto`} className="rounded-full px-3 py-2 text-mist transition hover:text-cloud">
+          <Link href={`/${lang}/konto`} className={`hidden min-[440px]:inline ${linkClass}`}>
             {dict.nav.account}
           </Link>
-          <Link href={`/${lang}/bewerben`} className="btn btn-primary btn-sm">
+          <Link href={`/${lang}/bewerben`} className="btn btn-primary btn-sm ml-1 whitespace-nowrap sm:ml-2">
             {dict.nav.apply}
           </Link>
         </nav>

@@ -21,9 +21,9 @@ function fill(text: string, parts: Record<string, ReactNode>) {
 }
 
 const inputClass =
-  "w-full rounded-xl border border-white/15 bg-night-950/60 px-4 py-3 text-cloud placeholder:text-mist/50 outline-none transition focus:border-rose-400 focus:ring-2 focus:ring-rose-400/30";
+  "w-full rounded-xl border border-white/15 bg-night-950/60 px-4 py-3 text-cloud placeholder:text-mist/50 outline-none transition focus:border-gold-400 focus:ring-2 focus:ring-gold-400/30";
 const buttonClass =
-  "w-full rounded-full bg-rose-400 px-6 py-3.5 font-semibold text-night-950 transition hover:bg-rose-300 disabled:cursor-not-allowed disabled:opacity-50";
+  "btn btn-primary w-full disabled:transform-none disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none";
 
 export function ApplyFlow({ lang, t, invitedBy }: { lang: string; t: T; invitedBy?: string }) {
   const supabase = useRef<ReturnType<typeof createClient> | null>(null);
@@ -136,7 +136,7 @@ export function ApplyFlow({ lang, t, invitedBy }: { lang: string; t: T; invitedB
         <ol className="mb-8 grid grid-cols-5 gap-2" aria-label="Fortschritt">
           {t.steps.map((label, i) => (
             <li key={label} className="min-w-0 text-xs text-mist">
-              <div className={`mb-2 h-1 rounded-full ${i <= stepIndex ? "bg-rose-400" : "bg-white/10"}`} />
+              <div className={`mb-2 h-1 rounded-full ${i <= stepIndex ? "bg-gold-400" : "bg-white/10"}`} />
               <span className={`block truncate ${i === stepIndex ? "text-cloud" : ""}`}>{label}</span>
             </li>
           ))}
@@ -144,7 +144,7 @@ export function ApplyFlow({ lang, t, invitedBy }: { lang: string; t: T; invitedB
       )}
 
       {error && (
-        <p role="alert" className="mb-6 rounded-xl border border-rose-500/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-300">
+        <p role="alert" className="mb-6 rounded-xl border border-gold-500/40 bg-gold-500/10 px-4 py-3 text-sm text-gold-300">
           {error}
         </p>
       )}
@@ -157,10 +157,10 @@ export function ApplyFlow({ lang, t, invitedBy }: { lang: string; t: T; invitedB
             <h1 className="font-display text-2xl font-semibold sm:text-3xl">{t.intro.title}</h1>
             <p className="mt-2 text-mist">{t.intro.lead}</p>
             {invitedBy && (
-              <div className="mt-4 rounded-xl border border-rose-400/30 bg-rose-400/10 px-4 py-3 text-sm text-rose-300">
+              <div className="mt-4 rounded-xl border border-gold-400/30 bg-gold-400/10 px-4 py-3 text-sm text-gold-300">
                 <p>{t.intro.invited}</p>
                 <label className="mt-3 flex gap-3 text-cloud">
-                  <input type="checkbox" className="mt-0.5 h-4 w-4 flex-none accent-rose-400" checked={together} onChange={(e) => setTogether(e.target.checked)} />
+                  <input type="checkbox" className="mt-0.5 h-4 w-4 flex-none accent-gold-400" checked={together} onChange={(e) => setTogether(e.target.checked)} />
                   <span>{t.intro.together}</span>
                 </label>
               </div>
@@ -179,8 +179,8 @@ export function ApplyFlow({ lang, t, invitedBy }: { lang: string; t: T; invitedB
             {(
               [
                 ["adult", t.intro.adult],
-                ["privacy", fill(t.intro.privacy, { privacy: <Link href={`/${lang}/datenschutz`} target="_blank" className="text-rose-400 underline">{t.intro.privacyLink}</Link> })],
-                ["terms", fill(t.intro.terms, { terms: <Link href={`/${lang}/agb`} target="_blank" className="text-rose-400 underline">{t.intro.termsLink}</Link> })],
+                ["privacy", fill(t.intro.privacy, { privacy: <Link href={`/${lang}/datenschutz`} target="_blank" className="text-gold-400 underline">{t.intro.privacyLink}</Link> })],
+                ["terms", fill(t.intro.terms, { terms: <Link href={`/${lang}/agb`} target="_blank" className="text-gold-400 underline">{t.intro.termsLink}</Link> })],
                 ["sensitive", t.intro.sensitive],
               ] as const
             ).map(([key, label]) => (
@@ -188,7 +188,7 @@ export function ApplyFlow({ lang, t, invitedBy }: { lang: string; t: T; invitedB
                 <input
                   type="checkbox"
                   required
-                  className="mt-1 h-4 w-4 flex-none accent-rose-400"
+                  className="mt-1 h-4 w-4 flex-none accent-gold-400"
                   checked={form[key]}
                   onChange={(e) => setForm({ ...form, [key]: e.target.checked })}
                 />
@@ -352,7 +352,7 @@ function Chat({
           <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
             <p
               className={`max-w-[85%] rounded-2xl px-4 py-2.5 leading-relaxed whitespace-pre-wrap ${
-                m.role === "user" ? "rounded-br-sm bg-rose-400 text-night-950" : "rounded-bl-sm bg-night-700 text-cloud"
+                m.role === "user" ? "rounded-br-sm bg-gold-400 text-night-950" : "rounded-bl-sm bg-night-700 text-cloud"
               }`}
             >
               {m.content}
@@ -362,7 +362,7 @@ function Chat({
         {sending && <p className="animate-pulse text-sm text-mist">{t.chat.typing}</p>}
         <div ref={endRef} />
       </div>
-      {error && <p className="px-4 pb-2 text-sm text-rose-300">{error}</p>}
+      {error && <p className="px-4 pb-2 text-sm text-gold-300">{error}</p>}
       <form onSubmit={send} className="flex items-end gap-2 border-t border-white/10 p-3">
         <textarea
           ref={inputRef}
@@ -378,7 +378,7 @@ function Chat({
           className={`${inputClass} resize-none`}
           aria-label={t.chat.placeholder}
         />
-        <button type="submit" disabled={sending || finished || !text.trim()} className="rounded-full bg-rose-400 px-5 py-3 font-semibold text-night-950 transition hover:bg-rose-300 disabled:opacity-50">
+        <button type="submit" disabled={sending || finished || !text.trim()} className="rounded-full bg-gold-400 px-5 py-3 font-semibold text-night-950 transition hover:bg-gold-300 disabled:opacity-50">
           {t.chat.send}
         </button>
       </form>
@@ -403,12 +403,12 @@ export function InviteBox({ t, lang, code }: { t: T["buddy"]; lang: string; code
   }
 
   return (
-    <div className="mt-8 rounded-2xl border border-rose-400/30 bg-rose-400/5 p-5 text-left">
+    <div className="mt-8 rounded-2xl border border-gold-400/30 bg-gold-400/5 p-5 text-left">
       <h2 className="font-display text-lg font-semibold">{t.title}</h2>
       <p className="mt-1 text-sm text-mist">{t.text}</p>
       <div className="mt-4 flex flex-col gap-2 sm:flex-row">
         <input readOnly value={url} className={`${inputClass} text-sm`} onFocus={(e) => e.target.select()} aria-label={t.title} />
-        <button type="button" onClick={share} className="shrink-0 rounded-full bg-rose-400 px-5 py-3 font-semibold text-night-950 hover:bg-rose-300">
+        <button type="button" onClick={share} className="shrink-0 rounded-full bg-gold-400 px-5 py-3 font-semibold text-night-950 hover:bg-gold-300">
           {copied ? t.copied : t.share}
         </button>
       </div>
@@ -476,22 +476,22 @@ function PhotoStep({ t, onDone }: { t: T["photo"]; onDone: () => void }) {
       <ul className="space-y-1.5 text-sm text-mist">
         {t.points.map((point) => (
           <li key={point} className="flex gap-2">
-            <span className="text-rose-400">✓</span>
+            <span className="text-gold-400">✓</span>
             {point}
           </li>
         ))}
       </ul>
-      <label className="flex cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-white/15 p-6 text-center transition hover:border-rose-400/60">
+      <label className="flex cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-white/15 p-6 text-center transition hover:border-gold-400/60">
         {preview ? (
           // eslint-disable-next-line @next/next/no-img-element -- lokale Vorschau (blob:-URL)
           <img src={preview} alt={t.previewAlt} className="h-48 w-48 rounded-2xl object-cover" />
         ) : (
-          <span className="flex h-20 w-20 items-center justify-center rounded-full bg-night-700 text-3xl text-rose-400">+</span>
+          <span className="flex h-20 w-20 items-center justify-center rounded-full bg-night-700 text-3xl text-gold-400">+</span>
         )}
         <span className="text-sm font-medium">{preview ? t.change : t.choose}</span>
         <input type="file" accept="image/*" className="sr-only" onChange={(e) => pick(e.target.files?.[0])} />
       </label>
-      {error && <p role="alert" className="text-sm text-rose-300">{error}</p>}
+      {error && <p role="alert" className="text-sm text-gold-300">{error}</p>}
       <button type="submit" disabled={!blob || busy} className={buttonClass}>
         {busy ? t.uploading : t.upload}
       </button>

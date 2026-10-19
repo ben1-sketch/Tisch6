@@ -9,7 +9,7 @@ type ButtonTone = "primary" | "default" | "danger";
 export type Submit = { label: string; name?: string; value?: string; tone?: ButtonTone; confirm?: string };
 
 const BUTTONS: Record<ButtonTone, string> = {
-  primary: "bg-rose-400 font-semibold text-night-950 hover:bg-rose-300",
+  primary: "bg-gold-400 font-semibold text-night-950 hover:bg-gold-300",
   default: "border border-white/15 text-cloud hover:border-white/35",
   danger: "border border-red-400/50 text-red-300 hover:bg-red-500/10",
 };

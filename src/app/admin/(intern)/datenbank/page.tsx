@@ -127,7 +127,7 @@ export default async function DatabasePage() {
         )}
 
         <p className="text-sm">
-          <Link href="/admin/datenbank" className="text-rose-300 hover:underline">
+          <Link href="/admin/datenbank" className="text-gold-300 hover:underline">
             Erneut prüfen
           </Link>
         </p>

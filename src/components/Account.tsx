@@ -91,7 +91,7 @@ export function Account({ lang, t, buddyT }: { lang: string; t: T; buddyT: Dicti
       {state === "loggedOut" && (
         <p className="glass mt-8 rounded-3xl p-6 text-mist">
           {t.loggedOutText}{" "}
-          <Link href={`/${lang}/bewerben`} className="text-rose-400 underline">→</Link>
+          <Link href={`/${lang}/bewerben`} className="text-gold-400 underline">→</Link>
         </p>
       )}
 
@@ -103,7 +103,7 @@ export function Account({ lang, t, buddyT }: { lang: string; t: T; buddyT: Dicti
             <div className="flex flex-wrap items-center justify-between gap-3">
               <h2 className="text-sm text-mist">{t.status}</h2>
               {overview?.founder && (
-                <span className="rounded-full bg-rose-400 px-3 py-1 text-xs font-semibold text-night-950">★ {t.founder}</span>
+                <span className="rounded-full bg-gold-400 px-3 py-1 text-xs font-semibold text-night-950">★ {t.founder}</span>
               )}
             </div>
             <p className="mt-1 font-display text-xl font-semibold">{t.statuses[status]}</p>
@@ -121,7 +121,7 @@ export function Account({ lang, t, buddyT }: { lang: string; t: T; buddyT: Dicti
             )}
             <div className="mt-5 flex flex-wrap gap-3">
               {(status === "onboarding" || status === "none") && (
-                <Link href={`/${lang}/bewerben`} className="rounded-full bg-rose-400 px-5 py-2.5 font-semibold text-night-950 hover:bg-rose-300">
+                <Link href={`/${lang}/bewerben`} className="btn btn-primary">
                   {t.continue}
                 </Link>
               )}
@@ -132,12 +132,12 @@ export function Account({ lang, t, buddyT }: { lang: string; t: T; buddyT: Dicti
           </section>
 
           {overview?.next && (
-            <section className="rounded-3xl border border-rose-400/30 p-6">
+            <section className="rounded-3xl border border-gold-400/30 p-6">
               <h2 className="text-sm text-mist">{t.next}</h2>
               <p className="mt-1 font-display text-lg font-semibold">{formatDateTime(new Date(overview.next.startsAt))}</p>
               <Link
                 href={`/${lang}/einladung/${overview.next.token}`}
-                className="mt-4 inline-block rounded-full bg-rose-400 px-5 py-2.5 font-semibold text-night-950 hover:bg-rose-300"
+                className="btn btn-primary mt-4"
               >
                 {t.nextOpen}
               </Link>
@@ -154,7 +154,7 @@ export function Account({ lang, t, buddyT }: { lang: string; t: T; buddyT: Dicti
                   checked={overview.available}
                   disabled={busy}
                   onChange={(e) => toggleAvailable(e.target.checked)}
-                  className="mt-1 h-5 w-5 flex-none accent-rose-400"
+                  className="mt-1 h-5 w-5 flex-none accent-gold-400"
                 />
               </label>
               {!overview.available && <p className="mt-2 text-sm text-mist">{t.availableHint}</p>}
@@ -168,7 +168,7 @@ export function Account({ lang, t, buddyT }: { lang: string; t: T; buddyT: Dicti
             </>
           )}
 
-          {error && <p className="text-sm text-rose-300">{error}</p>}
+          {error && <p className="text-sm text-gold-300">{error}</p>}
 
           {overview?.reportToken && (
             <p className="text-center">
@@ -178,10 +178,10 @@ export function Account({ lang, t, buddyT }: { lang: string; t: T; buddyT: Dicti
             </p>
           )}
 
-          <section className="rounded-3xl border border-rose-500/30 p-6">
+          <section className="rounded-3xl border border-gold-500/30 p-6">
             <h2 className="font-display text-lg font-semibold">{t.deleteTitle}</h2>
             <p className="mt-2 text-sm text-mist">{t.deleteText}</p>
-            <button onClick={remove} disabled={busy} className="mt-4 rounded-full bg-rose-600 px-5 py-2.5 font-semibold text-white hover:bg-rose-500 disabled:opacity-50">
+            <button onClick={remove} disabled={busy} className="mt-4 rounded-full bg-gold-600 px-5 py-2.5 font-semibold text-white hover:bg-gold-500 disabled:opacity-50">
               {t.delete}
             </button>
           </section>

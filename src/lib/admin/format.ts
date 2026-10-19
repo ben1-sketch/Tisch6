@@ -1,7 +1,7 @@
 import { TIMEZONE } from "../config";
 import type { ApplicationStatus, DinnerStatus, SeatStatus } from "../db";
 
-export type Tone = "green" | "amber" | "blue" | "red" | "rose" | "mist";
+export type Tone = "green" | "amber" | "blue" | "red" | "gold" | "mist";
 
 export const APP_STATUS: Record<ApplicationStatus, { label: string; tone: Tone }> = {
   onboarding: { label: "Im Gespräch", tone: "mist" },

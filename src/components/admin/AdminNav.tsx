@@ -33,7 +33,7 @@ export function AdminNav({ badges }: { badges: Record<string, number> }) {
             }`}
           >
             {item.label}
-            {badge ? <span className="rounded-full bg-rose-400 px-1.5 text-xs font-semibold text-night-950">{badge}</span> : null}
+            {badge ? <span className="rounded-full bg-gold-400 px-1.5 text-xs font-semibold text-night-950">{badge}</span> : null}
           </Link>
         );
       })}

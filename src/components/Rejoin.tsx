@@ -43,7 +43,7 @@ export function Rejoin({ token, lang, t }: { token: string; lang: string; t: Dic
               setState({ status: "working" });
               setAttempt((n) => n + 1);
             }}
-            className="mt-6 rounded-full bg-rose-400 px-6 py-3 font-semibold text-night-950"
+            className="btn btn-primary mt-6"
           >
             {t.retry}
           </button>

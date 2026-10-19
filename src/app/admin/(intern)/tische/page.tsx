@@ -78,7 +78,7 @@ export default async function TablesPage({ searchParams }: PageProps<"/admin/tis
             const men = fixed.filter((s) => s.applications?.gender === "mann").length;
             return (
               <li key={d.id}>
-                <Link href={`/admin/tische/${d.id}`} className="glass block rounded-2xl p-4 transition hover:border-rose-400/40">
+                <Link href={`/admin/tische/${d.id}`} className="glass block rounded-2xl p-4 transition hover:border-gold-400/40">
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div>
                       <div className="font-medium">{when(d.starts_at)}</div>

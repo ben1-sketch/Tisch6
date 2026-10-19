@@ -25,15 +25,15 @@ export default async function CardPrintPage({ params }: PageProps<"/admin/karte/
   return (
     <main className="min-h-dvh px-4 py-8 print:p-0">
       <div className="mx-auto mb-6 flex max-w-xl items-center justify-between gap-3 print:hidden">
-        <Link href={`/admin/tische/${dinner.id}`} className="text-sm text-rose-300 hover:underline">
+        <Link href={`/admin/tische/${dinner.id}`} className="text-sm text-gold-300 hover:underline">
           ← zurück zum Tisch
         </Link>
         {card && <PrintButton />}
       </div>
 
       {card ? (
-        <article className="mx-auto max-w-xl rounded-3xl border border-black/10 bg-white p-8 text-[#0a1128] shadow-xl print:max-w-none print:rounded-none print:border-0 print:shadow-none">
-          <header className="flex items-center justify-between gap-4 border-b border-[#f4b6c2] pb-4">
+        <article className="mx-auto max-w-xl rounded-3xl border border-black/10 bg-white p-8 text-[#0b1120] shadow-xl print:max-w-none print:rounded-none print:border-0 print:shadow-none">
+          <header className="flex items-center justify-between gap-4 border-b border-[#c09a57] pb-4">
             <div className="flex items-center gap-2 font-display text-xl font-semibold">
               <LogoMark className="h-8 w-8" />
               <span>

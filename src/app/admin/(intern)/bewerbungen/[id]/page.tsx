@@ -115,13 +115,13 @@ export default async function ApplicationPage({ params }: PageProps<"/admin/bewe
             <Chip tone={APP_STATUS[app.status].tone}>{APP_STATUS[app.status].label}</Chip>
             {app.status === "waitlist" && app.waitlist_reason && <Chip tone="amber">{WAITLIST_REASONS[app.waitlist_reason]}</Chip>}
             {app.under_review && app.status !== "blocked" && <Chip tone="amber">zur Prüfung</Chip>}
-            {app.founder && <Chip tone="rose">★ Gründungsmitglied</Chip>}
+            {app.founder && <Chip tone="gold">★ Gründungsmitglied</Chip>}
             {app.no_shows > 0 && <Chip tone="red">{app.no_shows}× nicht erschienen</Chip>}
             {app.status === "accepted" && <Chip tone={app.available_since ? "green" : "mist"}>{app.available_since ? "wartet auf Tisch" : "pausiert"}</Chip>}
           </div>
         }
       >
-        <Link href="/admin/bewerbungen" className="text-sm text-rose-300 hover:underline">
+        <Link href="/admin/bewerbungen" className="text-sm text-gold-300 hover:underline">
           ← alle Bewerbungen
         </Link>
       </PageTitle>
@@ -141,8 +141,8 @@ export default async function ApplicationPage({ params }: PageProps<"/admin/bewe
           <Card title="Kontakt">
             <Facts
               rows={[
-                ["E-Mail", <a key="m" href={`mailto:${app.email}`} className="text-rose-300 hover:underline">{app.email}</a>],
-                ["Handy", app.phone ? <a key="p" href={`tel:+${app.phone}`} className="text-rose-300 hover:underline">+{app.phone}</a> : "–"],
+                ["E-Mail", <a key="m" href={`mailto:${app.email}`} className="text-gold-300 hover:underline">{app.email}</a>],
+                ["Handy", app.phone ? <a key="p" href={`tel:+${app.phone}`} className="text-gold-300 hover:underline">+{app.phone}</a> : "–"],
                 ["Stadt", app.city === "wien" ? "Wien" : app.city],
                 ["Konto seit", when(app.created_at)],
                 ["Eingereicht", when(app.submitted_at)],
@@ -224,7 +224,7 @@ export default async function ApplicationPage({ params }: PageProps<"/admin/bewe
                     confirm="Profil sperren? Offene Einladungen werden zurückgezogen, fixe Plätze erstattet und Nachrücker gesucht."
                   >
                     <label className="flex items-center gap-2 text-sm text-mist">
-                      <input type="checkbox" name="notify" defaultChecked className="h-4 w-4 accent-rose-400" />
+                      <input type="checkbox" name="notify" defaultChecked className="h-4 w-4 accent-gold-400" />
                       per E-Mail informieren
                     </label>
                   </ActionForm>
@@ -274,7 +274,7 @@ export default async function ApplicationPage({ params }: PageProps<"/admin/bewe
           </Card>
 
           {p && (
-            <Card title="Persönlichkeit" aside={<Chip tone="rose">{p.persoenlichkeit.typ}</Chip>}>
+            <Card title="Persönlichkeit" aside={<Chip tone="gold">{p.persoenlichkeit.typ}</Chip>}>
               <div className="grid gap-4 sm:grid-cols-2">
                 <Axis left="ruhig" right="extrovertiert" value={p.persoenlichkeit.ruhig_extrovertiert} />
                 <Axis left="spontan" right="strukturiert" value={p.persoenlichkeit.spontan_strukturiert} />
@@ -320,7 +320,7 @@ export default async function ApplicationPage({ params }: PageProps<"/admin/bewe
                   <li key={s.id} className="flex flex-wrap items-center justify-between gap-2 py-2.5 text-sm">
                     <span className="min-w-0">
                       {s.dinners ? (
-                        <Link href={`/admin/tische/${s.dinners.id}`} className="font-medium hover:text-rose-200">
+                        <Link href={`/admin/tische/${s.dinners.id}`} className="font-medium hover:text-gold-200">
                           {when(s.dinners.starts_at)} · {s.dinners.restaurants?.name ?? "–"}
                         </Link>
                       ) : (
@@ -462,13 +462,13 @@ export default async function ApplicationPage({ params }: PageProps<"/admin/bewe
           <Card title="Kennenlern-Gespräch">
             {app.transcript.length ? (
               <details>
-                <summary className="cursor-pointer text-sm text-rose-300">{app.transcript.length} Nachrichten anzeigen</summary>
+                <summary className="cursor-pointer text-sm text-gold-300">{app.transcript.length} Nachrichten anzeigen</summary>
                 <ol className="mt-3 space-y-2">
                   {app.transcript.map((m, i) => (
                     <li
                       key={i}
                       className={`max-w-[90%] rounded-2xl px-3 py-2 text-sm ${
-                        m.role === "user" ? "ml-auto bg-rose-400/15 text-cloud" : "bg-night-950/60 text-mist"
+                        m.role === "user" ? "ml-auto bg-gold-400/15 text-cloud" : "bg-night-950/60 text-mist"
                       }`}
                     >
                       {m.content}

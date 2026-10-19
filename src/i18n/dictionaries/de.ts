@@ -24,7 +24,11 @@ const de = {
     cta: "Jetzt bewerben",
     secondary: "So funktioniert's",
     note: "Bewerbung in max. 10 Minuten · Antwort innerhalb von 24 Stunden",
-    sceneLabel: "Ein runder Tisch mit sechs Stühlen – drei in Rosé, drei in Weiß",
+  },
+  wien: {
+    eyebrow: "Wien bei Kerzenlicht",
+    title: "Ein Abend, wie ihn nur Wien kann.",
+    text: "Ein gedeckter Tisch, warmes Licht, sechs Menschen, die sich etwas zu sagen haben. Wir kümmern uns um alles davor – ihr um das Gespräch.",
   },
   steps: {
     title: "So funktioniert Tisch6",
@@ -56,7 +60,7 @@ const de = {
       { title: "Hinter jeder Nachricht steht ein Mensch.", text: "Echte Antwort, keine Warteschleife." },
       { title: "Das Gegenteil von Wischen.", text: "Zwei Stunden mit einem echten Menschen statt Fehlersuche im Profil." },
       { title: "Absagen hat Konsequenzen.", text: "Wer am Tisch sitzt, meint es ernst." },
-      { title: "Ein Preis, keine versteckten Extras.", text: "35 € pro Tischteilnahme. Keine Boosts, kein Abo-Zwang." },
+      { title: "Ein Preis, keine versteckten Extras.", text: "35\u00a0€ pro Tischteilnahme. Keine Boosts, kein Abo-Zwang." },
     ],
   },
   ambiente: {
@@ -96,16 +100,16 @@ const de = {
   },
   founder: {
     eyebrow: "Gründungspaket",
-    title: "Drei Tischteilnahmen für 79 € statt 105 €.",
+    title: "Drei Tischteilnahmen für 79\u00a0€ statt 105\u00a0€.",
     lead: "Für die ersten 300 Singles in Wien. Die Bewerbung ist kostenlos – bezahlt wird erst, wenn du eine Einladung annimmst.",
     badge: "Gründungsmitglied Tisch6",
-    price: "79 €",
-    was: "statt 105 €",
+    price: "79\u00a0€",
+    was: "statt 105\u00a0€",
     unit: "für drei Tischteilnahmen",
     points: ["3 Tischteilnahmen im Paket", "12 Monate gültig", "Abzeichen „Gründungsmitglied“ in deinem Profil", "Zahlung erst bei der ersten Einladung"],
     counterBefore: "noch",
     counterAfter: "von 300 Plätzen in Wien",
-    single: "Einzeln: 35 € pro Tischteilnahme. Essen und Getränke zahlt ihr im Lokal – die Rechnung wird einfach gleichmäßig geteilt. Ein Preis, keine versteckten Extras.",
+    single: "Einzeln: 35\u00a0€ pro Tischteilnahme. Essen und Getränke zahlt ihr im Lokal – die Rechnung wird einfach gleichmäßig geteilt. Ein Preis, keine versteckten Extras.",
     cta: "Jetzt bewerben",
   },
   faq: {
@@ -113,7 +117,7 @@ const de = {
     items: [
       {
         q: "Was kostet eine Tischteilnahme?",
-        a: "35 Euro. Für die ersten 300 in Wien gibt es das Gründungspaket: drei Tischteilnahmen für 79 Euro statt 105 Euro, zwölf Monate gültig. Essen und Getränke zahlt ihr im Lokal – die Rechnung wird einfach gleichmäßig geteilt. Ein Preis, keine versteckten Extras.",
+        a: "35\u00a0Euro. Für die ersten 300 in Wien gibt es das Gründungspaket: drei Tischteilnahmen für 79\u00a0Euro statt 105\u00a0Euro, zwölf Monate gültig. Essen und Getränke zahlt ihr im Lokal – die Rechnung wird einfach gleichmäßig geteilt. Ein Preis, keine versteckten Extras.",
       },
       {
         q: "Wer kann sich bewerben?",
@@ -141,7 +145,7 @@ const de = {
       },
       {
         q: "Bekomme ich etwas, wenn ich Tisch6 weiterempfehle?",
-        a: "Ja. Wird jemand über deinen persönlichen Einladungslink angenommen und nimmt an einem Tisch teil, kostet deine nächste Tischteilnahme 20 € statt 35 €.",
+        a: "Ja. Wird jemand über deinen persönlichen Einladungslink angenommen und nimmt an einem Tisch teil, kostet deine nächste Tischteilnahme 20\u00a0€ statt 35\u00a0€.",
       },
       {
         q: "Was, wenn ich absagen muss?",
@@ -244,7 +248,7 @@ const de = {
     },
     buddy: {
       title: "Dein Einladungslink",
-      text: "Bring eine Freundin mit: Wer sich über diesen Link bewirbt, kann am selben Abend wie du kommen – an einen anderen Tisch. Und wird jemand über deinen Link angenommen und sitzt an einem Tisch, kostet deine nächste Tischteilnahme nur 20 € statt 35 €.",
+      text: "Bring eine Freundin mit: Wer sich über diesen Link bewirbt, kann am selben Abend wie du kommen – an einen anderen Tisch. Und wird jemand über deinen Link angenommen und sitzt an einem Tisch, kostet deine nächste Tischteilnahme nur 20\u00a0€ statt 35\u00a0€.",
       share: "Link teilen",
       copied: "Kopiert!",
       shareText: "Komm mit zu Tisch6 – KI-kuratierte Dating-Dinner in Wien:",
@@ -343,7 +347,7 @@ const de = {
     useCredit: "Mit deinem Guthaben zusagen",
     creditLeft: "noch {n} im Guthaben",
     founderTitle: "Gründungsmitglied werden",
-    founderText: "3 Tischteilnahmen für 79 € statt 105 €, 12 Monate gültig – mit Abzeichen in deinem Profil. Nur für die ersten 300 in Wien.",
+    founderText: "3 Tischteilnahmen für 79\u00a0€ statt 105\u00a0€, 12 Monate gültig – mit Abzeichen in deinem Profil. Nur für die ersten 300 in Wien.",
     founderButton: "Gründungspaket kaufen & zusagen",
     foodNote: "Essen und Getränke zahlt ihr im Lokal – die Rechnung wird einfach gleichmäßig geteilt.",
     paymentsOff: "Die Bezahlung wird gerade eingerichtet – bitte versuch es etwas später nochmal.",

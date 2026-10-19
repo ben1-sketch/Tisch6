@@ -109,7 +109,7 @@ export default async function TablePage({ params }: PageProps<"/admin/tische/[id
           </div>
         }
       >
-        <Link href="/admin/tische" className="text-sm text-rose-300 hover:underline">
+        <Link href="/admin/tische" className="text-sm text-gold-300 hover:underline">
           ← alle Tische
         </Link>
       </PageTitle>
@@ -170,7 +170,7 @@ export default async function TablePage({ params }: PageProps<"/admin/tische/[id
                               confirm="Einladung zurückziehen? Die Person bekommt eine kurze E-Mail."
                             >
                               <label className="flex items-center gap-2 text-sm text-mist">
-                                <input type="checkbox" name="replace" defaultChecked className="h-4 w-4 accent-rose-400" />
+                                <input type="checkbox" name="replace" defaultChecked className="h-4 w-4 accent-gold-400" />
                                 Nachrücker suchen
                               </label>
                             </ActionForm>
@@ -185,11 +185,11 @@ export default async function TablePage({ params }: PageProps<"/admin/tische/[id
                             confirm="Diesen Platz stornieren? Die Person bekommt eine E-Mail."
                           >
                             <label className="flex items-center gap-2 text-sm text-mist">
-                              <input type="checkbox" name="refund" defaultChecked className="h-4 w-4 accent-rose-400" />
+                              <input type="checkbox" name="refund" defaultChecked className="h-4 w-4 accent-gold-400" />
                               erstatten
                             </label>
                             <label className="flex items-center gap-2 text-sm text-mist">
-                              <input type="checkbox" name="replace" defaultChecked className="h-4 w-4 accent-rose-400" />
+                              <input type="checkbox" name="replace" defaultChecked className="h-4 w-4 accent-gold-400" />
                               Nachrücker suchen
                             </label>
                           </ActionForm>
@@ -253,7 +253,7 @@ export default async function TablePage({ params }: PageProps<"/admin/tische/[id
             title="Gesprächskarte"
             aside={
               card ? (
-                <a href={`/admin/karte/${dinner.id}`} target="_blank" rel="noreferrer" className="text-sm text-rose-300 hover:underline">
+                <a href={`/admin/karte/${dinner.id}`} target="_blank" rel="noreferrer" className="text-sm text-gold-300 hover:underline">
                   Druckversion ↗
                 </a>
               ) : null
@@ -264,7 +264,7 @@ export default async function TablePage({ params }: PageProps<"/admin/tische/[id
                 <div className="grid gap-4 sm:grid-cols-3">
                   {card.runden.map((r) => (
                     <div key={r.name}>
-                      <h3 className="text-sm font-semibold text-rose-300">{r.name}</h3>
+                      <h3 className="text-sm font-semibold text-gold-300">{r.name}</h3>
                       <ol className="mt-1 list-decimal space-y-1 pl-5 text-sm text-cloud">
                         {r.fragen.map((q) => (
                           <li key={q}>{q}</li>
@@ -335,7 +335,7 @@ export default async function TablePage({ params }: PageProps<"/admin/tische/[id
                   <li key={r.id}>
                     <PersonLink id={r.reported_id} name={r.reported_id ? names.get(r.reported_id) : null} /> gemeldet von{" "}
                     <PersonLink id={r.reporter_id} name={r.reporter_id ? names.get(r.reporter_id) : null} /> · {day(r.created_at)} ·{" "}
-                    <Link href="/admin/meldungen" className="text-rose-300 hover:underline">
+                    <Link href="/admin/meldungen" className="text-gold-300 hover:underline">
                       {r.status === "open" ? "offen – jetzt prüfen" : "erledigt"}
                     </Link>
                   </li>
@@ -408,11 +408,11 @@ export default async function TablePage({ params }: PageProps<"/admin/tische/[id
                 >
                   <fieldset className="w-full space-y-1 text-sm text-mist">
                     <label className="flex items-center gap-2">
-                      <input type="radio" name="money" value="credit" defaultChecked className="accent-rose-400" />
+                      <input type="radio" name="money" value="credit" defaultChecked className="accent-gold-400" />
                       Bezahltes bleibt als Guthaben
                     </label>
                     <label className="flex items-center gap-2">
-                      <input type="radio" name="money" value="refund" className="accent-rose-400" />
+                      <input type="radio" name="money" value="refund" className="accent-gold-400" />
                       Geld zurück
                     </label>
                   </fieldset>

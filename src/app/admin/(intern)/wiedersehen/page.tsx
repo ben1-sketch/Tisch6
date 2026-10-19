@@ -188,7 +188,7 @@ export default async function ReunionPage() {
           <ul className="divide-y divide-white/5 text-sm">
             {best.map((t) => (
               <li key={t.d.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
-                <Link href={`/admin/tische/${t.d.id}`} className="hover:text-rose-200">
+                <Link href={`/admin/tische/${t.d.id}`} className="hover:text-gold-200">
                   {when(t.d.starts_at)} · {t.d.restaurants?.name ?? "–"}
                 </Link>
                 <span className="text-mist">

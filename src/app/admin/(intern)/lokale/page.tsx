@@ -52,7 +52,7 @@ function RestaurantFields({ r }: { r?: Restaurant }) {
         <div className="flex flex-wrap gap-x-4 gap-y-2">
           {DAYS.map((d) => (
             <label key={d} className="flex items-center gap-1.5 text-sm">
-              <input type="checkbox" name="weekdays" value={d} defaultChecked={r ? r.weekdays.includes(d) : true} className="h-4 w-4 accent-rose-400" />
+              <input type="checkbox" name="weekdays" value={d} defaultChecked={r ? r.weekdays.includes(d) : true} className="h-4 w-4 accent-gold-400" />
               {WEEKDAY_NAMES[d]}
             </label>
           ))}
@@ -63,7 +63,7 @@ function RestaurantFields({ r }: { r?: Restaurant }) {
         <textarea name="notes" rows={2} maxLength={1000} defaultValue={r?.notes ?? ""} placeholder="Ansprechperson, Absprachen …" className={`${field} w-full`} />
       </label>
       <label className="flex items-center gap-2 text-sm sm:col-span-2">
-        <input type="checkbox" name="active" defaultChecked={r?.active ?? true} className="h-4 w-4 accent-rose-400" />
+        <input type="checkbox" name="active" defaultChecked={r?.active ?? true} className="h-4 w-4 accent-gold-400" />
         Aktiv – die KI plant neue Tische hier ein
       </label>
     </div>
@@ -99,7 +99,7 @@ export default async function RestaurantsPage() {
               {r.tables_per_evening} {r.tables_per_evening === 1 ? "Tisch" : "Tische"} pro Abend
             </p>
             <details className="mt-3">
-              <summary className="cursor-pointer text-sm text-rose-300">Bearbeiten</summary>
+              <summary className="cursor-pointer text-sm text-gold-300">Bearbeiten</summary>
               <ActionForm action={restaurantAction} hidden={{ id: r.id }} submit="Speichern" tone="primary" className="mt-4">
                 <RestaurantFields r={r} />
               </ActionForm>

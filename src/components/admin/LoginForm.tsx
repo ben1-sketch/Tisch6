@@ -29,7 +29,7 @@ export function LoginForm({ weiter }: { weiter: string }) {
       <button
         type="submit"
         disabled={pending}
-        className="w-full rounded-full bg-rose-400 px-6 py-3 font-semibold text-night-950 transition hover:bg-rose-300 disabled:opacity-50"
+        className="w-full rounded-full bg-gold-400 px-6 py-3 font-semibold text-night-950 transition hover:bg-gold-300 disabled:opacity-50"
       >
         {pending ? "Bitte warten …" : "Anmelden"}
       </button>

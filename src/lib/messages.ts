@@ -22,37 +22,38 @@ type Layout = {
 
 function layout(o: Layout): EmailContent {
   const font = "font-family:Arial,Helvetica,sans-serif;";
-  const p = (t: string) => `<p style="${font}font-size:16px;line-height:1.6;color:#c9cde0;margin:0 0 14px;">${esc(t)}</p>`;
+  const serif = "font-family:Georgia,'Times New Roman',serif;";
+  const p = (t: string) => `<p style="${font}font-size:16px;line-height:1.6;color:#d8d3c9;margin:0 0 14px;">${esc(t)}</p>`;
   const details = o.details?.length
-    ? `<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin:6px 0 18px;background:#0a1128;border-radius:14px;">${o.details
+    ? `<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin:6px 0 18px;background:#0b1120;border-radius:14px;">${o.details
         .map(
           ([k, v]) =>
-            `<tr><td style="${font}padding:10px 16px;font-size:13px;color:#a7aed0;width:34%;vertical-align:top;">${esc(k)}</td><td style="${font}padding:10px 16px;font-size:15px;color:#eef0fa;">${esc(v)}</td></tr>`,
+            `<tr><td style="${font}padding:10px 16px;font-size:13px;color:#aab1c3;width:34%;vertical-align:top;">${esc(k)}</td><td style="${font}padding:10px 16px;font-size:15px;color:#f4efe6;">${esc(v)}</td></tr>`,
         )
         .join("")}</table>`
     : "";
   const list = (o.lists ?? [])
     .map(
       (l) =>
-        `<div style="margin:6px 0 14px;padding:16px 18px;border:1px solid #e88fa3;border-radius:14px;"><div style="${font}font-size:13px;color:#f4b6c2;font-weight:bold;margin-bottom:8px;">${esc(l.title)}</div>${l.items
-          .map((item, i) => `<div style="${font}font-size:15px;line-height:1.5;color:#eef0fa;margin:6px 0;">${i + 1}. ${esc(item)}</div>`)
+        `<div style="margin:6px 0 14px;padding:16px 18px;border:1px solid #c09a57;border-radius:14px;"><div style="${font}font-size:13px;color:#d6b77a;font-weight:bold;margin-bottom:8px;">${esc(l.title)}</div>${l.items
+          .map((item, i) => `<div style="${font}font-size:15px;line-height:1.5;color:#f4efe6;margin:6px 0;">${i + 1}. ${esc(item)}</div>`)
           .join("")}</div>`,
     )
     .join("");
   const cta = o.cta
-    ? `<div style="margin:22px 0 8px;"><a href="${esc(o.cta.url)}" style="${font}display:inline-block;background:#f4b6c2;color:#0a1128;text-decoration:none;font-weight:bold;font-size:16px;padding:14px 26px;border-radius:999px;">${esc(o.cta.label)}</a></div>`
+    ? `<div style="margin:22px 0 8px;"><a href="${esc(o.cta.url)}" style="${font}display:inline-block;background:#d6b77a;color:#060913;text-decoration:none;font-weight:bold;font-size:13px;letter-spacing:2px;text-transform:uppercase;padding:15px 28px;border-radius:999px;">${esc(o.cta.label)}</a></div>`
     : "";
   const html = `<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(o.subject)}</title></head>
-<body style="margin:0;padding:0;background:#0a1128;">
+<body style="margin:0;padding:0;background:#0b1120;">
 <span style="display:none;max-height:0;overflow:hidden;opacity:0;">${esc(o.preheader ?? o.paragraphs[0] ?? "")}</span>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0a1128;padding:28px 12px;"><tr><td align="center">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#111a3a;border:1px solid #26336a;border-radius:20px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0b1120;padding:28px 12px;"><tr><td align="center">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#121a2e;border:1px solid #4b4130;border-radius:20px;">
 <tr><td style="padding:30px 28px 10px;">
-<div style="${font}font-size:20px;font-weight:bold;color:#eef0fa;">Tisch<span style="color:#f4b6c2;">6</span></div>
-<h1 style="${font}font-size:24px;line-height:1.3;margin:22px 0 14px;color:#eef0fa;">${esc(o.title)}</h1>
+<div style="${serif}font-size:24px;color:#f4efe6;">Tisch<span style="color:#d6b77a;font-style:italic;">6</span></div>
+<h1 style="${serif}font-size:28px;font-weight:normal;line-height:1.25;margin:22px 0 14px;color:#f4efe6;">${esc(o.title)}</h1>
 ${o.paragraphs.map(p).join("")}${details}${list}${cta}${(o.after ?? []).map(p).join("")}
 </td></tr>
-<tr><td style="${font}padding:12px 28px 26px;font-size:12px;line-height:1.5;color:#7d84a8;">Fragen? Antworte einfach auf diese E-Mail – hier antwortet ein Mensch, keine Warteschleife.<br>Tisch6 · KI-kuratierte Dating-Dinner · Pilot in Wien<br><a href="${siteUrl()}" style="color:#7d84a8;">${esc(siteUrl().replace(/^https?:\/\//, ""))}</a></td></tr>
+<tr><td style="${font}padding:12px 28px 26px;font-size:12px;line-height:1.5;color:#8a90a3;">Fragen? Antworte einfach auf diese E-Mail – hier antwortet ein Mensch, keine Warteschleife.<br>Tisch6 · KI-kuratierte Dating-Dinner · Pilot in Wien<br><a href="${siteUrl()}" style="color:#8a90a3;">${esc(siteUrl().replace(/^https?:\/\//, ""))}</a></td></tr>
 </table></td></tr></table></body></html>`;
 
   const text = [

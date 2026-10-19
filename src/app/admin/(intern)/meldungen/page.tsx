@@ -73,7 +73,7 @@ export default async function ReportsPage({ searchParams }: PageProps<"/admin/me
                   {r.dinners && (
                     <>
                       {" · "}
-                      <Link href={`/admin/tische/${r.dinners.id}`} className="text-rose-300 hover:underline">
+                      <Link href={`/admin/tische/${r.dinners.id}`} className="text-gold-300 hover:underline">
                         Tisch {day(r.dinners.starts_at)}
                         {r.dinners.restaurants ? `, ${r.dinners.restaurants.name}` : ""}
                       </Link>

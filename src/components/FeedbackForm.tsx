@@ -20,7 +20,7 @@ function Stars({ label, value, onChange, t }: { label: string; value: number | n
             aria-pressed={value !== null && n <= value}
             onClick={() => onChange(n)}
             className={`h-11 w-11 rounded-full border text-lg transition ${
-              value !== null && n <= value ? "border-rose-400 bg-rose-400 text-night-950" : "border-white/15 text-mist hover:border-white/30"
+              value !== null && n <= value ? "border-gold-400 bg-gold-400 text-night-950" : "border-white/15 text-mist hover:border-white/30"
             }`}
           >
             ★
@@ -93,7 +93,7 @@ export function FeedbackForm({ view, t }: { view: FeedbackView; t: T }) {
                 aria-pressed={active}
                 onClick={() => setWants(toggle(wants, m.id))}
                 className={`rounded-full border px-4 py-2.5 transition ${
-                  active ? "border-rose-400 bg-rose-400 text-night-950" : "border-white/15 hover:border-white/30"
+                  active ? "border-gold-400 bg-gold-400 text-night-950" : "border-white/15 hover:border-white/30"
                 }`}
               >
                 {active ? "♥ " : ""}
@@ -103,7 +103,7 @@ export function FeedbackForm({ view, t }: { view: FeedbackView; t: T }) {
           })}
         </div>
         <label className="flex gap-3 text-sm text-mist">
-          <input type="checkbox" checked={sharePhone} onChange={(e) => setSharePhone(e.target.checked)} className="mt-0.5 h-4 w-4 flex-none accent-rose-400" />
+          <input type="checkbox" checked={sharePhone} onChange={(e) => setSharePhone(e.target.checked)} className="mt-0.5 h-4 w-4 flex-none accent-gold-400" />
           <span>{t.sharePhone}</span>
         </label>
       </section>
@@ -130,18 +130,18 @@ export function FeedbackForm({ view, t }: { view: FeedbackView; t: T }) {
         <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2">
           {view.members.map((m) => (
             <label key={m.id} className="flex items-center gap-2 text-sm">
-              <input type="checkbox" checked={absent.includes(m.id)} onChange={() => setAbsent(toggle(absent, m.id))} className="h-4 w-4 accent-rose-400" />
+              <input type="checkbox" checked={absent.includes(m.id)} onChange={() => setAbsent(toggle(absent, m.id))} className="h-4 w-4 accent-gold-400" />
               {m.firstName}
             </label>
           ))}
         </div>
       </section>
 
-      {state === "error" && <p className="text-sm text-rose-300">{error ?? "Da ist etwas schiefgelaufen."}</p>}
+      {state === "error" && <p className="text-sm text-gold-300">{error ?? "Da ist etwas schiefgelaufen."}</p>}
       <button
         type="submit"
         disabled={state === "busy"}
-        className="w-full rounded-full bg-rose-400 px-6 py-3.5 font-semibold text-night-950 transition hover:bg-rose-300 disabled:opacity-50"
+        className="btn btn-primary w-full disabled:opacity-50 disabled:shadow-none"
       >
         {t.send}
       </button>

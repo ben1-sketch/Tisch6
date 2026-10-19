@@ -144,7 +144,7 @@ export default async function ApplicationsPage({ searchParams }: PageProps<"/adm
             <li key={a.id}>
               <Link
                 href={`/admin/bewerbungen/${a.id}`}
-                className="glass flex flex-col gap-2 rounded-2xl p-4 transition hover:border-rose-400/40 sm:flex-row sm:items-center sm:justify-between"
+                className="glass flex flex-col gap-2 rounded-2xl p-4 transition hover:border-gold-400/40 sm:flex-row sm:items-center sm:justify-between"
               >
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
@@ -152,7 +152,7 @@ export default async function ApplicationsPage({ searchParams }: PageProps<"/adm
                     <Chip tone={APP_STATUS[a.status].tone}>{APP_STATUS[a.status].label}</Chip>
                     {a.status === "waitlist" && a.waitlist_reason && <Chip tone="amber">{WAITLIST_REASONS[a.waitlist_reason]}</Chip>}
                     {a.under_review && a.status !== "blocked" && <Chip tone="amber">zur Prüfung</Chip>}
-                    {a.founder && <Chip tone="rose">★ Gründungsmitglied</Chip>}
+                    {a.founder && <Chip tone="gold">★ Gründungsmitglied</Chip>}
                     {a.no_shows > 0 && <Chip tone="red">{a.no_shows}× nicht erschienen</Chip>}
                     {!a.photo_path && a.status !== "onboarding" && <Chip tone="red">kein Foto</Chip>}
                   </div>

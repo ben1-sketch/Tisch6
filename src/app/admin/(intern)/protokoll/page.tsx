@@ -34,12 +34,12 @@ export default async function LogPage({ searchParams }: PageProps<"/admin/protok
                 {e.action}
                 {e.detail && e.action !== "Anmeldung fehlgeschlagen" && <span className="text-mist"> · {e.detail}</span>}
                 {e.application_id && (
-                  <Link href={`/admin/bewerbungen/${e.application_id}`} className="ml-2 text-rose-300 hover:underline">
+                  <Link href={`/admin/bewerbungen/${e.application_id}`} className="ml-2 text-gold-300 hover:underline">
                     Profil
                   </Link>
                 )}
                 {e.dinner_id && (
-                  <Link href={`/admin/tische/${e.dinner_id}`} className="ml-2 text-rose-300 hover:underline">
+                  <Link href={`/admin/tische/${e.dinner_id}`} className="ml-2 text-gold-300 hover:underline">
                     Tisch
                   </Link>
                 )}

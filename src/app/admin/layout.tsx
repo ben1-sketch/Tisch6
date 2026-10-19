@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "@fontsource-variable/inter";
-import "@fontsource-variable/sora";
+import "@fontsource-variable/cormorant-garamond";
+import "@fontsource-variable/cormorant-garamond/wght-italic.css";
 import "../globals.css";
 
 export const metadata: Metadata = {
@@ -8,7 +9,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export const viewport: Viewport = { themeColor: "#0a1128" };
+export const viewport: Viewport = { themeColor: "#0b1120" };
 
 /** Eigenes Grundgerüst für den Adminbereich (ohne Website-Kopf und -Fuß) */
 export default function AdminRootLayout({ children }: { children: React.ReactNode }) {
