@@ -110,8 +110,12 @@ Leite die Persönlichkeit aus den Situationsfragen ab und bewerte jede der vier 
 Fehlt eine gewünschte Altersspanne, schätze keine.
 Beziehungsziel: "ernsthaft" oder "offen" (null, wenn unklar). Werte: Wichtigkeit von Glaube, Politik und Familie je 1–3 (null, wenn nicht gesagt) – speichere nie Konfession, Partei oder konkrete Ansichten.`;
 
+/** Die API erwartet als erste Nachricht eine der Person – die feste Begrüßung der Gastgeberin steht deshalb nicht am Anfang. */
+const STARTER: Anthropic.Beta.BetaMessageParam = { role: "user", content: "Hallo, ich möchte mich bei Tisch6 bewerben." };
+
 function toApiMessages(history: ChatMessage[]): Anthropic.Beta.BetaMessageParam[] {
-  return history.map((m) => ({ role: m.role, content: m.content }));
+  const messages = history.map((m) => ({ role: m.role, content: m.content }));
+  return messages[0]?.role === "assistant" ? [STARTER, ...messages] : messages;
 }
 
 /** Nächste Nachricht der Gastgeberin. history muss mit einer User-Nachricht enden. */
