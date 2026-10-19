@@ -8,6 +8,7 @@ import { eraseApplicant } from "../erase";
 import { APP_STATUS } from "./format";
 import {
   acceptedMail,
+  adminMail,
   blockedMail,
   creditMail,
   dinnerMovedMail,
@@ -20,7 +21,8 @@ import {
   seatRemovedMail,
   waitlistMail,
 } from "../messages";
-import { notifyAdmin, sendEmail, sendSms } from "../notify";
+import { type SendResult, notifyAdmin, sendEmail, sendSms } from "../notify";
+import { normalizePhone } from "../phone";
 import {
   afterSeatChange,
   closeDinner,
@@ -701,4 +703,79 @@ export async function deleteRestaurant(db: Db, id: string) {
   if (!data) throw new AdminError("Lokal nicht gefunden.");
   await logAdmin(db, "Lokal gelöscht", { detail: (data as { name: string }).name });
   return "Lokal gelöscht.";
+}
+
+/** Häufige Antworten von Twilio (Fehlercode) und Resend (Text) – mit dem, was zu tun ist */
+const TEST_HINTS: [number | RegExp, string][] = [
+  [20003, "TWILIO_ACCOUNT_SID oder TWILIO_AUTH_TOKEN in Vercel stimmt nicht."],
+  [21408, "Twilio darf in dieses Land noch keine SMS schicken: bei Twilio unter Messaging → Settings → Geo permissions das Land (z. B. Austria) anhaken."],
+  [21608, "Das Twilio-Konto ist noch im Testmodus und schickt nur an bestätigte Nummern – Konto bei Twilio upgraden."],
+  [21211, "Die Handynummer ist ungültig."],
+  [/messaging service/i, "TWILIO_MESSAGING_SERVICE_SID (MG…) prüfen – und ob im Messaging Service der Absender Tisch6 hinterlegt ist."],
+  [/api key/i, "RESEND_API_KEY in Vercel stimmt nicht."],
+  [/domain is not verified|verify a domain/i, "Die Domain aus EMAIL_FROM ist bei Resend noch nicht bestätigt."],
+  [/`from`/i, "EMAIL_FROM hat das falsche Format – richtig ist z. B. Tisch6 <hallo@tisch6.at>."],
+];
+
+/** Was Resend bzw. Twilio beim Testversand zurückgemeldet hat (steht im Versandprotokoll) */
+async function testFailure(db: Db, dedupeKey: string) {
+  const row = (await db.from("notifications").select("error").eq("dedupe_key", dedupeKey).maybeSingle()).data as { error: string | null } | null;
+  const raw = row?.error ?? "";
+  let body: { code?: number; message?: string } = {};
+  try {
+    body = JSON.parse(raw);
+  } catch {
+    // Kein JSON (z. B. abgeschnitten) – dann den Text so anzeigen
+  }
+  const message = body.message ?? raw;
+  const hint = TEST_HINTS.find(([match]) => (typeof match === "number" ? body.code === match : match.test(message)))?.[1];
+  return [hint, message && `(${message})`].filter(Boolean).join(" ") || "ohne Begründung.";
+}
+
+async function testLine(db: Db, label: string, result: SendResult, dedupeKey: string, texts: { sent: string; logged: string }) {
+  if (result === "sent") return { ok: true, line: `${label}: ${texts.sent}` };
+  if (result === "logged") return { ok: false, line: `${label}: ${texts.logged}` };
+  if (result === "failed") return { ok: false, line: `${label}: fehlgeschlagen – ${await testFailure(db, dedupeKey)}` };
+  return { ok: false, line: `${label}: gerade nicht erreichbar – bitte gleich nochmal versuchen.` };
+}
+
+/** Testversand über Resend und Twilio: E-Mail an ADMIN_EMAIL, SMS an die eingetragene Nummer */
+export async function sendTestMessages(db: Db, rawPhone: string) {
+  const phone = rawPhone.trim() ? normalizePhone(rawPhone) : null;
+  if (rawPhone.trim() && !phone) throw new AdminError("Die Handynummer stimmt nicht – z. B. 0660 1234567 oder +43 660 1234567.");
+
+  const results: { ok: boolean; line: string }[] = [];
+  const admin = process.env.ADMIN_EMAIL;
+  if (!admin) {
+    results.push({ ok: false, line: "E-Mail: ADMIN_EMAIL fehlt in Vercel – an diese Adresse geht die Test-E-Mail." });
+  } else {
+    const key = `test:email:${randomUUID()}`;
+    const content = adminMail("Test-E-Mail", ["Wenn du das liest, funktioniert der E-Mail-Versand von Tisch6. Du musst nichts weiter tun."]);
+    const result = await sendEmail(db, { to: admin, content, kind: "test", dedupeKey: key });
+    results.push(
+      await testLine(db, "E-Mail", result, key, {
+        sent: `ist an ${admin} raus ✓ – schau in dein Postfach, notfalls im Spam-Ordner.`,
+        logged: "RESEND_API_KEY fehlt in Vercel – die E-Mail wurde nur protokolliert.",
+      }),
+    );
+  }
+
+  if (!phone) {
+    results.push({ ok: true, line: "SMS: keine Handynummer eingetragen – nicht getestet." });
+  } else {
+    const key = `test:sms:${randomUUID()}`;
+    const body = "Tisch6: Test-SMS. Wenn du das liest, funktioniert der SMS-Versand.";
+    const result = await sendSms(db, { to: phone, body, kind: "test", dedupeKey: key });
+    results.push(
+      await testLine(db, "SMS", result, key, {
+        sent: `Twilio hat sie angenommen ✓ – sie sollte in einer Minute an ${phone} ankommen.`,
+        logged: "Twilio ist in Vercel nicht vollständig eingetragen – die SMS wurde nur protokolliert.",
+      }),
+    );
+  }
+
+  await logAdmin(db, "Versand getestet");
+  const message = results.map((r) => r.line).join("\n");
+  if (results.some((r) => !r.ok)) throw new AdminError(message);
+  return message;
 }

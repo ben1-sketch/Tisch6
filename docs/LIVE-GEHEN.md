@@ -42,9 +42,11 @@ das hier – in dieser Reihenfolge. Den aktuellen Stand zeigt der Adminbereich u
 
 ## 5. Generalprobe
 
-1. Selbst bewerben (mit eigener Handynummer) und das Kennenlern-Gespräch bis zum Ende führen.
-2. Im Adminbereich unter **Bewerbungen** prüfen: Foto da, Profil ausgewertet, E-Mail „Bewerbung eingegangen“ im Postfach.
-3. Unter **Versand** nachsehen, dass E-Mails und SMS wirklich verschickt wurden (nicht nur „protokolliert“).
-4. Mit Stripe im Testmodus einmal eine Tischteilnahme bezahlen (Karte `4242 4242 4242 4242`).
+1. Im Adminbereich unter **Übersicht → E-Mail und SMS testen** die eigene Handynummer eintragen und **Test senden**
+   drücken – Test-E-Mail und Test-SMS müssen ankommen. Bei einem Fehler steht dort, was zu tun ist.
+2. Selbst bewerben (mit eigener Handynummer) und das Kennenlern-Gespräch bis zum Ende führen.
+3. Im Adminbereich unter **Bewerbungen** prüfen: Foto da, Profil ausgewertet, E-Mail „Bewerbung eingegangen“ im Postfach.
+4. Unter **Versand** nachsehen, dass E-Mails und SMS wirklich verschickt wurden (nicht nur „protokolliert“).
+5. Mit Stripe im Testmodus einmal eine Tischteilnahme bezahlen (Karte `4242 4242 4242 4242`).
 
 Erst dann Stripe auf live stellen und Tisch6 bekannt machen.

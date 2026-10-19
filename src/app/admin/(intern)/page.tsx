@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ActionForm } from "@/components/admin/ActionForm";
-import { Card, Chip, Empty, Notice, PageTitle, Stat } from "@/components/admin/ui";
+import { Card, Chip, Empty, Notice, PageTitle, Stat, field } from "@/components/admin/ui";
 import { requireAdmin } from "@/lib/admin/auth";
 import { DINNER_STATUS, relative, when } from "@/lib/admin/format";
 import { FOUNDER, TABLE, euro } from "@/lib/config";
@@ -9,7 +9,7 @@ import { type AdminLog, type DinnerStatus, db } from "@/lib/db";
 import { configuredSiteUrl } from "@/lib/site";
 import { DAY, HOUR, WEEKDAY_CODES, addDays, viennaDate, viennaToUtc, weekdayOf } from "@/lib/time";
 import { TIMING } from "@/lib/config";
-import { planTablesAction, tickAction } from "../actions";
+import { planTablesAction, testSendAction, tickAction } from "../actions";
 
 export const metadata: Metadata = { title: "Übersicht" };
 // „Durchlauf jetzt starten“ darf so lange laufen wie der automatische Durchlauf
@@ -69,7 +69,12 @@ async function loadOverview() {
     client.from("payments").select("amount_cents, status, created_at"),
     client.from("packages").select("id", { count: "exact", head: true }).eq("kind", "founder"),
     client.from("matches").select("id", { count: "exact", head: true }),
-    client.from("notifications").select("id", { count: "exact", head: true }).eq("status", "failed").gte("created_at", iso(now - 7 * DAY)),
+    client
+      .from("notifications")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "failed")
+      .neq("kind", "test")
+      .gte("created_at", iso(now - 7 * DAY)),
     client.from("job_locks").select("locked_until").eq("name", "tick").maybeSingle(),
     client.from("restaurants").select("id", { count: "exact", head: true }).eq("active", true),
     client.from("admin_log").select("*").neq("action", "Anmeldung fehlgeschlagen").order("created_at", { ascending: false }).limit(10),
@@ -264,6 +269,16 @@ export default async function AdminHome() {
                 </li>
               ))}
             </ul>
+          </Card>
+
+          <Card title="E-Mail und SMS testen">
+            <p className="text-sm text-mist">
+              Schickt eine Test-E-Mail an ADMIN_EMAIL und – wenn du deine Handynummer einträgst – eine Test-SMS. So siehst du sofort, ob Resend
+              und Twilio richtig eingerichtet sind.
+            </p>
+            <ActionForm action={testSendAction} submit="Test senden" className="mt-4">
+              <input name="phone" type="tel" autoComplete="tel" placeholder="Handynummer, z. B. 0660 1234567" className={`${field} w-full sm:w-64`} />
+            </ActionForm>
           </Card>
         </div>
       </div>

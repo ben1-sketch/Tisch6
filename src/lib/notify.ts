@@ -2,7 +2,7 @@ import "server-only";
 import type { Db } from "./db";
 
 export type EmailContent = { subject: string; html: string; text: string };
-type SendResult = "sent" | "logged" | "duplicate" | "failed" | "retry";
+export type SendResult = "sent" | "logged" | "duplicate" | "failed" | "retry";
 
 /**
  * Reserviert den Versand im Protokoll. Gibt es den Schlüssel schon, wurde die Nachricht

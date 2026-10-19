@@ -33,6 +33,7 @@ import {
   revertNoShow,
   saveNote,
   saveRestaurant,
+  sendTestMessages,
   setApplicantAvailability,
   unblockApplicant,
   waitlistApplicant,
@@ -150,6 +151,10 @@ export async function planTablesAction(): Promise<ActionResult> {
     await logAdmin(client, "Tischplanung von Hand gestartet");
     return describeTick(report);
   });
+}
+
+export async function testSendAction(_: ActionResult, form: FormData) {
+  return run(async () => sendTestMessages(db(), String(form.get("phone") ?? "")));
 }
 
 export async function learningsAction(): Promise<ActionResult> {
