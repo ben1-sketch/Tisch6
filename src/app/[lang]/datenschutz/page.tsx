@@ -60,10 +60,13 @@ export default function Datenschutz() {
 
       <h2>6. Empfänger und Auftragsverarbeiter</h2>
       <ul>
-        <li>Supabase Inc. – Datenbank, Login und verschlüsselter Fotospeicher, Serverstandort EU (Frankfurt).</li>
+        <li>Supabase Inc. – Datenbank, Login und verschlüsselter Fotospeicher, Serverstandort EU (Irland).</li>
         <li>Vercel Inc. – Hosting der Website (USA; Datenübermittlung auf Grundlage des EU-US Data Privacy Framework bzw. Standardvertragsklauseln).</li>
         <li>Anthropic PBC – KI-Kennenlern-Chat (USA; Standardvertragsklauseln). Daten werden laut Anthropic nicht zum Training von Modellen verwendet.</li>
-        <li><Todo>SMS-Anbieter, z. B. Twilio Inc.</Todo> – Versand von Bestätigungscode, Erinnerungen und Nachrücker-Angeboten.</li>
+        <li>
+          Twilio Ireland Ltd. (Irland) – Versand von Bestätigungscode, Erinnerungen und Nachrücker-Angeboten; Verarbeitung auch durch Twilio Inc.
+          (USA; EU-US Data Privacy Framework bzw. Standardvertragsklauseln).
+        </li>
         <li>Resend Inc. – Versand von E-Mails (USA; EU-US Data Privacy Framework bzw. Standardvertragsklauseln).</li>
         <li>Stripe Payments Europe Ltd. (Irland) – Zahlungsabwicklung. Karten- und Kontodaten gibst du direkt bei Stripe ein; wir erhalten sie nicht.</li>
         <li>Unsere Partnerlokale – erhalten für die Reservierung auf den Namen „Tisch6“ nur die Personenzahl und anonyme Hinweise für die Küche (z. B. „1× vegetarisch“), keine Namen.</li>

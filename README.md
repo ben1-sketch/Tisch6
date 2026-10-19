@@ -17,7 +17,7 @@ Einrichtung: **[Etappe 1](docs/SETUP-ETAPPE-1.md)** · **[Etappe 2](docs/SETUP-E
 ## Technik
 
 - **Next.js 16** (App Router, TypeScript, Tailwind CSS 4) – Hosting auf Vercel
-- **Supabase** (EU/Frankfurt) – Datenbank, Login per Handynummer (SMS-Code)
+- **Supabase** (EU/Irland) – Datenbank, Login per Handynummer (SMS-Code)
 - **Claude API** – Kennenlern-Chat, Profil-Auswertung, Bewertung, Tischwahl, Gesprächskarten, Lernnotizen
 - **Stripe** – Zahlungen (Checkout + Webhook), **Resend** – E-Mails, **Twilio** – SMS
 - **Automatischer Durchlauf** alle 10 Minuten (`/api/cron/tick`, ausgelöst von Supabase pg_cron) – neue Tische plant die KI nachts zwischen 1 und 6 Uhr
