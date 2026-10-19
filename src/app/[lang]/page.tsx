@@ -30,9 +30,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
   const [t, remaining] = await Promise.all([getDictionary(lang), founderRemaining()]);
   const free = remaining ?? FOUNDER.limit;
   const apply = `/${lang}/bewerben`;
-  // Bildstrecke „Das Ambiente“ – gleiche Reihenfolge wie die Texte in t.ambiente.photos; das erste Bild ist das große
-  const ambiente = [bilder.ambienteBar, bilder.ambienteLounge, bilder.ambienteSamt, bilder.ambienteGlaeser];
-  const [feature, ...gallery] = ambiente.map((bild, i) => ({ ...bild, ...t.ambiente.photos[i] }));
+  const feature = { ...bilder.tischrunde, ...t.ambiente.photo };
 
   return (
     <>
@@ -40,7 +38,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
 
       {/* 1 · Seitenanfang: Vollbild-Foto, Überschrift in der Mitte */}
       <section className="relative isolate flex min-h-[calc(100svh-4.5rem)] items-center overflow-hidden">
-        <Foto src={bilder.heroHintergrund.src} alt="" sizes="100vw" className="absolute inset-0 -z-10" tint="hero" verlauf={false} preload zoom />
+        <Foto src={bilder.salon.src} alt="" sizes="100vw" className="absolute inset-0 -z-10" tint="hero" verlauf={false} preload zoom fokus="object-[62%_50%]" />
         <div className="mx-auto w-full max-w-4xl px-4 py-24 text-center sm:px-6">
           <p className="enter eyebrow">{t.hero.eyebrow}</p>
           <Ornament className="enter mt-6" />
@@ -100,7 +98,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         </div>
       </section>
 
-      {/* 4 · Das Ambiente: großes Bild mit versetztem Goldrahmen, darunter drei Hochformate */}
+      {/* 4 · Das Ambiente: großes Bild mit versetztem Goldrahmen, daneben der Text */}
       <section id="ambiente" className="scroll-mt-24 mx-auto max-w-6xl px-4 py-24 sm:px-6 sm:py-32">
         <div className="grid items-center gap-14 lg:grid-cols-[1.15fr_1fr] lg:gap-20">
           <figure data-reveal className="frame-offset zoom-hover relative mr-4 aspect-[4/3] sm:mr-0">
@@ -121,19 +119,6 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
               ))}
             </ul>
           </div>
-        </div>
-        <div className="mt-20 grid gap-8 sm:grid-cols-3 sm:gap-6">
-          {gallery.map((bild, i) => (
-            <figure key={bild.label} data-reveal style={{ transitionDelay: `${i * 150}ms` }} className="zoom-hover">
-              <div className="relative aspect-[4/5] overflow-hidden">
-                <Foto src={bild.src} alt={bild.alt} sizes="(min-width: 640px) 24rem, 100vw" className="absolute inset-0" verlauf={false} />
-              </div>
-              <figcaption className="eyebrow mt-4 flex items-center gap-3">
-                <span className="h-px w-6 bg-gold-400/60" aria-hidden="true" />
-                {bild.label}
-              </figcaption>
-            </figure>
-          ))}
         </div>
       </section>
 
@@ -161,9 +146,9 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         </div>
       </section>
 
-      {/* 6 · Sicher für Frauen / Fair für Männer – Hintergrund: gedeckter Tisch */}
+      {/* 6 · Sicher für Frauen / Fair für Männer – Hintergrund: die Fenster des Salons mit Blick auf Wien */}
       <section id="sicher" className="scroll-mt-24 relative isolate overflow-hidden">
-        <Foto src={bilder.gedeckt.src} alt="" sizes="100vw" className="absolute inset-0 -z-10" tint="strong" verlauf={false} />
+        <Foto src={bilder.salon.src} alt="" sizes="100vw" className="absolute inset-0 -z-10" tint="strong" verlauf={false} fokus="object-right" />
         <div className="mx-auto grid max-w-6xl gap-6 px-4 py-24 sm:px-6 sm:py-32 md:grid-cols-2">
           {[t.safe.women, t.safe.men].map((col, i) => (
             <div key={col.eyebrow} data-reveal style={{ transitionDelay: `${i * 180}ms` }} className="glass-strong p-8 sm:p-11">
@@ -245,9 +230,9 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         </div>
       </section>
 
-      {/* 9 · Abschluss: Champagner und die Einladung */}
+      {/* 9 · Abschluss: ein gedeckter Platz wartet */}
       <section className="relative isolate overflow-hidden">
-        <Foto src={bilder.abschluss.src} alt="" sizes="100vw" className="absolute inset-0 -z-10" tint="strong" verlauf={false} />
+        <Foto src={bilder.gedeck.src} alt="" sizes="100vw" className="absolute inset-0 -z-10" tint="strong" verlauf={false} />
         <div data-reveal className="mx-auto max-w-3xl px-4 py-28 text-center sm:px-6 sm:py-40">
           <Ornament />
           <h2 className="mt-8 font-display text-4xl leading-tight sm:text-6xl">{t.closing.title}</h2>

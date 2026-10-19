@@ -193,7 +193,7 @@
 
   /* ---------- Fotos: gedämpft und warm, damit sie leise im Hintergrund bleiben ---------- */
   .img-dezent {
-    filter: saturate(0.7) sepia(0.14) contrast(1.04) brightness(0.9);
+    filter: saturate(0.88) sepia(0.06) contrast(1.03) brightness(0.96);
   }
   /* langsamer Zoom beim Laden (Seitenanfang) */
   .kenburns {

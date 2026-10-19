@@ -3,7 +3,7 @@ const de = {
     title: "Tisch6 – KI-kuratierte Dating-Dinner in Wien",
     description:
       "Kein Wischen, kein Ghosting, echte Menschen am Tisch. Tisch6 stellt mit KI sechs Singles an einen Tisch – drei Frauen, drei Männer, ein Abend in einem Wiener Partnerlokal.",
-    imageAlt: "Gedeckter Tisch in einem edlen Restaurant bei gedämpftem Licht",
+    imageAlt: "Runder Tisch für sechs in einem Wiener Salon bei Abendlicht",
   },
   nav: {
     how: "So funktioniert's",
@@ -67,12 +67,7 @@ const de = {
     eyebrow: "Das Ambiente",
     title: "Lokale, in denen man gern sitzen bleibt.",
     lead: "Vier bis fünf ausgewählte Wiener Lokale – ruhig genug zum Reden, gut genug zum Genießen. Kein Lärm, kein Gedränge, kein Zeitdruck.",
-    photos: [
-      { label: "Zum Ankommen", alt: "Moderne Bar mit goldenen Akzenten und warmem Licht" },
-      { label: "Zum Bleiben", alt: "Elegante Lounge mit Kronleuchtern und blauem Licht" },
-      { label: "Zum Reden", alt: "Tische mit Samtstühlen in einem ruhigen Restaurant" },
-      { label: "Zum Anstoßen", alt: "Gedeckter Tisch mit vielen Weingläsern" },
-    ],
+    photo: { label: "Zum Reden", alt: "Sechs Gäste lachen an einem runden Tisch bei Kerzenlicht" },
     factsTitle: "Wo gegessen wird",
     facts: ["Vier bis fünf Stammlokale in Wien", "Nie zweimal hintereinander dasselbe Lokal", "Reserviert immer auf „Tisch6“", "Rechnung wird gleichmäßig geteilt"],
   },

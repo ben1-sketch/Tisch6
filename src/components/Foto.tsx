@@ -13,6 +13,7 @@ export function Foto({
   verlauf = true,
   tint = "soft",
   zoom = false,
+  fokus = "",
 }: {
   src: string;
   /** Beschreibung fürs Vorlesen; "" für rein dekorative Hintergrundbilder */
@@ -32,18 +33,21 @@ export function Foto({
   tint?: "soft" | "strong" | "hero";
   /** langsamer Zoom beim Laden */
   zoom?: boolean;
+  /** Bildausschnitt, z. B. "object-right" für die rechte Bildhälfte */
+  fokus?: string;
 }) {
   return (
     <div className={`overflow-hidden bg-night-800 ${className}`}>
-      <Image src={src} alt={alt} fill sizes={sizes} preload={preload} className={`img-dezent object-cover ${zoom ? "kenburns" : ""}`} />
+      <Image src={src} alt={alt} fill sizes={sizes} preload={preload} className={`img-dezent object-cover ${fokus} ${zoom ? "kenburns" : ""}`} />
       {/* warmer Kerzenlicht-Ton, darüber ein Mitternachtsschleier */}
       <div className="absolute inset-0 bg-gradient-to-br from-gold-600/15 via-transparent to-night-950/30 mix-blend-multiply" aria-hidden="true" />
       <div
-        className={`absolute inset-0 ${tint === "strong" ? "bg-night-950/65" : tint === "hero" ? "bg-night-950/55" : "bg-night-950/20"}`}
+        className={`absolute inset-0 ${tint === "strong" ? "bg-night-950/65" : tint === "hero" ? "bg-night-950/40" : "bg-night-950/20"}`}
         aria-hidden="true"
       />
-      {tint !== "soft" && <div className="absolute inset-0 bg-gradient-to-b from-night-950/80 via-transparent to-night-900" aria-hidden="true" />}
-      {tint === "hero" && <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,rgb(6_9_19/0.75)_100%)]" aria-hidden="true" />}
+      {tint === "strong" && <div className="absolute inset-0 bg-gradient-to-b from-night-950/80 via-transparent to-night-900" aria-hidden="true" />}
+      {tint === "hero" && <div className="absolute inset-0 bg-gradient-to-b from-night-950/70 via-transparent to-night-900" aria-hidden="true" />}
+      {tint === "hero" && <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_35%,rgb(6_9_19/0.7)_100%)]" aria-hidden="true" />}
       {verlauf && <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-night-950/80 via-night-950/25 to-transparent" aria-hidden="true" />}
     </div>
   );
