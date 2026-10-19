@@ -12,7 +12,7 @@ KI-kuratierte Dating-Dinner für Singles – sechs Menschen, ein Tisch. Pilot in
 | 3 | Adminbereich unter `/admin`: Bewerbungen mit Foto, Profile, Warteliste, Tische, Zahlungen, Wiedersehen & Feedback, Meldungen, Lokale, Versand, Protokoll – mit Eingriffen | ✅ |
 | Brief v4 | Beziehungsziel & Werte im Onboarding, Temperament am Tisch ähnlich, lernendes Matching aus den Wiedersehen-Antworten, nächtliche Tischplanung, Lokal-Rotation, Gesprächskarte (drei Runden, auch zum Ausdrucken), ab 5 Gästen fix, 24-Stunden-Regel mit Guthaben, Notfall-SMS, Verschieben/Absagen, „Was Tisch6 auszeichnet“, „Für Männer“ | ✅ |
 
-Einrichtung: **[Etappe 1](docs/SETUP-ETAPPE-1.md)** · **[Etappe 2](docs/SETUP-ETAPPE-2.md)** · **[Etappe 3](docs/SETUP-ETAPPE-3.md)**
+Einrichtung: **[Etappe 1](docs/SETUP-ETAPPE-1.md)** · **[Etappe 2](docs/SETUP-ETAPPE-2.md)** · **[Etappe 3](docs/SETUP-ETAPPE-3.md)** · **[Checkliste: live schalten](docs/LIVE-GEHEN.md)**
 
 ## Technik
 
