@@ -109,8 +109,9 @@ gar nicht verschickt, sondern nur im Vercel-Log protokolliert – praktisch zum 
 ## 4. SMS über Twilio (Verifizierung, Erinnerungen, Nachrücker)
 
 Falls du in Etappe 1 Platzhalter eingetragen hast, jetzt echt einrichten (Anleitung Etappe 1, Schritt 2):
-Konto upgraden, Messaging Service mit Absender `Tisch6`, die echten Werte in **Supabase → Phone** eintragen –
-und zusätzlich in Vercel (Schritt 5), damit auch Erinnerungen und Nachrücker-SMS rausgehen.
+Konto upgraden, Identitätsprüfung im Trust Hub, **Twilio Verify** für den Bewerbungs-Code in **Supabase → Phone**,
+dazu ein Messaging Service mit Absender `Tisch6`, dessen Werte in Vercel kommen (Schritt 5) – für Erinnerungen und
+Nachrücker-SMS. Diese kommen in Österreich erst an, wenn `Tisch6` als Sender-ID registriert ist.
 Kosten: pro Gast und Tisch ca. zwei SMS (am Morgen die Notfallnummer, 2 Stunden vorher die Erinnerung),
 plus Nachrücker-Angebote und – selten – eine SMS bei Verschiebung oder Absage.
 

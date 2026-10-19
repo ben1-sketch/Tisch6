@@ -41,10 +41,19 @@ Empfehlung: **Twilio** (wird von Supabase direkt unterstützt und in Etappe 2 au
    - Achtung: Im Testmodus schickt Twilio SMS nur an Nummern, die du vorher bei Twilio bestätigt hast.
      Für echte Bewerberinnen und Bewerber musst du das Konto upgraden (Kreditkarte hinterlegen, kein Monatsfixum).
    - Kosten: ca. 0,08 € pro SMS nach Österreich. Eine Bewerbung = 1 SMS, später pro Dinner ca. 3 Erinnerungen.
-2. In Twilio: **Messaging → Services → Create Messaging Service**, als Absender einen alphanumerischen Namen `Tisch6`
-   eintragen (funktioniert in Österreich ohne eigene Nummer).
-3. **Account SID**, **Auth Token** und die **Messaging Service SID** kopieren.
-4. In Supabase → **Authentication → Sign In / Providers → Phone** → SMS provider **Twilio** → die drei Werte eintragen → Speichern.
+   - Twilio verschickt erst SMS, wenn unter **Trust Hub → Profiles** ein *Primary profile* (Identitätsprüfung)
+     den Status „Twilio Approved“ hat.
+2. **Bewerbungs-Code über Twilio Verify:** Seit 1. Oktober 2026 blockieren österreichische Netze SMS von
+   Absendernamen, die nicht bei der RTR registriert sind. Twilio Verify übernimmt diese Registrierung selbst:
+   **Verify → Services → Create new** (Name `Tisch6`, Kanal SMS, Code length 6) und die **Service SID** (`VA…`) kopieren.
+3. In Supabase → **Authentication → Sign In / Providers → Phone** → SMS provider **Twilio Verify** → Account SID (`AC…`),
+   Auth Token und Verify Service SID (`VA…`) eintragen → Speichern. Kontrolle: Nach einem „Code senden“ steht der
+   Versuch unter **Verify → Logs**.
+4. **Erinnerungen, Notfall- und Nachrücker-SMS** schickt die Website selbst über einen Messaging Service:
+   **Messaging → Services → Create Messaging Service** mit dem alphanumerischen Absender `Tisch6`. Account SID,
+   Auth Token und Messaging Service SID (`MG…`) kommen in Vercel (Etappe 2, Schritt 5). Damit diese SMS in Österreich
+   ankommen, muss `Tisch6` bei Twilio als Sender-ID registriert werden (Firmendaten, UID, Ausweis; bis zu 2 Wochen).
+   Bis dahin gehen diese Nachrichten nur per E-Mail an.
 5. Die Testnummer aus 1.4 kannst du behalten – für sie werden nie SMS verschickt.
 
 ## 3. Claude-API (KI-Onboarding)
