@@ -19,6 +19,17 @@ type AppRow = { status: string; under_review: boolean; available_since: string |
 type DinnerRow = { id: string; starts_at: string; status: DinnerStatus; restaurants: { name: string } | null; seats: { status: string }[] };
 type PaymentRow = { amount_cents: number; status: string; created_at: string };
 
+const TWILIO_VARS = ["TWILIO_ACCOUNT_SID", "TWILIO_AUTH_TOKEN", "TWILIO_MESSAGING_SERVICE_SID"];
+
+/** Welche Twilio-Variablen fehlen – und welche ähnlich heißen (Tippfehler wie TWILIO_ACOUNT_SID oder TWILLIO_…) */
+function twilioHint(env: NodeJS.ProcessEnv) {
+  const missing = TWILIO_VARS.filter((k) => !env[k] && !(k === "TWILIO_MESSAGING_SERVICE_SID" && env.TWILIO_FROM));
+  const similar = Object.keys(env).filter((k) => /twil/i.test(k) && !TWILIO_VARS.includes(k) && k !== "TWILIO_FROM");
+  return [`fehlt in Vercel: ${missing.join(", ")}`, similar.length > 0 && `anders geschrieben vorhanden: ${similar.join(", ")}`]
+    .filter(Boolean)
+    .join(" · ");
+}
+
 function setupChecks(activeRestaurants: number, lastTick: string | null, migrated: boolean, migratedV4: boolean) {
   const env = process.env;
   const twilio = Boolean(env.TWILIO_ACCOUNT_SID && env.TWILIO_AUTH_TOKEN && (env.TWILIO_MESSAGING_SERVICE_SID || env.TWILIO_FROM));
@@ -35,7 +46,7 @@ function setupChecks(activeRestaurants: number, lastTick: string | null, migrate
     { label: "Hinweise ans Team (ADMIN_EMAIL)", ok: Boolean(env.ADMIN_EMAIL) },
     { label: "Zahlungen (STRIPE_SECRET_KEY)", ok: Boolean(env.STRIPE_SECRET_KEY), hint: env.STRIPE_SECRET_KEY?.startsWith("sk_test_") ? "Testmodus" : undefined },
     { label: "Stripe-Webhook (STRIPE_WEBHOOK_SECRET)", ok: Boolean(env.STRIPE_WEBHOOK_SECRET) },
-    { label: "SMS (Twilio)", ok: twilio, hint: twilio ? undefined : "ohne: SMS werden nur protokolliert" },
+    { label: "SMS (Twilio)", ok: twilio, hint: twilio ? undefined : twilioHint(env) },
     { label: "Notfallnummer am Abend (EMERGENCY_PHONE)", ok: Boolean(env.EMERGENCY_PHONE), hint: env.EMERGENCY_PHONE ? undefined : "ohne: keine Notfall-SMS am Tag des Tisches" },
     { label: "Schutz des Durchlaufs (CRON_SECRET)", ok: Boolean(env.CRON_SECRET) },
     { label: "Adresse der Website (NEXT_PUBLIC_SITE_URL)", ok: Boolean(configuredSiteUrl()), hint: env.NEXT_PUBLIC_SITE_URL && !configuredSiteUrl() ? "Adresse ungültig" : undefined },

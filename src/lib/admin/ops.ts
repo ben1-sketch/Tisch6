@@ -769,7 +769,7 @@ export async function sendTestMessages(db: Db, rawPhone: string) {
     results.push(
       await testLine(db, "SMS", result, key, {
         sent: `Twilio hat sie angenommen ✓ – sie sollte in einer Minute an ${phone} ankommen.`,
-        logged: "Twilio ist in Vercel nicht vollständig eingetragen – die SMS wurde nur protokolliert.",
+        logged: "Twilio ist in Vercel nicht vollständig eingetragen (was fehlt, steht unter Einrichtung) – die SMS wurde nur protokolliert.",
       }),
     );
   }
