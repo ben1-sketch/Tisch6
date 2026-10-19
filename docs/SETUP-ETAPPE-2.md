@@ -42,24 +42,40 @@ Weitere Lokale einfach genauso eintragen. Ohne E-Mail-Adresse geht die Reservier
 Vorübergehend sperren: `update public.restaurants set active = false where name = 'Name des Lokals';`
 
 ### 1.3 Zeitplan: alle 10 Minuten ein automatischer Durchlauf
-1. **Database → Extensions**: `pg_cron` und `pg_net` aktivieren.
-2. **SQL Editor** (Adresse und Geheimnis anpassen – das Geheimnis ist dasselbe wie `CRON_SECRET` in Vercel, Schritt 5):
+**SQL Editor** → ausführen. Das schaltet `pg_cron` und `pg_net` ein, legt im Vault ein zufälliges Geheimnis
+(`cron_secret`) an und plant den Aufruf. Die letzte Zeile zeigt das Geheimnis: genau diesen Wert in Vercel als
+`CRON_SECRET` eintragen (Schritt 5) – nie in einen Chat oder in den Code.
 
 ```sql
+create extension if not exists pg_cron;
+create extension if not exists pg_net with schema extensions;
+
+select vault.create_secret(
+  replace(gen_random_uuid()::text || gen_random_uuid()::text, '-', ''),
+  'cron_secret',
+  'Tisch6: Geheimnis für den automatischen Durchlauf (gleich wie CRON_SECRET in Vercel)'
+)
+where not exists (select 1 from vault.secrets where name = 'cron_secret');
+
 select cron.schedule(
   'tisch6-durchlauf',
   '*/10 * * * *',
   $$ select net.http_post(
-       url := 'https://DEINE-ADRESSE/api/cron/tick',
-       headers := jsonb_build_object('Authorization', 'Bearer DEIN_CRON_SECRET'),
+       url := 'https://www.tisch6.at/api/cron/tick',
+       headers := jsonb_build_object(
+         'Authorization', 'Bearer ' || (select decrypted_secret from vault.decrypted_secrets where name = 'cron_secret')
+       ),
        timeout_milliseconds := 60000
      ) $$
 );
+
+select decrypted_secret as "CRON_SECRET für Vercel" from vault.decrypted_secrets where name = 'cron_secret';
 ```
 
-`DEINE-ADRESSE` ist deine Vercel-Adresse (z. B. `tisch6-abc.vercel.app`) bzw. später `tisch6.at`.
+Die Adresse ist `www.tisch6.at`, weil `tisch6.at` dorthin weiterleitet – Weiterleitungen folgt der Aufruf nicht.
+Kontrolle: `select status_code, created from net._http_response order by created desc limit 5;` – 200 heißt: läuft;
+401 heißt: `CRON_SECRET` in Vercel passt nicht zum Wert im Vault (oder Production wurde noch nicht neu bereitgestellt).
 Ändern: erst `select cron.unschedule('tisch6-durchlauf');`, dann neu anlegen.
-Kontrolle: **Integrations → Cron** zeigt jeden Lauf.
 
 Antworten, Erinnerungen und Nachrücker laufen rund um die Uhr. **Neue Tische plant die KI nur nachts**
 (zwischen 1 und 6 Uhr Wiener Zeit) – so liegen die Einladungen morgens im Postfach. Als Sicherheitsnetz ruft
@@ -113,7 +129,7 @@ plus Nachrücker-Angebote und – selten – eine SMS bei Verschiebung oder Absa
 | `TWILIO_ACCOUNT_SID` | aus Twilio |
 | `TWILIO_AUTH_TOKEN` | aus Twilio |
 | `TWILIO_MESSAGING_SERVICE_SID` | aus Twilio |
-| `CRON_SECRET` | ein langes, zufälliges Geheimnis (mind. 32 Zeichen) – dasselbe wie in Schritt 1.3 |
+| `CRON_SECRET` | der Wert aus Schritt 1.3 (Vault: `cron_secret`), Typ Secret |
 | `NEXT_PUBLIC_SITE_URL` | `https://tisch6.at`, sobald die Domain verbunden ist |
 | `EMERGENCY_PHONE` | Notfallnummer, die alle Gäste am Tag des Tisches per SMS bekommen – z. B. dein Handy, `+43 660 1234567` |
 
