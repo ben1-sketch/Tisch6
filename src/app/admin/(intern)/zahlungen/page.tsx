@@ -6,6 +6,7 @@ import { requireAdmin } from "@/lib/admin/auth";
 import { day, when } from "@/lib/admin/format";
 import { FOUNDER, euro } from "@/lib/config";
 import { type Payment, db } from "@/lib/db";
+import { stripeTestMode } from "@/lib/stripe";
 import { refundAction } from "../../actions";
 
 export const metadata: Metadata = { title: "Zahlungen" };
@@ -46,7 +47,7 @@ export default async function PaymentsPage({ searchParams }: PageProps<"/admin/z
     { total: 0, refunded: 0 },
   );
   const manualRows = (manual.data ?? []) as unknown as ManualRow[];
-  const stripeBase = `https://dashboard.stripe.com/${process.env.STRIPE_SECRET_KEY?.startsWith("sk_test_") ? "test/" : ""}payments/`;
+  const stripeBase = `https://dashboard.stripe.com/${stripeTestMode() ? "test/" : ""}payments/`;
 
   return (
     <>

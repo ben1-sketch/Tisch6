@@ -7,6 +7,7 @@ import { DINNER_STATUS, relative, when } from "@/lib/admin/format";
 import { FOUNDER, TABLE, euro } from "@/lib/config";
 import { type AdminLog, type DinnerStatus, db } from "@/lib/db";
 import { configuredSiteUrl } from "@/lib/site";
+import { stripeTestMode } from "@/lib/stripe";
 import { DAY, HOUR, WEEKDAY_CODES, addDays, viennaDate, viennaToUtc, weekdayOf } from "@/lib/time";
 import { TIMING } from "@/lib/config";
 import { planTablesAction, testSendAction, tickAction } from "../actions";
@@ -44,7 +45,7 @@ function setupChecks(activeRestaurants: number, lastTick: string | null, migrate
     { label: "E-Mails (RESEND_API_KEY)", ok: Boolean(env.RESEND_API_KEY), hint: env.RESEND_API_KEY ? undefined : "ohne: E-Mails werden nur protokolliert" },
     { label: "Absender (EMAIL_FROM)", ok: Boolean(env.EMAIL_FROM) },
     { label: "Hinweise ans Team (ADMIN_EMAIL)", ok: Boolean(env.ADMIN_EMAIL) },
-    { label: "Zahlungen (STRIPE_SECRET_KEY)", ok: Boolean(env.STRIPE_SECRET_KEY), hint: env.STRIPE_SECRET_KEY?.startsWith("sk_test_") ? "Testmodus" : undefined },
+    { label: "Zahlungen (STRIPE_SECRET_KEY)", ok: Boolean(env.STRIPE_SECRET_KEY), hint: stripeTestMode() ? "Testmodus" : undefined },
     { label: "Stripe-Webhook (STRIPE_WEBHOOK_SECRET)", ok: Boolean(env.STRIPE_WEBHOOK_SECRET) },
     { label: "SMS (Twilio)", ok: twilio, hint: twilio ? undefined : twilioHint(env) },
     { label: "Notfallnummer am Abend (EMERGENCY_PHONE)", ok: Boolean(env.EMERGENCY_PHONE), hint: env.EMERGENCY_PHONE ? undefined : "ohne: keine Notfall-SMS am Tag des Tisches" },
