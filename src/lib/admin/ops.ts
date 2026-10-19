@@ -707,6 +707,8 @@ export async function deleteRestaurant(db: Db, id: string) {
 
 /** Häufige Antworten von Twilio (Fehlercode) und Resend (Text) – mit dem, was zu tun ist */
 const TEST_HINTS: [number | RegExp, string][] = [
+  // Twilio meldet auch die fehlende Identitätsprüfung mit Code 20003 – deshalb zuerst auf den Text prüfen
+  [/compliance profile|trust hub|kyc/i, "Twilio verlangt zuerst die Identitätsprüfung: bei Twilio unter Trust Hub → Profiles das Primary profile ausfüllen und auf „Twilio Approved“ warten."],
   [20003, "TWILIO_ACCOUNT_SID oder TWILIO_AUTH_TOKEN in Vercel stimmt nicht."],
   [21408, "Twilio darf in dieses Land noch keine SMS schicken: bei Twilio unter Messaging → Settings → Geo permissions das Land (z. B. Austria) anhaken."],
   [21608, "Das Twilio-Konto ist noch im Testmodus und schickt nur an bestätigte Nummern – Konto bei Twilio upgraden."],
