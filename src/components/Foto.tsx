@@ -14,6 +14,7 @@ export function Foto({
   tint = "soft",
 }: {
   src: string;
+  /** Beschreibung fürs Vorlesen; "" für rein dekorative Hintergrundbilder */
   alt: string;
   /** Wie breit das Bild im Layout ist (für die passende Bildgröße), z. B. "(min-width: 768px) 28rem, 100vw" */
   sizes: string;
@@ -22,17 +23,21 @@ export function Foto({
   preload?: boolean;
   /** dunkler Verlauf am unteren Rand (für Bildunterschriften) */
   verlauf?: boolean;
-  /** "strong" für Hintergrundbilder hinter Text: dunkler, mit weichen Rändern oben und unten */
-  tint?: "soft" | "strong";
+  /**
+   * soft: leichter Blauschleier (Fotos, die man anschauen soll)
+   * strong: dunkler, mit weichen Rändern oben und unten (Hintergrund hinter Text)
+   * hero: wie strong, zusätzlich links dunkler – für den Seitenanfang mit Text links
+   */
+  tint?: "soft" | "strong" | "hero";
 }) {
+  const dark = tint !== "soft";
   return (
     <div className={`overflow-hidden bg-night-800 ${className}`}>
       <Image src={src} alt={alt} fill sizes={sizes} preload={preload} className="object-cover" />
       {/* Blauschleier: nimmt dem Foto die Fremdfarben */}
-      <div className={`absolute inset-0 ${tint === "strong" ? "bg-night-900/70" : "bg-night-900/25"}`} aria-hidden="true" />
-      {tint === "strong" && (
-        <div className="absolute inset-0 bg-gradient-to-b from-night-900 via-transparent to-night-900" aria-hidden="true" />
-      )}
+      <div className={`absolute inset-0 ${tint === "strong" ? "bg-night-900/60" : tint === "hero" ? "bg-night-900/40" : "bg-night-900/25"}`} aria-hidden="true" />
+      {dark && <div className="absolute inset-0 bg-gradient-to-b from-night-900/90 via-night-900/10 to-night-900" aria-hidden="true" />}
+      {tint === "hero" && <div className="absolute inset-0 bg-gradient-to-r from-night-900 via-night-900/45 to-transparent" aria-hidden="true" />}
       {verlauf && <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-night-950/85 via-night-950/30 to-transparent" aria-hidden="true" />}
     </div>
   );

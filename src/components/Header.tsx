@@ -6,6 +6,7 @@ export function Header({ lang, dict }: { lang: string; dict: Dictionary }) {
   const items = [
     { href: `/${lang}#so-gehts`, label: dict.nav.how, show: "md:inline" },
     { href: `/${lang}#auszeichnet`, label: dict.nav.distinct, show: "xl:inline" },
+    { href: `/${lang}#ambiente`, label: dict.nav.ambiente, show: "xl:inline" },
     { href: `/${lang}#sicher`, label: dict.nav.safe, show: "lg:inline" },
     { href: `/${lang}#gruendungspaket`, label: dict.nav.founder, show: "md:inline" },
     { href: `/${lang}#faq`, label: dict.nav.faq, show: "md:inline" },

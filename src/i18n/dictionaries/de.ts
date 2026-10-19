@@ -8,6 +8,7 @@ const de = {
   nav: {
     how: "So funktioniert's",
     distinct: "Was uns auszeichnet",
+    ambiente: "Lokale",
     safe: "Sicher & fair",
     founder: "Gründungspaket",
     faq: "FAQ",
@@ -58,8 +59,20 @@ const de = {
       { title: "Ein Preis, keine versteckten Extras.", text: "35 € pro Tischteilnahme. Keine Boosts, kein Abo-Zwang." },
     ],
   },
+  ambiente: {
+    eyebrow: "Das Ambiente",
+    title: "Lokale, in denen man gern sitzen bleibt.",
+    lead: "Vier bis fünf ausgewählte Wiener Lokale – ruhig genug zum Reden, gut genug zum Genießen. Kein Lärm, kein Gedränge, kein Zeitdruck.",
+    photos: [
+      { label: "Zum Ankommen", alt: "Moderne Bar mit goldenen Akzenten und warmem Licht" },
+      { label: "Zum Bleiben", alt: "Elegante Lounge mit Kronleuchtern und blauem Licht" },
+      { label: "Zum Reden", alt: "Tische mit Samtstühlen in einem ruhigen Restaurant" },
+      { label: "Zum Anstoßen", alt: "Gedeckter Tisch mit vielen Weingläsern" },
+    ],
+    factsTitle: "Wo gegessen wird",
+    facts: ["Vier bis fünf Stammlokale in Wien", "Nie zweimal hintereinander dasselbe Lokal", "Reserviert immer auf „Tisch6“", "Rechnung wird gleichmäßig geteilt"],
+  },
   safe: {
-    imageAlt: "Ruhig gedeckter Tisch mit Weingläsern in einem Restaurant",
     women: {
       eyebrow: "Sicher für Frauen",
       title: "Du sollst dich vom ersten Moment an wohlfühlen.",

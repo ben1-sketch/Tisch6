@@ -23,6 +23,8 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
   const [t, remaining] = await Promise.all([getDictionary(lang), founderRemaining()]);
   const free = remaining ?? FOUNDER.limit;
   const apply = `/${lang}/bewerben`;
+  // Bildstrecke „Das Ambiente“ – gleiche Reihenfolge wie die Texte in t.ambiente.photos; das erste Bild ist das große
+  const ambiente = [bilder.ambienteBar, bilder.ambienteLounge, bilder.ambienteSamt, bilder.ambienteGlaeser];
 
   return (
     <>
@@ -31,6 +33,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
       <div className="relative z-10">
         {/* 1 · Hero: Vollbild, drehender 3D-Tisch */}
         <section className="relative overflow-hidden">
+          <Foto src={bilder.heroHintergrund.src} alt="" sizes="100vw" className="absolute inset-0" tint="hero" verlauf={false} preload />
           <div className="bg-grid absolute inset-0 [mask-image:radial-gradient(ellipse_at_top,black,transparent_70%)]" aria-hidden="true" />
           <div className="absolute -top-40 right-0 h-96 w-96 rounded-full bg-rose-500/15 blur-3xl" aria-hidden="true" />
           <div className="relative mx-auto grid min-h-[calc(100svh-4rem)] max-w-6xl items-center gap-10 px-4 py-14 sm:px-6 md:grid-cols-2 md:py-20">
@@ -103,9 +106,56 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
           </ol>
         </section>
 
+        {/* Das Ambiente – edle Lokale, Bildstrecke */}
+        <section id="ambiente" className="scroll-mt-20 mx-auto max-w-6xl px-4 pb-20 sm:px-6 sm:pb-28">
+          <div data-reveal className="max-w-3xl">
+            <p className="text-sm font-semibold tracking-wide text-rose-400 uppercase">{t.ambiente.eyebrow}</p>
+            <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight sm:text-4xl">{t.ambiente.title}</h2>
+            <p className="mt-4 leading-relaxed text-mist">{t.ambiente.lead}</p>
+          </div>
+          <div className="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
+            {ambiente.map((bild, i) => {
+              const p = t.ambiente.photos[i];
+              const feature = i === 0;
+              // Handy: großes Bild und letztes Bild über zwei Spalten, die zwei Hochformate nebeneinander
+              const shape =
+                i === 0
+                  ? "col-span-2 aspect-[16/10] sm:aspect-auto sm:min-h-[26rem]"
+                  : i === 3
+                    ? "col-span-2 aspect-[16/10] sm:col-span-1 sm:aspect-auto sm:min-h-[22rem]"
+                    : "aspect-[4/5] sm:aspect-auto sm:min-h-[22rem]";
+              return (
+                <figure
+                  key={p.label}
+                  data-reveal
+                  style={{ transitionDelay: `${i * 120}ms` }}
+                  className={`relative overflow-hidden rounded-3xl border border-white/10 ${shape}`}
+                >
+                  <Foto src={bild.src} alt={p.alt} sizes={feature ? "(min-width: 640px) 48rem, 100vw" : "(min-width: 640px) 24rem, 100vw"} className="absolute inset-0" />
+                  <figcaption className="absolute bottom-4 left-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-night-950/55 px-3 py-1.5 text-xs font-medium tracking-wide backdrop-blur-md sm:bottom-5 sm:left-5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-rose-400" aria-hidden="true" />
+                    {p.label}
+                  </figcaption>
+                </figure>
+              );
+            })}
+            <div data-reveal style={{ transitionDelay: "360ms" }} className="glass col-span-2 flex flex-col justify-center rounded-3xl p-7 sm:col-span-1 sm:min-h-[22rem]">
+              <h3 className="font-display text-xl font-semibold">{t.ambiente.factsTitle}</h3>
+              <ul className="mt-5 space-y-3 text-sm leading-relaxed text-mist">
+                {t.ambiente.facts.map((f) => (
+                  <li key={f} className="flex gap-3">
+                    <span className="mt-2 h-1.5 w-1.5 flex-none rounded-full bg-rose-400" aria-hidden="true" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
+
         {/* 4 · Sicher für Frauen / Fair für Männer – nebeneinander, Hintergrund: gedeckter Tisch */}
         <section id="sicher" className="scroll-mt-20 relative overflow-hidden border-y border-white/5">
-          <Foto src={bilder.gedeckt.src} alt={t.safe.imageAlt} sizes="100vw" className="absolute inset-0" tint="strong" verlauf={false} />
+          <Foto src={bilder.gedeckt.src} alt="" sizes="100vw" className="absolute inset-0" tint="strong" verlauf={false} />
           <div className="relative mx-auto grid max-w-6xl gap-6 px-4 py-20 sm:px-6 sm:py-28 md:grid-cols-2">
             {[t.safe.women, t.safe.men].map((col, i) => (
               <div key={col.eyebrow} data-reveal style={{ transitionDelay: `${i * 180}ms` }} className="glass-strong rounded-3xl p-7 sm:p-9">
@@ -195,6 +245,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
             data-reveal
             className="relative mx-auto max-w-4xl overflow-hidden rounded-3xl border border-rose-400/20 bg-gradient-to-br from-night-700 to-night-800 px-6 py-16 text-center"
           >
+            <Foto src={bilder.abschluss.src} alt="" sizes="(min-width: 896px) 56rem, 100vw" className="absolute inset-0" tint="strong" verlauf={false} />
             <div className="absolute -bottom-24 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-rose-500/25 blur-3xl" aria-hidden="true" />
             <h2 className="relative font-display text-3xl font-semibold tracking-tight sm:text-4xl">{t.closing.title}</h2>
             <p className="relative mt-3 text-mist">{t.closing.text}</p>
