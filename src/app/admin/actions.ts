@@ -35,6 +35,7 @@ import {
   saveRestaurant,
   sendTestMessages,
   setApplicantAvailability,
+  startTestPayment,
   unblockApplicant,
   waitlistApplicant,
 } from "@/lib/admin/ops";
@@ -155,6 +156,19 @@ export async function planTablesAction(): Promise<ActionResult> {
 
 export async function testSendAction(_: ActionResult, form: FormData) {
   return run(async () => sendTestMessages(db(), String(form.get("phone") ?? "")));
+}
+
+/** Leitet zur Stripe-Bezahlseite über 1 € weiter; Stripe schickt danach zurück in die Übersicht */
+export async function testPaymentAction(): Promise<ActionResult> {
+  await requireAdmin();
+  let url: string;
+  try {
+    url = await startTestPayment(db());
+  } catch (e) {
+    return failure(e);
+  }
+  // redirect() bricht mit einem eigenen Fehler ab – deshalb außerhalb von try
+  redirect(url);
 }
 
 export async function learningsAction(): Promise<ActionResult> {

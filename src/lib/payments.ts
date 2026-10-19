@@ -11,6 +11,9 @@ import { formatDate } from "./time";
 
 export class PaymentError extends Error {}
 
+/** Ablauf der Bezahlseite: Stripe verlangt mindestens 30 Minuten – eine Minute Puffer für Uhr und Übertragung */
+export const checkoutExpiry = () => Math.floor(Date.now() / 1000) + 31 * 60;
+
 /** Startet die Stripe-Bezahlseite für eine Tischteilnahme oder das Gründungspaket. */
 export async function createCheckout(db: Db, seat: Seat, app: Application, wantsPackage: boolean) {
   const s = stripe();
@@ -45,7 +48,7 @@ export async function createCheckout(db: Db, seat: Seat, app: Application, wants
     payment_intent_data: { metadata, description: name },
     success_url: `${siteUrl()}/de/einladung/${seat.token}?bezahlt=1`,
     cancel_url: `${siteUrl()}/de/einladung/${seat.token}`,
-    expires_at: Math.floor(Date.now() / 1000) + 30 * 60,
+    expires_at: checkoutExpiry(),
   });
   await db.from("seats").update({ checkout_started_at: new Date().toISOString() }).eq("id", seat.id);
   if (!session.url) throw new PaymentError("Die Bezahlseite konnte nicht geöffnet werden.");

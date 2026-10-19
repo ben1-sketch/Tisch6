@@ -47,6 +47,7 @@ das hier – in dieser Reihenfolge. Den aktuellen Stand zeigt der Adminbereich u
 2. Selbst bewerben (mit eigener Handynummer) und das Kennenlern-Gespräch bis zum Ende führen.
 3. Im Adminbereich unter **Bewerbungen** prüfen: Foto da, Profil ausgewertet, E-Mail „Bewerbung eingegangen“ im Postfach.
 4. Unter **Versand** nachsehen, dass E-Mails und SMS wirklich verschickt wurden (nicht nur „protokolliert“).
-5. Mit Stripe im Testmodus einmal eine Tischteilnahme bezahlen (Karte `4242 4242 4242 4242`).
+5. Unter **Übersicht → Zahlung testen** eine Testzahlung über 1 € machen (Karte `4242 4242 4242 4242`) – danach steht
+   dort „Testzahlung angekommen“.
 
-Erst dann Stripe auf live stellen und Tisch6 bekannt machen.
+Erst dann Stripe auf live stellen, mit einer echten Karte nochmal **Zahlung testen** und Tisch6 bekannt machen.

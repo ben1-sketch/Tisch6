@@ -102,9 +102,12 @@ gar nicht verschickt, sondern nur im Vercel-Log protokolliert – praktisch zum 
    - Ereignisse: `checkout.session.completed` und `checkout.session.async_payment_succeeded`
    - Danach „Signing secret“ (`whsec_…`) kopieren → wird `STRIPE_WEBHOOK_SECRET`.
 4. **Settings → Payment methods**: Karten, Apple Pay, Google Pay und **EPS** (in Österreich beliebt) einschalten.
-5. Testzahlung: Karte `4242 4242 4242 4242`, beliebiges Ablaufdatum in der Zukunft, beliebige Prüfziffer.
+5. Testzahlung: im Adminbereich unter **Übersicht → Zahlung testen** auf **Testzahlung starten** drücken und mit der Karte
+   `4242 4242 4242 4242` bezahlen (Ablaufdatum in der Zukunft, Prüfziffer beliebig). Zurück in der Übersicht muss dort
+   „Testzahlung angekommen – 1 € sofort erstattet“ stehen; dann passen Schlüssel und Webhook.
 6. **Live gehen:** Konto aktivieren (Firmendaten, Bankkonto), dann Live-Schlüssel (`sk_live_…`) und einen neuen
-   Live-Webhook genauso anlegen und in Vercel austauschen. Kosten: ca. 1,5 % + 0,25 € pro europäischer Kartenzahlung.
+   Live-Webhook genauso anlegen und in Vercel austauschen. Danach einmal **Zahlung testen** mit einer echten Karte
+   (1 €, wird sofort erstattet). Kosten: ca. 1,5 % + 0,25 € pro europäischer Kartenzahlung.
 
 ## 4. SMS über Twilio (Verifizierung, Erinnerungen, Nachrücker)
 

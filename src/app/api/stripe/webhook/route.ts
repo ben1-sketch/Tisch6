@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { confirmTestPayment } from "@/lib/admin/ops";
 import { db } from "@/lib/db";
 import { handlePaidSession } from "@/lib/payments";
 import { stripe } from "@/lib/stripe";
@@ -25,7 +26,8 @@ export async function POST(request: Request) {
     // Bei verzögerten Zahlarten kommt der Erfolg später als eigenes Ereignis
     if (session.payment_status !== "paid") return NextResponse.json({ received: true, pending: true });
     try {
-      const result = await handlePaidSession(db(), session);
+      // Testzahlung aus dem Adminbereich: nur erstatten und vermerken, nichts verbuchen
+      const result = session.metadata?.kind === "test" ? await confirmTestPayment(db(), session) : await handlePaidSession(db(), session);
       return NextResponse.json({ received: true, result });
     } catch (e) {
       console.error("Zahlung verarbeiten", e);

@@ -1,5 +1,6 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
+import type Stripe from "stripe";
 import { z } from "zod";
 import { FOUNDER, NO_SHOW_LIMIT, PRICES, TIMING, euro } from "../config";
 import { type Application, type Db, type Dinner, type Payment, type Report, type Restaurant, type Seat, OPEN_SEAT, must } from "../db";
@@ -23,6 +24,7 @@ import {
 } from "../messages";
 import { type SendResult, notifyAdmin, sendEmail, sendSms } from "../notify";
 import { normalizePhone } from "../phone";
+import { checkoutExpiry } from "../payments";
 import {
   afterSeatChange,
   closeDinner,
@@ -38,7 +40,8 @@ import {
   seatsOf,
   sendReservation,
 } from "../seats";
-import { refund } from "../stripe";
+import { siteUrl } from "../site";
+import { refund, stripe } from "../stripe";
 import { HOUR, WEEKDAY_CODES, formatDateTime, viennaToUtc } from "../time";
 
 /** Fehler, deren Text so im Adminbereich angezeigt wird */
@@ -780,4 +783,55 @@ export async function sendTestMessages(db: Db, rawPhone: string) {
   const message = results.map((r) => r.line).join("\n");
   if (results.some((r) => !r.ok)) throw new AdminError(message);
   return message;
+}
+
+/** Testzahlung aus dem Adminbereich – an diesen Protokolleinträgen erkennt die Übersicht den Stand */
+export const PAYMENT_TEST = {
+  started: "Testzahlung gestartet",
+  arrived: "Testzahlung angekommen",
+  refundFailed: "Testzahlung angekommen, Erstattung fehlgeschlagen",
+} as const;
+const PAYMENT_TEST_CENTS = 100;
+
+/** Öffnet die echte Stripe-Bezahlseite über 1 € – ohne Platz und ohne Verbuchung */
+export async function startTestPayment(db: Db) {
+  const s = stripe();
+  if (!s) throw new AdminError("STRIPE_SECRET_KEY fehlt in Vercel.");
+  const metadata = { kind: "test" };
+  const name = "Tisch6 · Testzahlung (wird sofort erstattet)";
+  let session: Stripe.Checkout.Session;
+  try {
+    session = await s.checkout.sessions.create({
+      mode: "payment",
+      locale: "de",
+      line_items: [{ quantity: 1, price_data: { currency: "eur", unit_amount: PAYMENT_TEST_CENTS, product_data: { name } } }],
+      metadata,
+      payment_intent_data: { metadata, description: name },
+      success_url: `${siteUrl()}/admin`,
+      cancel_url: `${siteUrl()}/admin`,
+      expires_at: checkoutExpiry(),
+    });
+  } catch (e) {
+    throw new AdminError(`Stripe lehnt ab – STRIPE_SECRET_KEY in Vercel prüfen. (${e instanceof Error ? e.message : String(e)})`);
+  }
+  if (!session.url) throw new AdminError("Stripe hat keine Bezahlseite geliefert – bitte nochmal versuchen.");
+  await logAdmin(db, PAYMENT_TEST.started, { detail: euro(PAYMENT_TEST_CENTS) });
+  return session.url;
+}
+
+/** Stripe meldet die Testzahlung: nichts verbuchen, sofort erstatten, Ergebnis ins Protokoll */
+export async function confirmTestPayment(db: Db, session: Stripe.Checkout.Session) {
+  const paymentIntent = typeof session.payment_intent === "string" ? session.payment_intent : (session.payment_intent?.id ?? null);
+  const amount = euro(session.amount_total ?? 0);
+  try {
+    if (!paymentIntent) throw new Error("Stripe hat keine Zahlungsnummer mitgeschickt");
+    await refund(paymentIntent);
+  } catch (e) {
+    // Stripe wiederholt Meldungen manchmal – dann ist schon erstattet
+    if ((e as { code?: string }).code === "charge_already_refunded") return "Testzahlung schon erstattet";
+    await logAdmin(db, PAYMENT_TEST.refundFailed, { detail: `${amount} bitte in Stripe von Hand erstatten (${e instanceof Error ? e.message : String(e)})` });
+    return "Testzahlung, Erstattung fehlgeschlagen";
+  }
+  await logAdmin(db, PAYMENT_TEST.arrived, { detail: `${amount} sofort erstattet` });
+  return "Testzahlung erstattet";
 }

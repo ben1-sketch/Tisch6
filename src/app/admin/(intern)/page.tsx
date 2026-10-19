@@ -4,13 +4,14 @@ import { ActionForm } from "@/components/admin/ActionForm";
 import { Card, Chip, Empty, Notice, PageTitle, Stat, field } from "@/components/admin/ui";
 import { requireAdmin } from "@/lib/admin/auth";
 import { DINNER_STATUS, relative, when } from "@/lib/admin/format";
+import { PAYMENT_TEST } from "@/lib/admin/ops";
 import { FOUNDER, TABLE, euro } from "@/lib/config";
 import { type AdminLog, type DinnerStatus, db } from "@/lib/db";
 import { configuredSiteUrl } from "@/lib/site";
 import { stripeTestMode } from "@/lib/stripe";
 import { DAY, HOUR, WEEKDAY_CODES, addDays, viennaDate, viennaToUtc, weekdayOf } from "@/lib/time";
 import { TIMING } from "@/lib/config";
-import { planTablesAction, testSendAction, tickAction } from "../actions";
+import { planTablesAction, testPaymentAction, testSendAction, tickAction } from "../actions";
 
 export const metadata: Metadata = { title: "Übersicht" };
 // „Durchlauf jetzt starten“ darf so lange laufen wie der automatische Durchlauf
@@ -19,6 +20,7 @@ export const maxDuration = 60;
 type AppRow = { status: string; under_review: boolean; available_since: string | null; gender: string | null; created_at: string };
 type DinnerRow = { id: string; starts_at: string; status: DinnerStatus; restaurants: { name: string } | null; seats: { status: string }[] };
 type PaymentRow = { amount_cents: number; status: string; created_at: string };
+type TestRow = Pick<AdminLog, "action" | "detail" | "created_at">;
 
 const TWILIO_VARS = ["TWILIO_ACCOUNT_SID", "TWILIO_AUTH_TOKEN", "TWILIO_MESSAGING_SERVICE_SID"];
 
@@ -68,7 +70,7 @@ async function loadOverview() {
   const today = viennaDate(new Date(now));
   // Woche ab Montag 0 Uhr (Wien)
   const weekStart = viennaToUtc(addDays(today, -((WEEKDAY_CODES.indexOf(weekdayOf(today)) + 6) % 7)), "00:00").getTime();
-  const [apps, dinners, reports, payments, founders, matches, failed, tick, restaurants, log, failedLogins, v4] = await Promise.all([
+  const [apps, dinners, reports, payments, founders, matches, failed, tick, restaurants, log, failedLogins, v4, paymentTest] = await Promise.all([
     client.from("applications").select("status, under_review, available_since, gender:profile->>geschlecht, created_at"),
     client
       .from("dinners")
@@ -96,13 +98,15 @@ async function loadOverview() {
       .eq("action", "Anmeldung fehlgeschlagen")
       .gte("created_at", iso(now - DAY)),
     client.from("affinities").select("id", { count: "exact", head: true }),
+    client.from("admin_log").select("action, detail, created_at").like("action", "Testzahlung%").order("created_at", { ascending: false }).limit(1).maybeSingle(),
   ]);
-  return { now, weekStart, apps, dinners, reports, payments, founders, matches, failed, tick, restaurants, log, failedLogins, v4 };
+  return { now, weekStart, apps, dinners, reports, payments, founders, matches, failed, tick, restaurants, log, failedLogins, v4, paymentTest };
 }
 
 export default async function AdminHome() {
   await requireAdmin();
-  const { now, weekStart, apps, dinners, reports, payments, founders, matches, failed, tick, restaurants, log, failedLogins, v4 } = await loadOverview();
+  const { now, weekStart, apps, dinners, reports, payments, founders, matches, failed, tick, restaurants, log, failedLogins, v4, paymentTest } =
+    await loadOverview();
 
   const errors = [apps, dinners, reports, payments, founders, matches, failed, tick, restaurants]
     .map((r) => r.error?.message)
@@ -120,6 +124,7 @@ export default async function AdminHome() {
   const upcoming = (dinners.data ?? []) as unknown as DinnerRow[];
   const checks = setupChecks(restaurants.count ?? 0, (tick.data as { locked_until: string } | null)?.locked_until ?? null, !log.error, !v4.error);
   const missing = checks.filter((c) => !c.ok).length;
+  const lastTest = paymentTest.data as TestRow | null;
 
   return (
     <>
@@ -291,6 +296,25 @@ export default async function AdminHome() {
             <ActionForm action={testSendAction} submit="Test senden" className="mt-4">
               <input name="phone" type="tel" autoComplete="tel" placeholder="Handynummer, z. B. 0660 1234567" className={`${field} w-full sm:w-64`} />
             </ActionForm>
+          </Card>
+
+          <Card title="Zahlung testen">
+            <p className="text-sm text-mist">
+              Öffnet die Stripe-Bezahlseite über 1 € – das Geld wird sofort erstattet.{" "}
+              {stripeTestMode()
+                ? "Im Testmodus mit der Karte 4242 4242 4242 4242 bezahlen, Ablaufdatum in der Zukunft, Prüfziffer beliebig."
+                : "Stripe ist live: Es wird eine echte Karte belastet, ein paar Cent Gebühr behält Stripe."}{" "}
+              Danach kommst du hierher zurück und siehst, ob Stripe die Zahlung an Tisch6 gemeldet hat.
+            </p>
+            <ActionForm action={testPaymentAction} submit="Testzahlung starten" className="mt-4" />
+            {lastTest && (
+              <p className={`mt-3 text-sm ${lastTest.action === PAYMENT_TEST.arrived ? "text-emerald-300" : "text-amber-200"}`}>
+                Zuletzt {relative(lastTest.created_at)}: {lastTest.action} –{" "}
+                {lastTest.action === PAYMENT_TEST.started
+                  ? "Stripe hat noch nichts gemeldet. Bezahlt? Dann die Seite in ein paar Sekunden neu laden. Kommt weiter nichts, stimmt der Webhook nicht (STRIPE_WEBHOOK_SECRET in Vercel oder die Adresse in Stripe)."
+                  : `${lastTest.detail}${lastTest.action === PAYMENT_TEST.arrived ? ". Zahlungen funktionieren ✓" : ""}`}
+              </p>
+            )}
           </Card>
         </div>
       </div>
