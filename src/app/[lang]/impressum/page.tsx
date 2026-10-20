@@ -10,7 +10,7 @@ export default function Impressum() {
 
       <h2>Medieninhaber und Betreiber</h2>
       <p>
-        Tisch6
+        Tisch6 (Einzelunternehmen)
         <br />
         Wien, Österreich
       </p>
