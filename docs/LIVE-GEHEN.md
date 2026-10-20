@@ -35,9 +35,8 @@ das hier – in dieser Reihenfolge. Den aktuellen Stand zeigt der Adminbereich u
 
 - **Impressum, AGB, Datenschutz:** Betreiber ist Arben Murseli e.U. (Marke Tisch6) – Firmendaten sind eingetragen.
   Noch offen: das Gewerbe für Tisch6 beim Einzelunternehmen anmelden.
-- **E-Mail:** Kontaktadresse ist `info@tisch6.at` (eigenes Postfach) – steht im Impressum und in der Datenschutzerklärung.
-  Die automatischen E-Mails kommen von `hallo@tisch6.at` (Versand über Resend), Antworten gehen an `info@tisch6.at`.
-  `hallo@tisch6.at` ist im Postfach als zweite Adresse (Alias) eingerichtet, damit auch direkte Mails ankommen.
+- **E-Mail-Adressen** wie `hallo@tisch6.at` und `datenschutz@tisch6.at` müssen wirklich ankommen
+  (z. B. Weiterleitung bei GoDaddy auf deine eigene Adresse).
 - **Gewerbe und Steuern** mit der Wirtschaftskammer bzw. einer Steuerberatung klären; AGB und Datenschutzerklärung
   vor dem Start einmal rechtlich prüfen lassen.
 
