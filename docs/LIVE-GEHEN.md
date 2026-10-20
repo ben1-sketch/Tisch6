@@ -33,8 +33,8 @@ das hier – in dieser Reihenfolge. Den aktuellen Stand zeigt der Adminbereich u
 
 ## 4. Rechtliches
 
-- **Impressum, AGB, Datenschutz:** Die Stellen in [eckigen Klammern] brauchen deine echten Daten (Name bzw. Firma,
-  Anschrift, Telefon, E-Mail, UID-Nummer und Gewerbe, falls vorhanden). Einfach schicken – sie werden eingetragen.
+- **Impressum, AGB, Datenschutz:** Betreiber ist Arben Murseli e.U. (Marke Tisch6) – Firmendaten sind eingetragen.
+  Noch offen: das Gewerbe für Tisch6 beim Einzelunternehmen anmelden.
 - **E-Mail-Adressen** wie `hallo@tisch6.at` und `datenschutz@tisch6.at` müssen wirklich ankommen
   (z. B. Weiterleitung bei GoDaddy auf deine eigene Adresse).
 - **Gewerbe und Steuern** mit der Wirtschaftskammer bzw. einer Steuerberatung klären; AGB und Datenschutzerklärung

@@ -6,13 +6,27 @@ export const metadata: Metadata = { title: "Impressum" };
 export default function Impressum() {
   return (
     <LegalPage title="Impressum" updated="20. Oktober 2026">
-      <p>Informationspflicht laut § 5 E-Commerce-Gesetz und Offenlegungspflicht laut § 25 Mediengesetz.</p>
+      <p>
+        Informationspflicht laut §&nbsp;5 E-Commerce-Gesetz, §&nbsp;14 Unternehmensgesetzbuch und §&nbsp;63 Gewerbeordnung sowie Offenlegungspflicht laut
+        §&nbsp;25 Mediengesetz.
+      </p>
 
       <h2>Medieninhaber und Betreiber</h2>
       <p>
-        Tisch6 (Einzelunternehmen)
+        Arben Murseli e.U. (Einzelunternehmen)
         <br />
-        Wien, Österreich
+        Marke: Tisch6
+        <br />
+        Wiener Straße 5, 3500 Krems an der Donau, Österreich
+      </p>
+
+      <h2>Firmendaten</h2>
+      <p>
+        Firmenbuchnummer: FN 452345 p
+        <br />
+        Firmenbuchgericht: Landesgericht Krems an der Donau
+        <br />
+        UID-Nummer: ATU70958706
       </p>
 
       <h2>Kontakt</h2>
@@ -20,6 +34,15 @@ export default function Impressum() {
         Tisch6-Team
         <br />
         E-Mail: <a href="mailto:hallo@tisch6.at">hallo@tisch6.at</a>
+      </p>
+
+      <h2>Gewerberecht</h2>
+      <p>
+        Mitglied der Wirtschaftskammer Niederösterreich
+        <br />
+        Gewerbebehörde: Magistrat der Stadt Krems an der Donau
+        <br />
+        Anwendbare Vorschrift: Gewerbeordnung, abrufbar unter <a href="https://www.ris.bka.gv.at">www.ris.bka.gv.at</a>
       </p>
 
       <h2>Unternehmensgegenstand</h2>
