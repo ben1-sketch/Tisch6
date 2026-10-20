@@ -96,7 +96,7 @@ export async function ensureConversationCard(db: Db, dinner: Dinner, useAi = tru
       const user = apps
         .map((a, i) => {
           const p = a.profile;
-          return `G${i + 1}: ${p?.alter ?? "?"} Jahre, Typ ${p?.persoenlichkeit.typ ?? "–"}, Themen ${p?.gespraechsthemen?.join(", ") || "–"}`;
+          return `G${i + 1}: ${p?.alter ?? "?"} Jahre, Typ ${p?.persoenlichkeit.typ ?? "–"}, Themen ${p?.gespraechsthemen?.join(", ") || "–"}, begeistert von ${p?.begeistert_von?.join(", ") || "–"}`;
         })
         .join("\n");
       const result = await askStructured({ schema: CardSchema, system: CARD_SYSTEM, user, effort: "low", maxTokens: 2000 });

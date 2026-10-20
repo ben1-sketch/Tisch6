@@ -29,6 +29,13 @@ export type Person = {
   typ: string;
   summary: string;
   topics: string[];
+  /** Humorstil und wie die Person am Tisch redet */
+  humor: string | null;
+  talkStyle: string | null;
+  /** Wofür die Person brennt, was sie an anderen mag, was beim Kennenlernen gar nicht geht */
+  passions: string[];
+  likesInOthers: string[];
+  noGos: string[];
   smoker: string | null;
   childWish: string | null;
   diet: string | null;
@@ -78,6 +85,12 @@ export function toPerson(
     typ: a.typ,
     summary: a.zusammenfassung,
     topics: p.gespraechsthemen ?? [],
+    // ältere Profile kennen Humor, Gesprächsstil, Begeisterung und No-Gos noch nicht
+    humor: p.humor ?? null,
+    talkStyle: p.gespraechsstil ?? null,
+    passions: p.begeistert_von ?? [],
+    likesInOthers: p.mag_an_anderen ?? [],
+    noGos: p.no_gos ?? [],
     smoker: p.rauchen,
     childWish: p.kinderwunsch,
     diet: p.ernaehrung,

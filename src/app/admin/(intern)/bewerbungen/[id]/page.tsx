@@ -285,6 +285,12 @@ export default async function ApplicationPage({ params }: PageProps<"/admin/bewe
               <Facts
                 rows={[
                   ["Gesprächsthemen", p.gespraechsthemen.join(", ") || "–"],
+                  // ältere Profile kennen die folgenden Felder noch nicht
+                  ["Humor", p.humor ?? "–"],
+                  ["Gesprächsstil", p.gespraechsstil ?? "–"],
+                  ["Begeistert von", p.begeistert_von?.join(", ") || "–"],
+                  ["Mag an anderen", p.mag_an_anderen?.join(", ") || "–"],
+                  ["No-Gos", p.no_gos?.join(", ") || "–"],
                   ["Hinweise fürs Matching", p.hinweise_matching || "–"],
                 ]}
               />

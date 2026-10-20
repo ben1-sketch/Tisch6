@@ -26,6 +26,7 @@ Wähle die Runde, in der die Gespräche am besten fließen und die beste Chance 
 - Werte (wie wichtig Glaube, Politik und Familie sind) sollen zwischen Frauen und Männern nicht stark auseinandergehen.
 - Lernendes Matching: Bevorzuge Konstellationen, die bei einer Person bisher funktioniert haben – Gegenüber, die den Typen ähneln, die sie wiedersehen wollte oder von denen sie wiedersehen gewollt wurde.
 - Gemeinsame oder sich ergänzende Gesprächsthemen helfen; Lebensentwürfe sollen nicht offensichtlich kollidieren (z. B. Kinderwunsch).
+- Ein Tisch braucht Erzählende und Fragende, und die Humorstile sollen sich vertragen. Niemand soll genau das mitbringen, was für eine andere Person ein No-Go ist; was jemand an anderen mag, darf am Tisch vorkommen.
 - Berücksichtige Hinweise aus früherem Feedback und die Lernnotizen.
 Beziehungsziel und Werte sind vertraulich: Erwähne sie nicht in der Begründung.
 Antworte im vorgegebenen JSON-Format.`;
@@ -48,6 +49,10 @@ function describe(p: Person, label: string) {
     `  Achsen: ${axes}; Typ: ${p.typ}`,
     `  Kurzprofil: ${p.summary}`,
     `  Themen: ${p.topics.join(", ") || "–"}; Rauchen: ${p.smoker ?? "–"}; Kinderwunsch: ${p.childWish ?? "–"}`,
+    ...(p.humor || p.talkStyle ? [`  Humor: ${p.humor ?? "–"}; Gesprächsstil: ${p.talkStyle ?? "–"}`] : []),
+    ...(p.passions.length || p.likesInOthers.length || p.noGos.length
+      ? [`  Begeistert von: ${p.passions.join(", ") || "–"}; mag an anderen: ${p.likesInOthers.join(", ") || "–"}; No-Gos: ${p.noGos.join(", ") || "–"}`]
+      : []),
     `  Beziehungsziel: ${p.goal ?? "–"}; Werte Glaube/Politik/Familie (1–3): ${v.glaube ?? "–"}/${v.politik ?? "–"}/${v.familie ?? "–"}`,
     ...(p.history.liked.length ? [`  Wollte bisher wiedersehen: ${summarize(p.history.liked)}`] : []),
     ...(p.history.likedBy.length ? [`  Wurde bisher wiedersehen gewollt von: ${summarize(p.history.likedBy)}`] : []),
