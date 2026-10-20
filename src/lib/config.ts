@@ -4,7 +4,7 @@
  */
 export const PRICES = {
   /** Eine Tischteilnahme */
-  seat: 3500,
+  seat: 3800,
   /** Nächste Tischteilnahme, wenn eine eingeladene Person an einem Tisch saß */
   referral: 2000,
   /** Nächste Tischteilnahme, wenn ein Dinner zu fünft stattfinden musste */

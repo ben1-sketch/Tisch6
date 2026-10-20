@@ -27,15 +27,15 @@ export default function Agb() {
       <h2>4. Tischteilnahme, Preise und Zahlung</h2>
       <ul>
         <li>Dinner sind an jedem Tag möglich. Tisch6 stellt die Tische automatisch zusammen und legt den Termin fest, sobald ein passender Tisch beisammen ist; dabei werden die angegebenen Wunschtage berücksichtigt. Angenommene Personen erhalten per E-Mail eine Einladung zu dieser konkreten Tischteilnahme (Datum, Uhrzeit, Partnerlokal).</li>
-        <li>Eine Tischteilnahme kostet 35 Euro. Sie umfasst den Platz an einem kuratierten Tisch, die Gesprächskarte und die Wiedersehen-Funktion. Speisen und Getränke bezahlen die Gäste selbst im Lokal; die Partnerlokale teilen die Rechnung dabei gleichmäßig auf alle Gäste des Tisches auf. Es gibt keine weiteren Kosten.</li>
+        <li>Eine Tischteilnahme kostet 38 Euro. Sie umfasst den Platz an einem kuratierten Tisch, die Gesprächskarte und die Wiedersehen-Funktion. Speisen und Getränke bezahlen die Gäste selbst im Lokal; die Partnerlokale teilen die Rechnung dabei gleichmäßig auf alle Gäste des Tisches auf. Es gibt keine weiteren Kosten.</li>
         <li>Eine Einladung gilt 48 Stunden, längstens bis 25 Stunden vor Beginn. Der Platz ist erst nach vollständiger Zahlung über unseren Zahlungsanbieter (Stripe) verbindlich reserviert. Bis dahin kann der Platz anderweitig vergeben werden. Geht eine Zahlung ein, nachdem der Platz bereits vergeben wurde, wird sie automatisch erstattet.</li>
-        <li>Gründungsangebot „Gründungsmitglied Tisch6“: Für die ersten 300 Käuferinnen und Käufer in Wien gibt es drei Tischteilnahmen im Paket für 79 Euro statt 105 Euro. Das Paket ist ab Kauf zwölf Monate gültig; nicht genutzte Tischteilnahmen verfallen danach. Das Paket ist persönlich und nicht übertragbar. Käufer erhalten das Abzeichen „Gründungsmitglied“ im Profil.</li>
+        <li>Gründungsangebot „Gründungsmitglied Tisch6“: Für die ersten 300 Käuferinnen und Käufer in Wien gibt es drei Tischteilnahmen im Paket für 79 Euro statt 114 Euro. Das Paket ist ab Kauf zwölf Monate gültig; nicht genutzte Tischteilnahmen verfallen danach. Das Paket ist persönlich und nicht übertragbar. Käufer erhalten das Abzeichen „Gründungsmitglied“ im Profil.</li>
       </ul>
 
       <h2>5. Empfehlungsprogramm</h2>
       <ul>
         <li>Jede Person erhält einen persönlichen Einladungslink.</li>
-        <li>Wird eine über diesen Link eingeladene Person angenommen und nimmt sie an einem Dinner teil, kostet die nächste Tischteilnahme der einladenden Person 20 Euro statt 35 Euro. Der Rabatt wird automatisch bei der nächsten Einladung verrechnet, ist nicht auszahlbar und nicht mit dem Gründungspaket kombinierbar.</li>
+        <li>Wird eine über diesen Link eingeladene Person angenommen und nimmt sie an einem Dinner teil, kostet die nächste Tischteilnahme der einladenden Person 20 Euro statt 38 Euro. Der Rabatt wird automatisch bei der nächsten Einladung verrechnet, ist nicht auszahlbar und nicht mit dem Gründungspaket kombinierbar.</li>
         <li>Mehrfachprofile oder Selbsteinladungen führen zum Verlust aller Rabatte und zum Ausschluss.</li>
       </ul>
 
@@ -46,7 +46,7 @@ export default function Agb() {
         <li>Absage weniger als 48 Stunden vor Beginn: Die Gebühr verfällt.</li>
         <li>Nichterscheinen ohne Absage: Die Gebühr verfällt. Beim zweiten Nichterscheinen ohne Absage wird das Profil gesperrt.</li>
         <li>Als nicht erschienen gilt, wer von mindestens zwei anderen Gästen des Tisches im Feedback als abwesend angegeben wird.</li>
-        <li>Ab fünf bestätigten Personen findet der Tisch statt. Fällt kurzfristig eine Person aus, findet das Dinner mit fünf Personen statt. Alle Anwesenden erhalten einen Rabatt auf ihre nächste Tischteilnahme (25 Euro statt 35 Euro).</li>
+        <li>Ab fünf bestätigten Personen findet der Tisch statt. Fällt kurzfristig eine Person aus, findet das Dinner mit fünf Personen statt. Alle Anwesenden erhalten einen Rabatt auf ihre nächste Tischteilnahme (25 Euro statt 38 Euro).</li>
         <li>Sind 24 Stunden vor Beginn weniger als fünf Personen bestätigt, wird der Tisch automatisch abgesagt; alle werden per E-Mail und SMS informiert. Bereits bezahlte Tischteilnahmen bleiben als Guthaben für die nächste Einladung erhalten (zwölf Monate gültig). Auf Wunsch erstatten wir den bezahlten Betrag stattdessen zurück.</li>
         <li>Muss Tisch6 einen Tisch verschieben oder absagen, werden alle Teilnehmenden sofort per E-Mail und SMS informiert. Nach einer Verschiebung kann jede Person, die den neuen Termin nicht wahrnehmen kann, kostenlos absagen.</li>
       </ul>
