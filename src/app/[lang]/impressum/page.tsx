@@ -35,7 +35,7 @@ export default function Impressum() {
       <p>
         Tisch6-Team
         <br />
-        E-Mail: <a href="mailto:hallo@tisch6.at">hallo@tisch6.at</a>
+        E-Mail: <a href="mailto:info@tisch6.at">info@tisch6.at</a>
       </p>
 
       <h2>Gewerberecht</h2>
@@ -55,7 +55,7 @@ export default function Impressum() {
 
       <h2>Beschwerden</h2>
       <p>
-        Anliegen und Beschwerden kannst du jederzeit an <a href="mailto:hallo@tisch6.at">hallo@tisch6.at</a> richten – hier antwortet ein Mensch.
+        Anliegen und Beschwerden kannst du jederzeit an <a href="mailto:info@tisch6.at">info@tisch6.at</a> richten – hier antwortet ein Mensch.
       </p>
     </LegalPage>
   );

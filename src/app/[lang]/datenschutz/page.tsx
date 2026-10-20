@@ -14,7 +14,7 @@ export default function Datenschutz() {
       <h2>1. Verantwortlicher</h2>
       <p>
         Arben Murseli e.U. (Marke Tisch6), Wienerstraße 5b, 3500 Krems an der Donau, Österreich, E-Mail:{" "}
-        <a href="mailto:hallo@tisch6.at">hallo@tisch6.at</a>. Siehe auch das Impressum.
+        <a href="mailto:info@tisch6.at">info@tisch6.at</a>. Siehe auch das Impressum.
       </p>
 
       <h2>2. Welche Daten wir verarbeiten</h2>
@@ -88,7 +88,7 @@ export default function Datenschutz() {
       <h2>8. Deine Rechte</h2>
       <p>
         Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch sowie das Recht,
-        erteilte Einwilligungen jederzeit mit Wirkung für die Zukunft zu widerrufen. Wende dich dazu an <a href="mailto:hallo@tisch6.at">hallo@tisch6.at</a>. Du kannst dich
+        erteilte Einwilligungen jederzeit mit Wirkung für die Zukunft zu widerrufen. Wende dich dazu an <a href="mailto:info@tisch6.at">info@tisch6.at</a>. Du kannst dich
         außerdem bei der Österreichischen Datenschutzbehörde beschweren (<a href="https://www.dsb.gv.at">www.dsb.gv.at</a>).
       </p>
 
