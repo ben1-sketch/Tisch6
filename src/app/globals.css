@@ -51,6 +51,13 @@
     }
   }
 
+  /* Bewerbungs-Chat auf dem Handy (Vollbild): die Seite dahinter bleibt stehen */
+  html.chat-offen,
+  html.chat-offen body {
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
   /* Überschriften gleichmäßig umbrechen – kein einzelnes Wort allein in der letzten Zeile */
   h1,
   h2,

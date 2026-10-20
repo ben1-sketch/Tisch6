@@ -233,6 +233,8 @@ const de = {
       placeholder: "Deine Antwort …",
       send: "Senden",
       typing: "Die Gastgeberin schreibt …",
+      later: "Später",
+      laterLabel: "Später weitermachen – dein Gespräch bleibt gespeichert",
     },
     done: {
       title: "Danke – deine Bewerbung ist da!",

@@ -252,6 +252,7 @@ export function ApplyFlow({ lang, t, invitedBy }: { lang: string; t: T; invitedB
       {step === "chat" && (
         <Chat
           t={t}
+          lang={lang}
           messages={messages}
           onUpdate={setMessages}
           onComplete={(s) => {
@@ -279,13 +280,18 @@ export function ApplyFlow({ lang, t, invitedBy }: { lang: string; t: T; invitedB
   );
 }
 
+/** Bis zu dieser Breite liegt der Chat als Vollbild über der Seite (Handy) */
+const HANDY = "(max-width: 639px)";
+
 function Chat({
   t,
+  lang,
   messages,
   onUpdate,
   onComplete,
 }: {
   t: T;
+  lang: string;
   messages: Msg[];
   onUpdate: (m: Msg[]) => void;
   onComplete: (status: string) => void;
@@ -294,8 +300,12 @@ function Chat({
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [finished, setFinished] = useState(false);
-  const endRef = useRef<HTMLDivElement>(null);
+  const boxRef = useRef<HTMLElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  // Liest man gerade das Ende des Gesprächs? Dann bleibt es sichtbar, auch wenn die Tastatur aufgeht
+  const atEnd = useRef(true);
+  const firstScroll = useRef(true);
 
   // Eingabefeld wächst mit längeren Antworten mit (bis ca. fünf Zeilen)
   useEffect(() => {
@@ -305,8 +315,60 @@ function Chat({
     el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
   }, [text]);
 
+  // Handy: der Chat füllt genau den sichtbaren Bereich – geht die Tastatur auf, wird er kleiner statt verschoben,
+  // und die Seite dahinter scrollt nicht mit
   useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    const box = boxRef.current;
+    if (!box) return;
+    const vv = window.visualViewport;
+    const handy = window.matchMedia(HANDY);
+    const root = document.documentElement;
+    const fit = () => {
+      if (handy.matches && vv) {
+        root.classList.add("chat-offen");
+        box.style.height = `${vv.height}px`;
+        box.style.transform = `translateY(${vv.offsetTop}px)`;
+      } else {
+        root.classList.remove("chat-offen");
+        box.style.height = "";
+        box.style.transform = "";
+      }
+    };
+    fit();
+    vv?.addEventListener("resize", fit);
+    vv?.addEventListener("scroll", fit);
+    handy.addEventListener("change", fit);
+    return () => {
+      vv?.removeEventListener("resize", fit);
+      vv?.removeEventListener("scroll", fit);
+      handy.removeEventListener("change", fit);
+      root.classList.remove("chat-offen");
+    };
+  }, []);
+
+  // Wird der Nachrichtenbereich kleiner oder größer (Tastatur, längere Eingabe): wer am Ende war, bleibt am Ende
+  useEffect(() => {
+    const list = listRef.current;
+    if (!list) return;
+    const keep = new ResizeObserver(() => {
+      if (atEnd.current) list.scrollTop = list.scrollHeight;
+    });
+    keep.observe(list);
+    return () => keep.disconnect();
+  }, []);
+
+  // Neue Nachricht: nur im Chat scrollen, nie die ganze Seite. Eine lange Antwort der Gastgeberin
+  // nur bis zu ihrem Anfang, damit man sie von oben lesen kann.
+  useEffect(() => {
+    const list = listRef.current;
+    if (!list) return;
+    const items = list.querySelectorAll<HTMLElement>("[data-msg]");
+    const last = items[items.length - 1];
+    const end = list.scrollHeight - list.clientHeight;
+    const top = last?.dataset.msg === "assistant" && !sending ? Math.min(end, last.offsetTop - 12) : end;
+    atEnd.current = top >= end - 4;
+    list.scrollTo({ top, behavior: firstScroll.current ? "auto" : "smooth" });
+    firstScroll.current = false;
   }, [messages, sending]);
 
   async function send(e: FormEvent) {
@@ -342,14 +404,35 @@ function Chat({
   }
 
   return (
-    <section className="glass flex h-[min(75vh,720px)] flex-col overflow-hidden rounded-3xl">
-      <header className="border-b border-white/10 px-5 py-4">
-        <h1 className="font-display text-lg font-semibold">{t.chat.title}</h1>
-        <p className="text-sm text-mist">{t.chat.lead}</p>
+    <section
+      ref={boxRef}
+      className="fixed inset-x-0 top-0 z-50 flex h-dvh flex-col overflow-hidden bg-night-900 sm:static sm:z-auto sm:h-[min(75vh,720px)] sm:rounded-3xl sm:border sm:border-gold-400/15 sm:bg-night-800/60 sm:backdrop-blur-md"
+    >
+      <header className="flex items-start gap-4 border-b border-gold-400/10 px-4 py-3 sm:px-5 sm:py-4">
+        <div className="min-w-0 flex-1">
+          <h1 className="font-display text-xl sm:text-2xl">{t.chat.title}</h1>
+          <p className="text-sm text-mist">{t.chat.lead}</p>
+        </div>
+        {/* nur am Handy, wo der Chat die ganze Seite bedeckt */}
+        <Link
+          href={`/${lang}`}
+          aria-label={t.chat.laterLabel}
+          className="mt-1.5 shrink-0 text-[0.68rem] font-medium tracking-[0.18em] text-mist uppercase hover:text-gold-300 sm:hidden"
+        >
+          {t.chat.later}
+        </Link>
       </header>
-      <div className="flex-1 space-y-3 overflow-y-auto px-4 py-5" aria-live="polite">
+      <div
+        ref={listRef}
+        onScroll={(e) => {
+          const el = e.currentTarget;
+          atEnd.current = el.scrollHeight - el.scrollTop - el.clientHeight < 48;
+        }}
+        className="relative flex-1 space-y-3 overflow-y-auto overscroll-contain px-4 py-5"
+        aria-live="polite"
+      >
         {messages.map((m, i) => (
-          <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+          <div key={i} data-msg={m.role} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
             <p
               className={`max-w-[85%] rounded-2xl px-4 py-2.5 leading-relaxed whitespace-pre-wrap ${
                 m.role === "user" ? "rounded-br-sm bg-gold-400 text-night-950" : "rounded-bl-sm bg-night-700 text-cloud"
@@ -360,25 +443,31 @@ function Chat({
           </div>
         ))}
         {sending && <p className="animate-pulse text-sm text-mist">{t.chat.typing}</p>}
-        <div ref={endRef} />
       </div>
       {error && <p className="px-4 pb-2 text-sm text-gold-300">{error}</p>}
-      <form onSubmit={send} className="flex items-end gap-2 border-t border-white/10 p-3">
+      <form onSubmit={send} className="flex items-end gap-2 border-t border-gold-400/10 p-3">
         <textarea
           ref={inputRef}
           rows={1}
           maxLength={1200}
           value={text}
           disabled={finished}
+          enterKeyHint="send"
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) send(e);
           }}
           placeholder={t.chat.placeholder}
-          className={`${inputClass} resize-none`}
+          className={`${inputClass} resize-none text-base`}
           aria-label={t.chat.placeholder}
         />
-        <button type="submit" disabled={sending || finished || !text.trim()} className="rounded-full bg-gold-400 px-5 py-3 font-semibold text-night-950 transition hover:bg-gold-300 disabled:opacity-50">
+        {/* Fokus bleibt im Eingabefeld – so bleibt die Tastatur offen und nichts springt */}
+        <button
+          type="submit"
+          onPointerDown={(e) => e.preventDefault()}
+          disabled={sending || finished || !text.trim()}
+          className="rounded-full bg-gold-400 px-5 py-3 font-semibold text-night-950 transition hover:bg-gold-300 disabled:opacity-50"
+        >
           {t.chat.send}
         </button>
       </form>
