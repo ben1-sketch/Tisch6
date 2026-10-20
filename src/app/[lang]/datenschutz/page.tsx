@@ -13,7 +13,7 @@ export default function Datenschutz() {
 
       <h2>1. Verantwortlicher</h2>
       <p>
-        Arben Murseli e.U. (Marke Tisch6), Wiener Straße 5, 3500 Krems an der Donau, Österreich, E-Mail:{" "}
+        Arben Murseli e.U. (Marke Tisch6), Wienerstraße 5b, 3500 Krems an der Donau, Österreich, E-Mail:{" "}
         <a href="mailto:hallo@tisch6.at">hallo@tisch6.at</a>. Siehe auch das Impressum.
       </p>
 

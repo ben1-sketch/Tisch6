@@ -17,12 +17,14 @@ export default function Impressum() {
         <br />
         Marke: Tisch6
         <br />
-        Wiener Straße 5, 3500 Krems an der Donau, Österreich
+        Wienerstraße 5b, 3500 Krems an der Donau, Österreich
       </p>
 
       <h2>Firmendaten</h2>
       <p>
-        Firmenbuchnummer: FN 452345 p
+        Firmensitz: Krems an der Donau
+        <br />
+        Firmenbuchnummer: FN 452345p
         <br />
         Firmenbuchgericht: Landesgericht Krems an der Donau
         <br />

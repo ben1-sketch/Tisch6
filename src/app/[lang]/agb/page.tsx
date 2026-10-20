@@ -7,7 +7,7 @@ export default function Agb() {
   return (
     <LegalPage title="Allgemeine Geschäftsbedingungen" updated="20. Oktober 2026">
       <h2>1. Geltungsbereich</h2>
-      <p>Diese AGB gelten für die Nutzung von Tisch6 (tisch6.at), betrieben von Arben Murseli e.U., Wiener Straße 5, 3500 Krems an der Donau (siehe Impressum), und die Teilnahme an Tisch6-Dinnern.</p>
+      <p>Diese AGB gelten für die Nutzung von Tisch6 (tisch6.at), betrieben von Arben Murseli e.U., Wienerstraße 5b, 3500 Krems an der Donau (siehe Impressum), und die Teilnahme an Tisch6-Dinnern.</p>
 
       <h2>2. Leistung</h2>
       <p>
