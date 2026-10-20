@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import { LegalPage, Todo } from "@/components/LegalPage";
+import { LegalPage } from "@/components/LegalPage";
 
 export const metadata: Metadata = { title: "AGB" };
 
 export default function Agb() {
   return (
-    <LegalPage title="Allgemeine Geschäftsbedingungen" updated="17. Oktober 2026">
+    <LegalPage title="Allgemeine Geschäftsbedingungen" updated="20. Oktober 2026">
       <h2>1. Geltungsbereich</h2>
-      <p>Diese AGB gelten für die Nutzung von Tisch6 (tisch6.at), betrieben von <Todo>Name / Firma laut Impressum</Todo>, und die Teilnahme an Tisch6-Dinnern.</p>
+      <p>Diese AGB gelten für die Nutzung von Tisch6 (tisch6.at), betrieben von Tisch6 (siehe Impressum), und die Teilnahme an Tisch6-Dinnern.</p>
 
       <h2>2. Leistung</h2>
       <p>
@@ -54,7 +54,7 @@ export default function Agb() {
       <h2>7. Rücktrittsrecht</h2>
       <p>
         Bei Dienstleistungen im Zusammenhang mit Freizeitbetätigungen, die zu einem bestimmten Termin erbracht werden, besteht gemäß § 18 Abs. 1 Z 10
-        FAGG kein Rücktrittsrecht. Für das Gründungspaket ohne festen Termin gilt das gesetzliche Rücktrittsrecht von 14 Tagen. <Todo>Rechtlich prüfen lassen</Todo>
+        FAGG kein Rücktrittsrecht. Für das Gründungspaket ohne festen Termin gilt das gesetzliche Rücktrittsrecht von 14 Tagen.
       </p>
 
       <h2>8. Verhalten</h2>

@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { LegalPage, Todo } from "@/components/LegalPage";
+import { LegalPage } from "@/components/LegalPage";
 
 export const metadata: Metadata = { title: "Datenschutzerklärung" };
 
 export default function Datenschutz() {
   return (
-    <LegalPage title="Datenschutzerklärung" updated="17. Oktober 2026">
+    <LegalPage title="Datenschutzerklärung" updated="20. Oktober 2026">
       <p>
         Der Schutz deiner Daten ist uns wichtig. Hier erklären wir, welche Daten Tisch6 verarbeitet, wofür und welche Rechte du hast. Wir verarbeiten
         personenbezogene Daten ausschließlich auf Grundlage der Datenschutz-Grundverordnung (DSGVO) und des österreichischen Datenschutzgesetzes (DSG).
@@ -13,7 +13,7 @@ export default function Datenschutz() {
 
       <h2>1. Verantwortlicher</h2>
       <p>
-        <Todo>Name / Firma, Anschrift</Todo>, E-Mail: <Todo>datenschutz@tisch6.at</Todo>. Siehe auch das Impressum.
+        Tisch6, Wien, Österreich, E-Mail: <a href="mailto:hallo@tisch6.at">hallo@tisch6.at</a>. Siehe auch das Impressum.
       </p>
 
       <h2>2. Welche Daten wir verarbeiten</h2>
@@ -87,7 +87,7 @@ export default function Datenschutz() {
       <h2>8. Deine Rechte</h2>
       <p>
         Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch sowie das Recht,
-        erteilte Einwilligungen jederzeit mit Wirkung für die Zukunft zu widerrufen. Wende dich dazu an <Todo>datenschutz@tisch6.at</Todo>. Du kannst dich
+        erteilte Einwilligungen jederzeit mit Wirkung für die Zukunft zu widerrufen. Wende dich dazu an <a href="mailto:hallo@tisch6.at">hallo@tisch6.at</a>. Du kannst dich
         außerdem bei der Österreichischen Datenschutzbehörde beschweren (<a href="https://www.dsb.gv.at">www.dsb.gv.at</a>).
       </p>
 
