@@ -719,7 +719,7 @@ const TEST_HINTS: [number | RegExp, string][] = [
   [/messaging service/i, "TWILIO_MESSAGING_SERVICE_SID (MG…) prüfen – und ob im Messaging Service der Absender Tisch6 hinterlegt ist."],
   [/api key/i, "RESEND_API_KEY in Vercel stimmt nicht."],
   [/domain is not verified|verify a domain/i, "Die Domain aus EMAIL_FROM ist bei Resend noch nicht bestätigt."],
-  [/`from`/i, "EMAIL_FROM hat das falsche Format – richtig ist z. B. Tisch6 <info@tisch6.at>."],
+  [/`from`/i, "EMAIL_FROM hat das falsche Format – richtig ist z. B. Tisch6 <hallo@tisch6.at>."],
 ];
 
 /** Was Resend bzw. Twilio beim Testversand zurückgemeldet hat (steht im Versandprotokoll) */
