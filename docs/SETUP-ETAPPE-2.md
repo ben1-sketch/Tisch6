@@ -126,7 +126,7 @@ plus Nachrücker-Angebote und – selten – eine SMS bei Verschiebung oder Absa
 |---|---|
 | `RESEND_API_KEY` | aus Schritt 2.4 |
 | `EMAIL_FROM` | `Tisch6 <hallo@tisch6.at>` (erst nach bestätigter Domain) |
-| `EMAIL_REPLY_TO` | deine eigene E-Mail-Adresse (Antworten landen bei dir) |
+| `EMAIL_REPLY_TO` | `info@tisch6.at` (Antworten der Gäste landen im Tisch6-Postfach) |
 | `ADMIN_EMAIL` | deine E-Mail-Adresse – Meldungen vom Meldeknopf, abgesagte Tische, Hinweise |
 | `STRIPE_SECRET_KEY` | aus Schritt 3.2 |
 | `STRIPE_WEBHOOK_SECRET` | aus Schritt 3.3 |

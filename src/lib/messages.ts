@@ -53,7 +53,7 @@ function layout(o: Layout): EmailContent {
 <h1 style="${serif}font-size:28px;font-weight:normal;line-height:1.25;margin:22px 0 14px;color:#f4efe6;">${esc(o.title)}</h1>
 ${o.paragraphs.map(p).join("")}${details}${list}${cta}${(o.after ?? []).map(p).join("")}
 </td></tr>
-<tr><td style="${font}padding:12px 28px 26px;font-size:12px;line-height:1.5;color:#8a90a3;">Fragen? Antworte einfach auf diese E-Mail – hier antwortet ein Mensch, keine Warteschleife.<br>Tisch6 · KI-kuratierte Dating-Dinner<br><a href="${siteUrl()}" style="color:#8a90a3;">${esc(siteUrl().replace(/^https?:\/\//, ""))}</a></td></tr>
+<tr><td style="${font}padding:12px 28px 26px;font-size:12px;line-height:1.5;color:#8a90a3;">Diese E-Mail wurde automatisch verschickt. Fragen? Antworte einfach darauf oder schreib an <a href="mailto:info@tisch6.at" style="color:#8a90a3;">info@tisch6.at</a> – hier antwortet ein Mensch, keine Warteschleife.<br>Tisch6 · KI-kuratierte Dating-Dinner<br><a href="${siteUrl()}" style="color:#8a90a3;">${esc(siteUrl().replace(/^https?:\/\//, ""))}</a></td></tr>
 </table></td></tr></table></body></html>`;
 
   const text = [
@@ -65,7 +65,7 @@ ${o.paragraphs.map(p).join("")}${details}${list}${cta}${(o.after ?? []).map(p).j
     ...(o.cta ? ["", `${o.cta.label}: ${o.cta.url}`] : []),
     ...(o.after?.length ? ["", ...o.after] : []),
     "",
-    "Fragen? Antworte einfach auf diese E-Mail – hier antwortet ein Mensch.",
+    "Diese E-Mail wurde automatisch verschickt. Fragen? Antworte einfach darauf oder schreib an info@tisch6.at – hier antwortet ein Mensch.",
     "Tisch6 · KI-kuratierte Dating-Dinner",
   ].join("\n");
 
