@@ -66,10 +66,10 @@ const de = {
   ambiente: {
     eyebrow: "Das Ambiente",
     title: "Lokale, in denen man gern sitzen bleibt.",
-    lead: "Vier bis fünf ausgewählte Wiener Lokale – ruhig genug zum Reden, gut genug zum Genießen. Kein Lärm, kein Gedränge, kein Zeitdruck.",
+    lead: "Ausgewählte Wiener Lokale – ruhig genug zum Reden, gut genug zum Genießen. Kein Lärm, kein Gedränge, kein Zeitdruck.",
     photo: { label: "Zum Reden", alt: "Sechs Gäste lachen an einem runden Tisch bei Kerzenlicht" },
     factsTitle: "Wo gegessen wird",
-    facts: ["Vier bis fünf Stammlokale in Wien", "Nie zweimal hintereinander dasselbe Lokal", "Reserviert immer auf „Tisch6“", "Rechnung wird gleichmäßig geteilt"],
+    facts: ["Ausgewählte Partnerlokale in Wien", "Ein eigener Tisch für euch sechs", "Reserviert immer auf „Tisch6“", "Rechnung wird gleichmäßig geteilt"],
   },
   safe: {
     women: {
@@ -128,7 +128,7 @@ const de = {
       },
       {
         q: "Wann und wo finden die Dinner statt?",
-        a: "An jedem Tag möglich – jede Nacht stellt die KI neue Tische zusammen und legt den Termin nach euren Wunschtagen fest. Gegessen wird in vier bis fünf ausgewählten Wiener Lokalen, nie zweimal hintereinander im selben. Reserviert ist auf „Tisch6“; die Adresse bekommst du mit der Bestätigung und mit den Erinnerungen drei Tage, einen Tag und zwei Stunden vorher.",
+        a: "Gegessen wird in ausgewählten Wiener Partnerlokalen, {tage}. Jede Nacht stellt die KI neue Tische zusammen und legt den Termin nach euren Wunschtagen fest. Reserviert ist auf „Tisch6“; die Adresse bekommst du mit der Bestätigung und mit den Erinnerungen drei Tage, einen Tag und zwei Stunden vorher.",
       },
       {
         q: "Wofür brauche ich ein Foto?",

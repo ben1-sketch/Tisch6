@@ -8,9 +8,11 @@ import { Ticker } from "@/components/Ticker";
 import { WienSilhouette } from "@/components/WienSilhouette";
 import { bilder } from "@/lib/bilder";
 import { FOUNDER } from "@/lib/config";
+import { dinnerDaysPhrase, dinnerWeekdays } from "@/lib/dinner-days";
 import { founderRemaining } from "@/lib/founder-count";
+import { fill } from "@/lib/text";
 
-/** Der Zähler „noch X von 300“ wird alle fünf Minuten neu geladen – sonst bleibt die Seite statisch und schnell. */
+/** Der Zähler „noch X von 300“ und die Dinner-Tage werden alle fünf Minuten neu geladen – sonst bleibt die Seite statisch und schnell. */
 export const revalidate = 300;
 
 const ROMAN = ["I", "II", "III"];
@@ -27,8 +29,9 @@ function Ornament({ className = "" }: { className?: string }) {
 export default async function Home({ params }: PageProps<"/[lang]">) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
-  const [t, remaining] = await Promise.all([getDictionary(lang), founderRemaining()]);
+  const [t, remaining, days] = await Promise.all([getDictionary(lang), founderRemaining(), dinnerWeekdays()]);
   const free = remaining ?? FOUNDER.limit;
+  const tage = dinnerDaysPhrase(days);
   const apply = `/${lang}/bewerben`;
   const feature = { ...bilder.tischrunde, ...t.ambiente.photo };
 
@@ -223,7 +226,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
                     +
                   </span>
                 </summary>
-                <p className="mt-4 leading-relaxed text-mist">{f.a}</p>
+                <p className="mt-4 leading-relaxed text-mist">{fill(f.a, { tage })}</p>
               </details>
             ))}
           </div>
