@@ -17,6 +17,7 @@ type Overview = {
   founder: boolean;
   available: boolean;
   inviteCode: string;
+  gender: string | null;
   buddyLinked: boolean;
   packageRemaining: number | null;
   packageExpires: string | null;
@@ -164,7 +165,7 @@ export function Account({ lang, t, buddyT }: { lang: string; t: T; buddyT: Dicti
           {overview && status !== "rejected" && status !== "blocked" && (
             <>
               {overview.buddyLinked && <p className="glass rounded-3xl p-6 text-mist">{t.buddyLinked}</p>}
-              <InviteBox t={buddyT} lang={lang} code={overview.inviteCode} />
+              <InviteBox t={buddyT} lang={lang} code={overview.inviteCode} gender={overview.gender} />
             </>
           )}
 

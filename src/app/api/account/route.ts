@@ -46,6 +46,7 @@ export async function GET() {
       founder: app.founder,
       available: Boolean(app.available_since),
       inviteCode: app.invite_code,
+      gender: app.profile?.geschlecht ?? null,
       buddyLinked: Boolean(app.buddy_id),
       packageRemaining: offer.package?.remaining ?? null,
       packageExpires: offer.package?.expires_at ?? null,

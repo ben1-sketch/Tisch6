@@ -475,8 +475,8 @@ function Chat({
   );
 }
 
-/** "Bring eine Freundin mit": persönlicher Link, über den sich jemand als Duo bewirbt. */
-export function InviteBox({ t, lang, code }: { t: T["buddy"]; lang: string; code: string }) {
+/** „Bring eine Freundin / einen Freund mit“: persönlicher Link, über den sich jemand als Duo bewirbt. */
+export function InviteBox({ t, lang, code, gender = null }: { t: T["buddy"]; lang: string; code: string; gender?: string | null }) {
   const [copied, setCopied] = useState(false);
   // Immer die offizielle Domain – auch wenn die Seite über eine Vercel-Vorschau aufgerufen wird
   const origin = process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin;
@@ -494,7 +494,7 @@ export function InviteBox({ t, lang, code }: { t: T["buddy"]; lang: string; code
   return (
     <div className="mt-8 rounded-2xl border border-gold-400/30 bg-gold-400/5 p-5 text-left">
       <h2 className="font-display text-lg font-semibold">{t.title}</h2>
-      <p className="mt-1 text-sm text-mist">{t.text}</p>
+      <p className="mt-1 text-sm text-mist">{fill(t.text, { bring: gender === "frau" ? t.bring.frau : gender === "mann" ? t.bring.mann : t.bring.offen })}</p>
       <div className="mt-4 flex flex-col gap-2 sm:flex-row">
         <input readOnly value={url} className={`${inputClass} text-sm`} onFocus={(e) => e.target.select()} aria-label={t.title} />
         <button type="button" onClick={share} className="shrink-0 rounded-full bg-gold-400 px-5 py-3 font-semibold text-night-950 hover:bg-gold-300">

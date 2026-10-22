@@ -36,7 +36,7 @@ const de = {
     items: [
       {
         title: "Bewerben",
-        text: "Zehn Minuten mit unserer KI-Gastgeberin: Fakten, Lebensstil, Persönlichkeit. Dazu ein SMS-Code und ein Foto, das nur unser Team sieht. Allein oder mit „Bring eine Freundin mit“.",
+        text: "Zehn Minuten mit unserer KI-Gastgeberin: Fakten, Lebensstil, Persönlichkeit. Dazu ein SMS-Code und ein Foto, das nur unser Team sieht. Allein oder zu zweit – mit einer Freundin oder einem Freund.",
       },
       {
         title: "Eingeladen werden",
@@ -88,8 +88,8 @@ const de = {
       lead: "Drei Frauen, drei Männer, ein gutes Abendessen – kein Auftritt, kein Wettbewerb.",
       items: [
         { title: "3:3 ohne Konkurrenz", text: "Niemand muss um Aufmerksamkeit kämpfen. Alle am Tisch wissen, warum sie da sind." },
-        { title: "Keine öffentliche Ablehnung", text: "Ob jemand dich wiedersehen will, erfährst du privat – nie vor anderen." },
-        { title: "Wiedersehen diskret am nächsten Tag", text: "Am Tag danach, anonym. Kontakt gibt es nur, wenn es beide wollen." },
+        { title: "Bring einen Freund mit", text: "Bewerbt euch zu zweit: gleicher Abend, gleiches Lokal, verschiedene Tische." },
+        { title: "Keine öffentliche Ablehnung", text: "Ob jemand dich wiedersehen will, erfährst du am Tag danach – privat und anonym, nie vor anderen." },
       ],
     },
   },
@@ -126,8 +126,8 @@ const de = {
         a: "Weil ein Abend nur so gut ist wie der Tisch. Die Bewerbung hilft uns, Menschen zusammenzubringen, die sich wirklich etwas zu sagen haben.",
       },
       {
-        q: "Kann ich mit einer Freundin kommen?",
-        a: "Ja – mit „Bring eine Freundin mit“ bewerbt ihr euch zu zweit. Ihr seid am selben Abend im selben Lokal, sitzt aber an verschiedenen Tischen.",
+        q: "Kann ich mit einer Freundin oder einem Freund kommen?",
+        a: "Ja – ihr bewerbt euch zu zweit: Nach deiner Bewerbung bekommst du einen Einladungslink für deine Begleitung. Ihr seid am selben Abend im selben Lokal, sitzt aber an verschiedenen Tischen.",
       },
       {
         q: "Wann und wo finden die Dinner statt?",
@@ -187,7 +187,7 @@ const de = {
       title: "Schön, dass du dabei sein willst.",
       lead: "Zuerst das Wichtigste – danach verifizierst du deine Handynummer, lädst ein Foto zur Prüfung hoch und unsere KI-Gastgeberin führt ein kurzes Gespräch mit dir.",
       invited: "Schön, du wurdest zu Tisch6 eingeladen!",
-      together: "Wir bewerben uns zu zweit („Bring eine Freundin mit“) – gleicher Abend, verschiedene Tische.",
+      together: "Wir bewerben uns zu zweit – gleicher Abend, verschiedene Tische.",
       firstName: "Vorname",
       email: "E-Mail-Adresse",
       emailHint: "Hierhin schicken wir Antwort und Einladungen.",
@@ -248,7 +248,9 @@ const de = {
     },
     buddy: {
       title: "Dein Einladungslink",
-      text: "Bring eine Freundin mit: Wer sich über diesen Link bewirbt, kann am selben Abend wie du kommen – an einen anderen Tisch. Und wird jemand über deinen Link angenommen und sitzt an einem Tisch, kostet deine nächste Tischteilnahme nur 20\u00a0€ statt 38\u00a0€.",
+      /** Frauen lesen „Freundin“, Männer „Freund“ – solange das Geschlecht noch nicht feststeht, beides */
+      bring: { frau: "Bring eine Freundin mit", mann: "Bring einen Freund mit", offen: "Bring eine Freundin oder einen Freund mit" },
+      text: "{bring}: Wer sich über diesen Link bewirbt, kann am selben Abend wie du kommen – an einen anderen Tisch. Und wird jemand über deinen Link angenommen und sitzt an einem Tisch, kostet deine nächste Tischteilnahme nur 20\u00a0€ statt 38\u00a0€.",
       share: "Link teilen",
       copied: "Kopiert!",
       shareText: "Komm mit zu Tisch6 – KI-kuratierte Dating-Dinner in Wien:",

@@ -21,7 +21,7 @@ export default function Agb() {
         <li>Über die Bewerbung wird automatisiert innerhalb von 24 Stunden entschieden (angenommen, abgelehnt oder – für ein ausgewogenes Verhältnis von Frauen und Männern – Warteliste). In Zweifelsfällen prüft ein Mensch. Abgelehnte Bewerbungen werden nach 30 Tagen gelöscht.</li>
         <li>Die Angaben in der Bewerbung müssen wahrheitsgemäß sein. Falsche Angaben berechtigen zum Ausschluss.</li>
         <li>Pro Person ist nur ein Profil erlaubt. Zur Verifizierung sind eine per SMS-Code bestätigte Handynummer und genau ein aktuelles Foto erforderlich. Das Foto dient ausschließlich der Prüfung durch Tisch6 und wird anderen Teilnehmern nie gezeigt.</li>
-        <li>„Bring eine Freundin mit“: Wer sich über den Einladungslink einer anderen Person bewirbt, wird mit ihr verknüpft. Beide werden nach Möglichkeit zum selben Termin, aber stets an verschiedene Tische eingeladen. Jede Person bewirbt sich und zahlt selbst.</li>
+        <li>„Bring eine Freundin oder einen Freund mit“: Wer sich über den Einladungslink einer anderen Person bewirbt, wird mit ihr verknüpft. Beide werden nach Möglichkeit zum selben Termin, aber stets an verschiedene Tische eingeladen. Jede Person bewirbt sich und zahlt selbst.</li>
       </ul>
 
       <h2>4. Tischteilnahme, Preise und Zahlung</h2>
