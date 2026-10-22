@@ -15,10 +15,10 @@ export function configuredSiteUrl() {
 }
 
 /**
- * Instagram-Account von Tisch6 – hier eintragen, z. B. "https://www.instagram.com/tisch6.at".
- * Solange der Wert leer ist, wird der Instagram-Link in der Fußzeile nicht angezeigt.
+ * Instagram-Account von Tisch6 (@tischsechs).
+ * Ist der Wert leer, wird der Instagram-Link in der Fußzeile nicht angezeigt.
  */
-export const instagramUrl = "";
+export const instagramUrl = "https://www.instagram.com/tischsechs/";
 
 /** Öffentliche Adresse für Links in E-Mails und SMS. */
 export function siteUrl() {
