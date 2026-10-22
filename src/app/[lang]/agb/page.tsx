@@ -5,7 +5,7 @@ export const metadata: Metadata = { title: "AGB" };
 
 export default function Agb() {
   return (
-    <LegalPage title="Allgemeine Geschäftsbedingungen" updated="20. Oktober 2026">
+    <LegalPage title="Allgemeine Geschäftsbedingungen" updated="22. Oktober 2026">
       <h2>1. Geltungsbereich</h2>
       <p>Diese AGB gelten für die Nutzung von Tisch6 (tisch6.at), betrieben von Arben Murseli e.U., Wienerstraße 5b, 3500 Krems an der Donau (siehe Impressum), und die Teilnahme an Tisch6-Dinnern.</p>
 
@@ -27,7 +27,7 @@ export default function Agb() {
       <h2>4. Tischteilnahme, Preise und Zahlung</h2>
       <ul>
         <li>Dinner finden an den Abenden statt, an denen die Partnerlokale einen Tisch für Tisch6 bereithalten. Tisch6 stellt die Tische automatisch zusammen und legt den Termin fest, sobald ein passender Tisch beisammen ist; dabei werden die angegebenen Wunschtage berücksichtigt. Angenommene Personen erhalten per E-Mail eine Einladung zu dieser konkreten Tischteilnahme (Datum, Uhrzeit, Partnerlokal).</li>
-        <li>Eine Tischteilnahme kostet 38 Euro. Sie umfasst den Platz an einem kuratierten Tisch, die Gesprächskarte und die Wiedersehen-Funktion. Speisen und Getränke bezahlen die Gäste selbst im Lokal; die Partnerlokale teilen die Rechnung dabei gleichmäßig auf alle Gäste des Tisches auf. Es gibt keine weiteren Kosten.</li>
+        <li>Eine Tischteilnahme kostet 38 Euro. Sie umfasst den Platz an einem kuratierten Tisch, die Gesprächskarte und die Wiedersehen-Funktion. Speisen und Getränke bezahlt jeder Gast selbst im Lokal, und zwar nur das, was er selbst bestellt hat (getrennte Rechnung). Es gibt keine weiteren Kosten.</li>
         <li>Eine Einladung gilt 48 Stunden, längstens bis 25 Stunden vor Beginn. Der Platz ist erst nach vollständiger Zahlung über unseren Zahlungsanbieter (Stripe) verbindlich reserviert. Bis dahin kann der Platz anderweitig vergeben werden. Geht eine Zahlung ein, nachdem der Platz bereits vergeben wurde, wird sie automatisch erstattet.</li>
         <li>Gründungsangebot „Gründungsmitglied Tisch6“: Für die ersten 300 Käuferinnen und Käufer in Wien gibt es drei Tischteilnahmen im Paket für 79 Euro statt 114 Euro. Das Paket ist ab Kauf zwölf Monate gültig; nicht genutzte Tischteilnahmen verfallen danach. Das Paket ist persönlich und nicht übertragbar. Käufer erhalten das Abzeichen „Gründungsmitglied“ im Profil.</li>
       </ul>

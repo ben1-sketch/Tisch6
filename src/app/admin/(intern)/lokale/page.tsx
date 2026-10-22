@@ -77,7 +77,7 @@ export default async function RestaurantsPage() {
 
   return (
     <>
-      <PageTitle title="Lokale" sub="Vier bis fünf Partnerlokale, die einen Sechsertisch auf „Tisch6“ reservieren und die Rechnung durch sechs teilen. Die KI wechselt sie ab und legt Termine nur an den angehakten Tagen an." />
+      <PageTitle title="Lokale" sub="Vier bis fünf Partnerlokale, die einen Sechsertisch auf „Tisch6“ reservieren und getrennt abrechnen. Die KI wechselt sie ab und legt Termine nur an den angehakten Tagen an." />
       {error && <Notice tone="red">Datenbank: {error.message}</Notice>}
 
       <div className="space-y-4">

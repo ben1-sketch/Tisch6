@@ -93,7 +93,7 @@ const accountUrl = () => link("/de/konto");
 
 /** Reservierungsname im Lokal */
 export const RESERVATION_NAME = "Tisch6";
-const BILL_NOTE = "Essen und Getränke zahlt ihr direkt im Lokal – die Rechnung wird am Ende einfach gleichmäßig geteilt, niemand muss rechnen.";
+const BILL_NOTE = "Essen und Getränke zahlt ihr direkt im Lokal – jeder seine eigene Rechnung, also nur das, was er selbst bestellt hat.";
 
 // ---------------------------------------------------------------------------
 // Bewerbung
@@ -602,7 +602,7 @@ export function reservationMail(o: { dinner: DinnerInfo; count: number; kitchen:
       ["Hinweise für die Küche", o.kitchen.length ? o.kitchen.join(", ") : "keine"],
     ],
     after: [
-      "Eine Bitte: Teilt die Rechnung am Ende einfach automatisch gleichmäßig durch alle Gäste am Tisch (in der Regel sechs). Die Gäste bestellen und zahlen Essen und Getränke selbst.",
+      "Eine Bitte: Rechnet am Ende bitte getrennt ab – jeder Gast zahlt nur, was er selbst bestellt hat.",
       "Vielen Dank – wir freuen uns auf den Abend bei euch!",
     ],
   });

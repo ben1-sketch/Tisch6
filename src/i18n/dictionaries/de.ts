@@ -69,7 +69,7 @@ const de = {
     lead: "Ausgewählte Wiener Lokale – ruhig genug zum Reden, gut genug zum Genießen. Kein Lärm, kein Gedränge, kein Zeitdruck.",
     photo: { label: "Zum Reden", alt: "Sechs Gäste lachen an einem runden Tisch bei Kerzenlicht" },
     factsTitle: "Wo gegessen wird",
-    facts: ["Ausgewählte Partnerlokale in Wien", "Ein eigener Tisch für euch sechs", "Reserviert immer auf „Tisch6“", "Rechnung wird gleichmäßig geteilt"],
+    facts: ["Ausgewählte Partnerlokale in Wien", "Ein eigener Tisch für euch sechs", "Reserviert immer auf „Tisch6“", "Jeder zahlt seine eigene Rechnung"],
   },
   safe: {
     women: {
@@ -108,14 +108,14 @@ const de = {
     cta: "Platz sichern",
     counterBefore: "noch",
     counterAfter: "von 300 Plätzen in Wien",
-    note: "Bewerbung kostenlos – bezahlt wird erst, wenn dein Tisch steht. Essen und Getränke zahlt ihr im Lokal.",
+    note: "Bewerbung kostenlos – bezahlt wird erst, wenn dein Tisch steht. Essen und Getränke zahlt jeder selbst im Lokal.",
   },
   faq: {
     title: "Häufige Fragen",
     items: [
       {
         q: "Was kostet eine Tischteilnahme?",
-        a: "38\u00a0Euro. Für die ersten 300 in Wien gibt es das Gründungspaket: drei Tischteilnahmen für 79\u00a0Euro statt 114\u00a0Euro, zwölf Monate gültig. Essen und Getränke zahlt ihr im Lokal – die Rechnung wird einfach gleichmäßig geteilt. Ein Preis, keine versteckten Extras.",
+        a: "38\u00a0Euro. Für die ersten 300 in Wien gibt es das Gründungspaket: drei Tischteilnahmen für 79\u00a0Euro statt 114\u00a0Euro, zwölf Monate gültig. Essen und Getränke zahlt ihr im Lokal – jeder seine eigene Rechnung, also nur das, was er selbst bestellt hat. Ein Preis, keine versteckten Extras.",
       },
       {
         q: "Wer kann sich bewerben?",
@@ -349,7 +349,7 @@ const de = {
     founderTitle: "Gründungsmitglied werden",
     founderText: "3 Tischteilnahmen für 79\u00a0€ statt 114\u00a0€, 12 Monate gültig – mit Abzeichen in deinem Profil. Nur für die ersten 300 in Wien.",
     founderButton: "Gründungspaket kaufen & zusagen",
-    foodNote: "Essen und Getränke zahlt ihr im Lokal – die Rechnung wird einfach gleichmäßig geteilt.",
+    foodNote: "Essen und Getränke zahlt ihr im Lokal – jeder seine eigene Rechnung.",
     paymentsOff: "Die Bezahlung wird gerade eingerichtet – bitte versuch es etwas später nochmal.",
     decline: "Leider keine Zeit",
     declineConfirm: "Möchtest du diese Einladung wirklich absagen?",

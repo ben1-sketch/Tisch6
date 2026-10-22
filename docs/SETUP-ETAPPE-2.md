@@ -20,7 +20,7 @@ Ideal sind **vier bis fünf Lokale**: Die KI wechselt sie ab, niemand bekommt zw
 
 Bitte jedes Lokal vorab um zwei Dinge (beides steht auch in jeder Reservierungs-E-Mail):
 - der Tisch ist immer auf den Namen **„Tisch6“** reserviert,
-- die Rechnung wird **automatisch durch sechs geteilt**, jeder Gast zahlt seinen Teil selbst.
+- **getrennte Rechnung**: jeder Gast zahlt nur, was er selbst bestellt hat.
 
 Oder im **SQL Editor** (Werte anpassen):
 
@@ -153,7 +153,7 @@ Nach 10–60 Minuten in Resend auf **Verify** tippen.
 | ca. 30 Min. später, spätestens nach 24 Stunden | KI-Prüfung, Antwort per E-Mail: **angenommen**, **abgelehnt** oder Warteliste (Geschlechterverhältnis wird intern gesteuert). Unklare Fälle landen bei dir zur Prüfung. Abgelehnte Bewerbungen werden nach 30 Tagen gelöscht |
 | jede Nacht (1–6 Uhr) | Tischplanung: 3 Frauen + 3 Männer, ähnliches Temperament (ruhig–extrovertiert), möglichst gleiches Beziehungsziel, Werte und Wiedersehen-Erfahrungen fließen ein. Termin 6–21 Tage später an einem gemeinsamen Wunschtag, in einem anderen Lokal als beim letzten Mal. Einladung per E-Mail, 48 Stunden zum Bezahlen |
 | Absage oder Einladung abgelaufen | erster passender Nachrücker bekommt E-Mail + SMS, 12 Stunden Zeit |
-| ab 5 Zahlungen | der Tisch findet statt, das Lokal bekommt die Reservierung auf „Tisch6“ (mit der Bitte, die Rechnung durch sechs zu teilen) |
+| ab 5 Zahlungen | der Tisch findet statt, das Lokal bekommt die Reservierung auf „Tisch6“ (mit der Bitte um getrennte Rechnungen) |
 | alle sechs haben bezahlt | E-Mail „Tisch bestätigt“ an alle |
 | 7 Tage ohne Tisch | „Wir suchen noch die richtigen fünf für dich“ |
 | 24 Stunden vorher | weniger als 5 Zahlungen → der Tisch wird automatisch abgesagt; wer bezahlt hat, behält die Tischteilnahme als Guthaben (Geld zurück auf Wunsch) |

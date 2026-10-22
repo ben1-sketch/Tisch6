@@ -13,7 +13,7 @@ Dauer der Einrichtung: ca. 10 Minuten.
 > 2. Vercel → **Settings → Environment Variables** → `EMERGENCY_PHONE` mit deiner Notfallnummer anlegen
 >    (z. B. `+43 660 1234567`) → **Save** → **Deployments → ⋯ → Redeploy**.
 > 3. Im Adminbereich unter **Lokale** vier bis fünf Partnerlokale anlegen und jedes Lokal bitten, auf „Tisch6“ zu
->    reservieren und die Rechnung durch sechs zu teilen (siehe Schritt 4).
+>    reservieren und getrennt abzurechnen (siehe Schritt 4).
 >
 > Der Zeitplan in Supabase bleibt, wie er ist.
 
@@ -52,8 +52,8 @@ Das Passwort gehört nur in Vercel und in deinen Passwort-Manager – bitte nie 
    Partnerlokal, automatischer Durchlauf). Alles mit ✓ läuft.
 2. **Lokale:** vier bis fünf Partnerlokale anlegen – die KI wechselt sie ab, niemand bekommt zweimal
    hintereinander dasselbe Lokal. Tage ankreuzen, an denen das Lokal einen Sechsertisch freihalten kann.
-   Mit jedem Lokal einmal kurz absprechen: Reservierung immer auf **„Tisch6“**, Rechnung **automatisch durch sechs**
-   teilen. Beides steht zusätzlich in jeder Reservierungs-E-Mail.
+   Mit jedem Lokal einmal kurz absprechen: Reservierung immer auf **„Tisch6“**, **getrennte Rechnung** –
+   jeder Gast zahlt, was er bestellt hat. Beides steht zusätzlich in jeder Reservierungs-E-Mail.
 3. **Versand:** Hier siehst du jede E-Mail und SMS. „Nur protokolliert“ heißt: Resend bzw. Twilio ist noch nicht
    eingerichtet – die Nachricht wäre sonst verschickt worden.
 
