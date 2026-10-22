@@ -1,6 +1,6 @@
 # Tisch6
 
-KI-kuratierte Dating-Dinner für Singles – sechs Menschen, ein Tisch. Pilot in Wien.
+KI-kuratierte Dating-Dinner für Singles in Wien – sechs Menschen, ein Tisch.
 **Kein Wischen, kein Ghosting, echte Menschen am Tisch.**
 
 ## Stand

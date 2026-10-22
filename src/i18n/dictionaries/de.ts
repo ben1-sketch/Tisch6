@@ -16,7 +16,7 @@ const de = {
     account: "Mein Konto",
   },
   hero: {
-    eyebrow: "Pilot in Wien · Bewerbung offen",
+    eyebrow: "Bewerbung offen",
     title1: "Kein Wischen.",
     title2: "Kein Ghosting.",
     title3: "Echte Menschen am Tisch.",
@@ -170,7 +170,7 @@ const de = {
     cta: "Jetzt bewerben",
   },
   footer: {
-    tagline: "KI-kuratierte Dating-Dinner. Pilot in Wien, danach international.",
+    tagline: "KI-kuratierte Dating-Dinner.",
     instagram: "Instagram",
     imprint: "Impressum",
     privacy: "Datenschutz",
