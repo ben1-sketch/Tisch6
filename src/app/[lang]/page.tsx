@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { Foto } from "@/components/Foto";
+import { Logo } from "@/components/Logo";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { Ticker } from "@/components/Ticker";
 import { WienSilhouette } from "@/components/WienSilhouette";
@@ -174,31 +175,38 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         </div>
       </section>
 
-      {/* 7 · Gründungspaket: links der Zähler, rechts eine Karte wie eine gedruckte Einladung */}
-      <section id="gruendungspaket" className="scroll-mt-24 mx-auto max-w-6xl px-4 py-24 sm:px-6 sm:py-32">
-        <div className="grid items-center gap-14 lg:grid-cols-[1.1fr_1fr] lg:gap-20">
-          <div data-reveal>
-            <p className="eyebrow">{t.founder.eyebrow}</p>
-            <h2 className="mt-5 font-display text-4xl leading-tight lining-nums sm:text-5xl">{t.founder.title}</h2>
-            <p className="mt-6 max-w-xl text-lg leading-relaxed text-mist">{t.founder.lead}</p>
-            <p className="mt-10 flex flex-wrap items-baseline gap-x-3 font-display text-3xl lining-nums">
-              {t.founder.counterBefore}
-              <span className="text-gradient pr-1 text-6xl italic">
-                <Ticker value={free} total={FOUNDER.limit} />
-              </span>
-              {t.founder.counterAfter}
-            </p>
-            <p className="mt-6 max-w-xl text-sm leading-relaxed text-mist">{t.founder.single}</p>
+      {/* 7 · Gründungspaket: eine Karte wie eine gedruckte Einladung, dahinter das Gedeck-Foto unscharf */}
+      <section id="gruendungspaket" className="relative isolate scroll-mt-24 overflow-hidden">
+        <div className="absolute inset-0 -z-10 scale-110 blur-md" aria-hidden="true">
+          <Foto src={bilder.gedeck.src} alt="" sizes="100vw" className="absolute inset-0" tint="strong" verlauf={false} />
+        </div>
+        <div className="mx-auto max-w-xl px-4 py-24 text-center sm:px-6 sm:py-32">
+          <div data-reveal className="flex justify-center">
+            <Logo />
           </div>
-          <article data-reveal style={{ transitionDelay: "180ms" }} className="bg-cloud p-2 text-night-900 shadow-2xl shadow-black/60">
+          <article data-reveal style={{ transitionDelay: "150ms" }} className="mt-10 bg-cloud p-2 text-night-900 shadow-2xl shadow-black/60">
             <div className="border border-gold-600/50 p-1.5">
-              <div className="border border-gold-600/25 px-7 py-11 text-center sm:px-10">
-                <p className="eyebrow text-gold-600">{t.founder.badge}</p>
-                <p className="mt-7 font-display text-7xl leading-none lining-nums">{t.founder.price}</p>
-                <p className="mt-3 text-night-600 line-through decoration-gold-600/70">{t.founder.was}</p>
-                <p className="mt-1 text-sm text-night-600">{t.founder.unit}</p>
+              <div className="border border-gold-600/25 px-5 py-12 sm:px-10 sm:py-14">
+                <p className="eyebrow leading-loose text-gold-600 sm:leading-normal">
+                  {t.founder.eyebrow}
+                  <span className="hidden sm:inline"> · </span>
+                  <br className="sm:hidden" />
+                  {t.founder.eyebrowWho}
+                </p>
+                <h2 className="mt-6 font-display text-5xl leading-[1.05] sm:text-6xl">
+                  {t.founder.title1}
+                  <br />
+                  {t.founder.title2} <em className="pr-1 text-gold-600 italic">{t.founder.title3}</em>
+                </h2>
                 <Ornament className="mt-8 text-gold-600" />
-                <ul className="mt-8 space-y-2.5 text-night-700">
+                <p className="eyebrow mt-8 text-sm text-night-700">{t.founder.badge}</p>
+                <p className="mt-4 font-display text-[2.75rem] leading-none sm:text-7xl">{t.founder.headline}</p>
+                <p className="mt-5 font-display text-4xl lining-nums sm:text-5xl">
+                  {t.founder.price}{" "}
+                  <s className="text-2xl text-night-600 decoration-gold-600 decoration-2 sm:text-3xl">{t.founder.was}</s>
+                </p>
+                <p className="mt-3 text-balance text-night-700 lining-nums">{t.founder.perEvening}</p>
+                <ul className="mt-8 space-y-2.5 text-balance text-night-700">
                   {t.founder.points.map((p) => (
                     <li key={p}>{p}</li>
                   ))}
@@ -209,6 +217,12 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
               </div>
             </div>
           </article>
+          <p data-reveal className="eyebrow mt-10 lining-nums">
+            {t.founder.counterBefore} <Ticker value={free} total={FOUNDER.limit} /> {t.founder.counterAfter}
+          </p>
+          <p data-reveal className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-cloud/75">
+            {t.founder.note}
+          </p>
         </div>
       </section>
 
