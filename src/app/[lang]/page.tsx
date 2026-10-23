@@ -5,15 +5,12 @@ import { getDictionary } from "@/i18n/get-dictionary";
 import { Foto } from "@/components/Foto";
 import { Logo } from "@/components/Logo";
 import { ScrollReveal } from "@/components/ScrollReveal";
-import { Ticker } from "@/components/Ticker";
 import { WienSilhouette } from "@/components/WienSilhouette";
 import { bilder } from "@/lib/bilder";
-import { FOUNDER } from "@/lib/config";
 import { dinnerDaysPhrase, dinnerWeekdays } from "@/lib/dinner-days";
-import { founderRemaining } from "@/lib/founder-count";
 import { fill } from "@/lib/text";
 
-/** Der Zähler „noch X von 300“ und die Dinner-Tage werden alle fünf Minuten neu geladen – sonst bleibt die Seite statisch und schnell. */
+/** Die Dinner-Tage werden alle fünf Minuten neu geladen – sonst bleibt die Seite statisch und schnell. */
 export const revalidate = 300;
 
 const ROMAN = ["I", "II", "III"];
@@ -30,8 +27,7 @@ function Ornament({ className = "" }: { className?: string }) {
 export default async function Home({ params }: PageProps<"/[lang]">) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
-  const [t, remaining, days] = await Promise.all([getDictionary(lang), founderRemaining(), dinnerWeekdays()]);
-  const free = remaining ?? FOUNDER.limit;
+  const [t, days] = await Promise.all([getDictionary(lang), dinnerWeekdays()]);
   const tage = dinnerDaysPhrase(days);
   const apply = `/${lang}/bewerben`;
   const feature = { ...bilder.tischrunde, ...t.ambiente.photo };
@@ -217,10 +213,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
               </div>
             </div>
           </article>
-          <p data-reveal className="eyebrow mt-10 lining-nums">
-            {t.founder.counterBefore} <Ticker value={free} total={FOUNDER.limit} /> {t.founder.counterAfter}
-          </p>
-          <p data-reveal className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-cloud/75">
+          <p data-reveal className="mx-auto mt-10 max-w-md text-sm leading-relaxed text-balance text-cloud/75">
             {t.founder.note}
           </p>
         </div>

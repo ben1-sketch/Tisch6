@@ -106,8 +106,6 @@ const de = {
     perEvening: "Das sind 26,33\u00a0€ pro Abend statt 38\u00a0€.",
     points: ["3 Tischteilnahmen, 12 Monate gültig", "Abzeichen „Gründungsmitglied“ im Profil", "Zahlung erst bei der ersten Einladung"],
     cta: "Platz sichern",
-    counterBefore: "noch",
-    counterAfter: "von 300 Plätzen in Wien",
     note: "Bewerbung kostenlos – bezahlt wird erst, wenn dein Tisch steht. Essen und Getränke zahlt jeder selbst im Lokal.",
   },
   faq: {
