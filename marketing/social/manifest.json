@@ -1,0 +1,131 @@
+[
+  {
+    "id": "reel-kein-wischen",
+    "type": "REEL",
+    "ai": true,
+    "media": [
+      "https://www.tisch6.at/social/reel-kein-wischen.mp4"
+    ],
+    "cover": "https://www.tisch6.at/social/reel-kein-wischen-cover.jpg",
+    "caption": "Kein Wischen. Kein Ghosting. Echte Menschen am Tisch. 🕯️\n\nTisch6 bringt sechs Singles in Wien an einen Tisch – drei Frauen, drei Männer. Nicht du suchst: Unsere KI stellt den Tisch so zusammen, dass die Gespräche von selbst laufen. Du bewirbst dich einmal, den Rest machen wir.\n\nBewerbung kostenlos – Link in der Bio.\n\n#wien #singleswien #datingwien #wienerleben #vienna"
+  },
+  {
+    "id": "reel-automatisch",
+    "type": "REEL",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/reel-automatisch.mp4"
+    ],
+    "cover": "https://www.tisch6.at/social/reel-automatisch-cover.jpg",
+    "caption": "Dating, das sich um sich selbst kümmert. ✨\n\nDu bewirbst dich einmal – zehn Minuten Chat mit unserer KI-Gastgeberin. Danach läuft alles automatisch: Die KI stellt jede Nacht passende Tische zusammen, wir legen Termin und Lokal fest, du bekommst Einladung und Erinnerung. Und am Tag danach gibt es Kontakt nur, wenn es beide wollen.\n\nSingles in Wien, die keine Lust mehr auf Dating-Apps haben: Bewerbung kostenlos – Link in der Bio.\n\n#wien #singleswien #datingwien #wienerleben #vienna"
+  },
+  {
+    "id": "reel-pov",
+    "type": "REEL",
+    "ai": true,
+    "media": [
+      "https://www.tisch6.at/social/reel-pov.mp4"
+    ],
+    "cover": "https://www.tisch6.at/social/reel-pov-cover.jpg",
+    "caption": "POV: Du musst nicht mehr wischen – eine KI hat deinen Tisch zusammengestellt. 🥂\n\nDrei Frauen, drei Männer, ähnliche Wellenlänge. Ein ausgewähltes Wiener Lokal, reserviert auf „Tisch6“. Am Tag danach sagst du anonym, wen du wiedersehen möchtest – Kontakt gibt es nur, wenn es beidseitig ist.\n\nNeue Leute kennenlernen in Wien, ganz ohne App-Stress. Bewerbung kostenlos – Link in der Bio.\n\n#wien #singleswien #datingwien #wienerleben #vienna"
+  },
+  {
+    "id": "reel-fuer-frauen",
+    "type": "REEL",
+    "ai": true,
+    "media": [
+      "https://www.tisch6.at/social/reel-fuer-frauen.mp4"
+    ],
+    "cover": "https://www.tisch6.at/social/reel-fuer-frauen-cover.jpg",
+    "caption": "Für Frauen: Du sollst dich vom ersten Moment an wohlfühlen. 🤍\n\nBei Tisch6 ist jede Person geprüft (SMS-Code und Verifizierungsfoto, das nur unser Team sieht). Ihr trefft euch in einem öffentlichen Lokal, zu sechst. Deine Nummer bleibt bei dir – Kontakt gibt es nur bei gegenseitigem Interesse. Und am Abend hast du einen diskreten Meldeknopf und eine Notfallnummer.\n\nLieber nicht allein? Bring eine Freundin mit – gleicher Abend, verschiedene Tische. Bewerbung kostenlos – Link in der Bio.\n\n#wien #singleswien #datingwien #wienerleben #vienna"
+  },
+  {
+    "id": "reel-fuer-maenner",
+    "type": "REEL",
+    "ai": true,
+    "media": [
+      "https://www.tisch6.at/social/reel-fuer-maenner.mp4"
+    ],
+    "cover": "https://www.tisch6.at/social/reel-fuer-maenner-cover.jpg",
+    "caption": "Männer, ehrlich: Wie viele Matches haben euch zuletzt wirklich geantwortet? 😅\n\nBei Tisch6 gibt es kein Wischen ins Leere. Drei Frauen, drei Männer, ein gutes Abendessen in Wien – niemand muss um Aufmerksamkeit kämpfen. Ob dich jemand wiedersehen will, erfährst du am Tag danach privat, nie vor anderen. Und du kannst einen Freund mitbringen: gleicher Abend, verschiedene Tische.\n\nBewerbung kostenlos – Link in der Bio.\n\n#wien #singleswien #datingwien #wienerleben #vienna"
+  },
+  {
+    "id": "reel-gruendungspaket",
+    "type": "REEL",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/reel-gruendungspaket.mp4"
+    ],
+    "cover": "https://www.tisch6.at/social/reel-gruendungspaket-cover.jpg",
+    "caption": "Gründungsmitglied werden: drei Abende für 79 € statt 114 €. 🥂\n\nFür die ersten 300 in Wien. Das sind 26,33 € pro Abend statt 38 €, zwölf Monate gültig, mit Abzeichen „Gründungsmitglied“ im Profil. Die Bewerbung ist kostenlos – bezahlt wird erst bei deiner ersten Einladung. Essen und Getränke zahlt jeder selbst im Lokal.\n\nBewerbung kostenlos – Link in der Bio.\n\n#wien #singleswien #datingwien #wienerleben #vienna"
+  },
+  {
+    "id": "karussell-so-funktionierts",
+    "type": "CAROUSEL",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/karussell-so-funktionierts-1.jpg",
+      "https://www.tisch6.at/social/karussell-so-funktionierts-2.jpg",
+      "https://www.tisch6.at/social/karussell-so-funktionierts-3.jpg",
+      "https://www.tisch6.at/social/karussell-so-funktionierts-4.jpg",
+      "https://www.tisch6.at/social/karussell-so-funktionierts-5.jpg"
+    ],
+    "caption": "So funktioniert Tisch6 – in vier Schritten. 👉\n\n1. Bewerben: zehn Minuten Chat mit unserer KI-Gastgeberin, kostenlos.\n2. Die KI stellt jede Nacht passende Tische zusammen – drei Frauen, drei Männer.\n3. Du bekommst deine Einladung: ausgewähltes Wiener Lokal, reserviert auf „Tisch6“.\n4. Am Tag danach: Wiedersehen nur, wenn es beide wollen.\n\nSpeichern für später – und Bewerbung kostenlos – Link in der Bio.\n\n#wien #singleswien #datingwien #wienerleben #vienna"
+  },
+  {
+    "id": "karussell-warum-tisch6",
+    "type": "CAROUSEL",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/karussell-warum-tisch6-1.jpg",
+      "https://www.tisch6.at/social/karussell-warum-tisch6-2.jpg",
+      "https://www.tisch6.at/social/karussell-warum-tisch6-3.jpg",
+      "https://www.tisch6.at/social/karussell-warum-tisch6-4.jpg",
+      "https://www.tisch6.at/social/karussell-warum-tisch6-5.jpg"
+    ],
+    "caption": "Warum Tisch6 statt Dating-App? 🤔\n\nKein Wischen: Die KI stellt den Tisch zusammen.\nKein Ghosting: Ihr sitzt euch gegenüber.\nKein Druck: Sechs Menschen statt Date zu zweit – Wiedersehen nur, wenn es beide wollen.\n\nSchick das jemandem, der Dating-Apps genauso satt hat. Bewerbung kostenlos – Link in der Bio.\n\n#wien #singleswien #datingwien #wienerleben #vienna"
+  },
+  {
+    "id": "karussell-sicher-fair",
+    "type": "CAROUSEL",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/karussell-sicher-fair-1.jpg",
+      "https://www.tisch6.at/social/karussell-sicher-fair-2.jpg",
+      "https://www.tisch6.at/social/karussell-sicher-fair-3.jpg",
+      "https://www.tisch6.at/social/karussell-sicher-fair-4.jpg"
+    ],
+    "caption": "Sicher für Frauen. Fair für Männer. 🤝\n\nBei Tisch6 ist jede Person geprüft, ihr trefft euch zu sechst in einem öffentlichen Wiener Lokal und eure Nummern bleiben privat. Für Männer heißt das: keine Konkurrenz, keine öffentliche Ablehnung – nur ein guter Abend mit echten Gesprächen.\n\nUnd ihr könnt zu zweit kommen: Bring eine Freundin oder einen Freund mit. Bewerbung kostenlos – Link in der Bio.\n\n#wien #singleswien #datingwien #wienerleben #vienna"
+  },
+  {
+    "id": "karussell-faq",
+    "type": "CAROUSEL",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/karussell-faq-1.jpg",
+      "https://www.tisch6.at/social/karussell-faq-2.jpg",
+      "https://www.tisch6.at/social/karussell-faq-3.jpg",
+      "https://www.tisch6.at/social/karussell-faq-4.jpg",
+      "https://www.tisch6.at/social/karussell-faq-5.jpg"
+    ],
+    "caption": "Eure häufigsten Fragen zu Tisch6 – kurz beantwortet. 💬\n\nWas kostet das? Wer sitzt am Tisch? Was, wenn es nicht funkt? Und kann ich zu zweit kommen? Alles im Karussell. 👉\n\nNoch eine Frage? Schreib uns an info@tisch6.at. Bewerbung kostenlos – Link in der Bio.\n\n#wien #singleswien #datingwien #wienerleben #vienna"
+  },
+  {
+    "id": "bild-gruendungspaket",
+    "type": "POST",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/bild-gruendungspaket.jpg"
+    ],
+    "caption": "Dein Platz ist reserviert. 🥂\n\nGründungspaket für die ersten 300 in Wien: drei Abende für 79 € statt 114 € – das sind 26,33 € pro Abend statt 38 €. Zwölf Monate gültig, mit Abzeichen „Gründungsmitglied“ im Profil. Zahlung erst bei deiner ersten Einladung.\n\nDie Bewerbung ist kostenlos. Essen und Getränke zahlt jeder selbst im Lokal. Bewerbung kostenlos – Link in der Bio.\n\n#wien #singleswien #datingwien #wienerleben #vienna"
+  },
+  {
+    "id": "bild-wien",
+    "type": "POST",
+    "ai": true,
+    "media": [
+      "https://www.tisch6.at/social/bild-wien.jpg"
+    ],
+    "caption": "Ein gedeckter Tisch, warmes Licht, sechs Menschen, die sich etwas zu sagen haben. 🕯️\n\nWir kümmern uns um alles davor – ihr um das Gespräch. Tisch6: KI-kuratierte Dating-Dinner für Singles in Wien.\n\nBewerbung kostenlos – Link in der Bio.\n\n#wien #singleswien #datingwien #wienerleben #vienna"
+  }
+]

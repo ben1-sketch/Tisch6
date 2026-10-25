@@ -41,3 +41,6 @@ yarn-error.log*
 next-env.d.ts
 
 !.env.example
+
+# Zwischendateien der Instagram-Grafiken
+/marketing/social/.render/
