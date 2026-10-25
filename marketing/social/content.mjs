@@ -150,7 +150,7 @@ ${TAGS}`,
     ],
     caption: `Gründungsmitglied werden: drei Abende für 79 € statt 114 €. 🥂
 
-Für die ersten 300 in Wien. Das sind 26,33 € pro Abend statt 38 €, zwölf Monate gültig, mit Abzeichen „Gründungsmitglied“ im Profil. Die Bewerbung ist kostenlos – bezahlt wird erst bei deiner ersten Einladung. Essen und Getränke zahlt jeder selbst im Lokal.
+Für die ersten 300 in Wien. Das sind 26,33 € pro Abend statt 38 €, zwölf Monate gültig, mit Abzeichen „Gründungsmitglied“ im Profil. Bezahlt wird erst bei deiner ersten Einladung. Essen und Getränke zahlt jeder selbst im Lokal.
 
 ${CTA}
 
@@ -177,7 +177,7 @@ export const carousels = [
 3. Du bekommst deine Einladung: ausgewähltes Wiener Lokal, reserviert auf „Tisch6“.
 4. Am Tag danach: Wiedersehen nur, wenn es beide wollen.
 
-Speichern für später – und ${CTA}
+Speichern für später! ${CTA}
 
 ${TAGS}`,
   },
@@ -250,7 +250,9 @@ export const posts = [
 
 Gründungspaket für die ersten 300 in Wien: drei Abende für 79 € statt 114 € – das sind 26,33 € pro Abend statt 38 €. Zwölf Monate gültig, mit Abzeichen „Gründungsmitglied“ im Profil. Zahlung erst bei deiner ersten Einladung.
 
-Die Bewerbung ist kostenlos. Essen und Getränke zahlt jeder selbst im Lokal. ${CTA}
+Essen und Getränke zahlt jeder selbst im Lokal.
+
+${CTA}
 
 ${TAGS}`,
   },
