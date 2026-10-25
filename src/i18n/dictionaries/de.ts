@@ -243,6 +243,7 @@ const de = {
       rejectedTitle: "Danke für dein Interesse",
       rejectedText: "Tisch6 ist leider erst ab 18 Jahren. Wir freuen uns, wenn du später wiederkommst.",
       home: "Zur Startseite",
+      instagram: "Folge uns auf Instagram: @tischsechs",
     },
     buddy: {
       title: "Dein Einladungslink",

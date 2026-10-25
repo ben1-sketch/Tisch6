@@ -5,6 +5,7 @@ import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "rea
 import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { normalizePhone } from "@/lib/phone";
+import { instagramUrl } from "@/lib/site";
 import type { Dictionary } from "@/i18n/get-dictionary";
 
 type T = Dictionary["apply"];
@@ -271,6 +272,11 @@ export function ApplyFlow({ lang, t, invitedBy }: { lang: string; t: T; invitedB
             {status === "rejected" ? t.done.rejectedText : fill(t.done.text, { email: <strong className="text-cloud">{form.email || "deine E-Mail-Adresse"}</strong> })}
           </p>
           {status !== "rejected" && ownInvite && <InviteBox t={t.buddy} lang={lang} code={ownInvite} />}
+          {status !== "rejected" && (
+            <a href={instagramUrl} target="_blank" rel="noopener noreferrer" className="mt-6 block text-gold-400 underline underline-offset-4 hover:text-gold-300">
+              {t.done.instagram}
+            </a>
+          )}
           <Link href={`/${lang}`} className="mt-8 inline-block rounded-full border border-white/15 px-6 py-3 hover:border-white/30">
             {t.done.home}
           </Link>

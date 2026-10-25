@@ -2,7 +2,8 @@
 // Fakten (Preise, Ablauf) müssen zur Website passen – bei Änderungen dort auch hier anpassen.
 
 const TAGS = "#wien #singleswien #datingwien #wienerleben #vienna";
-const CTA = "Bewerbung kostenlos – Link in der Bio.";
+const CTA = "Bewerbung kostenlos – Link in der Bio. Folge @tischsechs, damit du nichts verpasst.";
+const TAG_A_FRIEND = "Kennst du jemanden, der da hin muss? Markier ihn oder sie in den Kommentaren 👇";
 
 /** Reels: 1080×1920, Szenen mit Start/Ende in Sekunden. `bg`: Foto aus /public/bilder oder null (nur Grafik). */
 export const reels = [
@@ -20,6 +21,8 @@ export const reels = [
     caption: `Kein Wischen. Kein Ghosting. Echte Menschen am Tisch. 🕯️
 
 Tisch6 bringt sechs Singles in Wien an einen Tisch – drei Frauen, drei Männer. Nicht du suchst: Unsere KI stellt den Tisch so zusammen, dass die Gespräche von selbst laufen. Du bewirbst dich einmal, den Rest machen wir.
+
+${TAG_A_FRIEND}
 
 ${CTA}
 
@@ -70,7 +73,9 @@ ${TAGS}`,
 
 Drei Frauen, drei Männer, ähnliche Wellenlänge. Ein ausgewähltes Wiener Lokal, reserviert auf „Tisch6“. Am Tag danach sagst du anonym, wen du wiedersehen möchtest – Kontakt gibt es nur, wenn es beidseitig ist.
 
-Neue Leute kennenlernen in Wien, ganz ohne App-Stress. ${CTA}
+Neue Leute kennenlernen in Wien, ganz ohne App-Stress. ${TAG_A_FRIEND}
+
+${CTA}
 
 ${TAGS}`,
   },
@@ -192,7 +197,9 @@ Kein Wischen: Die KI stellt den Tisch zusammen.
 Kein Ghosting: Ihr sitzt euch gegenüber.
 Kein Druck: Sechs Menschen statt Date zu zweit – Wiedersehen nur, wenn es beide wollen.
 
-Schick das jemandem, der Dating-Apps genauso satt hat. ${CTA}
+Schick das jemandem, der Dating-Apps genauso satt hat – oder markier ihn oder sie in den Kommentaren 👇
+
+${CTA}
 
 ${TAGS}`,
   },

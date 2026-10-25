@@ -1,5 +1,5 @@
 import { PRICES, TIMING, euro } from "./config";
-import { siteUrl } from "./site";
+import { instagramUrl, siteUrl } from "./site";
 import { formatDate, formatDateTime, formatShortDate, formatTime } from "./time";
 import type { EmailContent } from "./notify";
 
@@ -53,7 +53,7 @@ function layout(o: Layout): EmailContent {
 <h1 style="${serif}font-size:28px;font-weight:normal;line-height:1.25;margin:22px 0 14px;color:#f4efe6;">${esc(o.title)}</h1>
 ${o.paragraphs.map(p).join("")}${details}${list}${cta}${(o.after ?? []).map(p).join("")}
 </td></tr>
-<tr><td style="${font}padding:12px 28px 26px;font-size:12px;line-height:1.5;color:#8a90a3;">Diese E-Mail wurde automatisch verschickt. Fragen? Antworte einfach darauf oder schreib an <a href="mailto:info@tisch6.at" style="color:#8a90a3;">info@tisch6.at</a> – hier antwortet ein Mensch, keine Warteschleife.<br>Tisch6 · KI-kuratierte Dating-Dinner<br><a href="${siteUrl()}" style="color:#8a90a3;">${esc(siteUrl().replace(/^https?:\/\//, ""))}</a></td></tr>
+<tr><td style="${font}padding:12px 28px 26px;font-size:12px;line-height:1.5;color:#8a90a3;">Diese E-Mail wurde automatisch verschickt. Fragen? Antworte einfach darauf oder schreib an <a href="mailto:info@tisch6.at" style="color:#8a90a3;">info@tisch6.at</a> – hier antwortet ein Mensch, keine Warteschleife.<br>Tisch6 · KI-kuratierte Dating-Dinner<br><a href="${siteUrl()}" style="color:#8a90a3;">${esc(siteUrl().replace(/^https?:\/\//, ""))}</a> · <a href="${instagramUrl}" style="color:#8a90a3;">Instagram @tischsechs</a></td></tr>
 </table></td></tr></table></body></html>`;
 
   const text = [
@@ -67,6 +67,7 @@ ${o.paragraphs.map(p).join("")}${details}${list}${cta}${(o.after ?? []).map(p).j
     "",
     "Diese E-Mail wurde automatisch verschickt. Fragen? Antworte einfach darauf oder schreib an info@tisch6.at – hier antwortet ein Mensch.",
     "Tisch6 · KI-kuratierte Dating-Dinner",
+    `Instagram: ${instagramUrl}`,
   ].join("\n");
 
   return { subject: o.subject, html, text };
@@ -93,6 +94,7 @@ const accountUrl = () => link("/de/konto");
 
 /** Reservierungsname im Lokal */
 export const RESERVATION_NAME = "Tisch6";
+const INSTAGRAM_NOTE = "Folge uns auf Instagram (@tischsechs) – dort zeigen wir, wie die Abende ablaufen. Und kennst du Singles, die auch hin müssen? Schick ihnen deinen Einladungslink aus deinem Konto.";
 const BILL_NOTE = "Essen und Getränke zahlt ihr direkt im Lokal – jeder seine eigene Rechnung, also nur das, was er selbst bestellt hat.";
 
 // ---------------------------------------------------------------------------
@@ -108,6 +110,7 @@ export function receivedMail(name: string): EmailContent {
       "Wie es dann weitergeht: Unsere KI stellt einen Tisch mit fünf Menschen zusammen, die zu dir passen. Bezahlt wird erst, wenn dein Tisch steht.",
     ],
     cta: { label: "Mein Konto", url: accountUrl() },
+    after: [INSTAGRAM_NOTE],
   });
 }
 
@@ -135,6 +138,7 @@ export function acceptedMail(name: string, fromWaitlist = false): EmailContent {
       "Bezahlt wird erst, wenn du eine Einladung annimmst.",
     ],
     cta: { label: "Mein Konto", url: accountUrl() },
+    after: [INSTAGRAM_NOTE],
   });
 }
 
