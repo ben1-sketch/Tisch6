@@ -127,5 +127,277 @@
       "https://www.tisch6.at/social/bild-wien.jpg"
     ],
     "caption": "Ein gedeckter Tisch, warmes Licht, sechs Menschen, die sich etwas zu sagen haben. 🕯️\n\nWir kümmern uns um alles davor – ihr um das Gespräch. Tisch6: KI-kuratierte Dating-Dinner für Singles in Wien.\n\nBewerbung kostenlos – Link in der Bio. Folge @tischsechs, damit du nichts verpasst.\n\n#wien #singleswien #datingwien #wienerleben #vienna"
+  },
+  {
+    "id": "story-single-in-wien",
+    "type": "STORY",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/story-single-in-wien.jpg"
+    ]
+  },
+  {
+    "id": "story-neue-woche",
+    "type": "STORY",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/story-neue-woche.jpg"
+    ]
+  },
+  {
+    "id": "story-so-einfach",
+    "type": "STORY",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/story-so-einfach.jpg"
+    ]
+  },
+  {
+    "id": "story-fuer-frauen",
+    "type": "STORY",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/story-fuer-frauen.jpg"
+    ]
+  },
+  {
+    "id": "story-fuer-maenner",
+    "type": "STORY",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/story-fuer-maenner.jpg"
+    ]
+  },
+  {
+    "id": "story-sonntag",
+    "type": "STORY",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/story-sonntag.jpg"
+    ]
+  },
+  {
+    "id": "story-gruendungspaket",
+    "type": "STORY",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/story-gruendungspaket.jpg"
+    ]
+  },
+  {
+    "id": "story-zu-zweit",
+    "type": "STORY",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/story-zu-zweit.jpg"
+    ]
+  },
+  {
+    "id": "story-wiedersehen",
+    "type": "STORY",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/story-wiedersehen.jpg"
+    ]
+  },
+  {
+    "id": "story-rechnung",
+    "type": "STORY",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/story-rechnung.jpg"
+    ]
+  },
+  {
+    "id": "story-ki-gastgeberin",
+    "type": "STORY",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/story-ki-gastgeberin.jpg"
+    ]
+  },
+  {
+    "id": "story-foto-wien",
+    "type": "STORY",
+    "ai": true,
+    "media": [
+      "https://www.tisch6.at/social/story-foto-wien.jpg"
+    ]
+  },
+  {
+    "id": "story-foto-platz",
+    "type": "STORY",
+    "ai": true,
+    "media": [
+      "https://www.tisch6.at/social/story-foto-platz.jpg"
+    ]
+  },
+  {
+    "id": "story-foto-salon",
+    "type": "STORY",
+    "ai": true,
+    "media": [
+      "https://www.tisch6.at/social/story-foto-salon.jpg"
+    ]
+  },
+  {
+    "id": "story-frage-erstes-mal",
+    "type": "STORY",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/story-frage-erstes-mal.jpg"
+    ]
+  },
+  {
+    "id": "story-frage-jahr-frei",
+    "type": "STORY",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/story-frage-jahr-frei.jpg"
+    ]
+  },
+  {
+    "id": "story-frage-absurd",
+    "type": "STORY",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/story-frage-absurd.jpg"
+    ]
+  },
+  {
+    "id": "story-frage-meinung",
+    "type": "STORY",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/story-frage-meinung.jpg"
+    ]
+  },
+  {
+    "id": "story-frage-triest",
+    "type": "STORY",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/story-frage-triest.jpg"
+    ]
+  },
+  {
+    "id": "story-frage-detail",
+    "type": "STORY",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/story-frage-detail.jpg"
+    ]
+  },
+  {
+    "id": "story-frage-lieblingsplatz",
+    "type": "STORY",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/story-frage-lieblingsplatz.jpg"
+    ]
+  },
+  {
+    "id": "story-frage-nie-gefragt",
+    "type": "STORY",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/story-frage-nie-gefragt.jpg"
+    ]
+  },
+  {
+    "id": "story-neu-reel-kein-wischen",
+    "type": "STORY",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/story-neu-reel-kein-wischen.jpg"
+    ]
+  },
+  {
+    "id": "story-neu-reel-automatisch",
+    "type": "STORY",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/story-neu-reel-automatisch.jpg"
+    ]
+  },
+  {
+    "id": "story-neu-reel-pov",
+    "type": "STORY",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/story-neu-reel-pov.jpg"
+    ]
+  },
+  {
+    "id": "story-neu-reel-fuer-frauen",
+    "type": "STORY",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/story-neu-reel-fuer-frauen.jpg"
+    ]
+  },
+  {
+    "id": "story-neu-reel-fuer-maenner",
+    "type": "STORY",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/story-neu-reel-fuer-maenner.jpg"
+    ]
+  },
+  {
+    "id": "story-neu-reel-gruendungspaket",
+    "type": "STORY",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/story-neu-reel-gruendungspaket.jpg"
+    ]
+  },
+  {
+    "id": "story-neu-karussell-so-funktionierts",
+    "type": "STORY",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/story-neu-karussell-so-funktionierts.jpg"
+    ]
+  },
+  {
+    "id": "story-neu-karussell-warum-tisch6",
+    "type": "STORY",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/story-neu-karussell-warum-tisch6.jpg"
+    ]
+  },
+  {
+    "id": "story-neu-karussell-sicher-fair",
+    "type": "STORY",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/story-neu-karussell-sicher-fair.jpg"
+    ]
+  },
+  {
+    "id": "story-neu-karussell-faq",
+    "type": "STORY",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/story-neu-karussell-faq.jpg"
+    ]
+  },
+  {
+    "id": "story-neu-bild-gruendungspaket",
+    "type": "STORY",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/story-neu-bild-gruendungspaket.jpg"
+    ]
+  },
+  {
+    "id": "story-neu-bild-wien",
+    "type": "STORY",
+    "ai": false,
+    "media": [
+      "https://www.tisch6.at/social/story-neu-bild-wien.jpg"
+    ]
   }
 ]

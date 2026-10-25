@@ -10,7 +10,7 @@ import { spawn } from "node:child_process";
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { carousels, posts, reels } from "./content.mjs";
+import { carousels, posts, reels, stories } from "./content.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "../..");
@@ -300,6 +300,79 @@ async function renderPost(browser, post) {
   return [`${SITE}/${post.id}.jpg`];
 }
 
+
+// ---------------------------------------------------------------------------
+// Storys (1080×1920, Bild): tägliche Storys und „Neu im Feed“ zu jedem Beitrag
+// ---------------------------------------------------------------------------
+
+const storyCss = `
+.shade { background: linear-gradient(180deg, rgb(6 9 19 / 0.85) 0%, rgb(6 9 19 / 0.45) 30%, rgb(6 9 19 / 0.6) 62%, rgb(6 9 19 / 0.95) 100%); }
+.top { position: absolute; top: 290px; left: 0; right: 0; display: flex; justify-content: center; }
+.mid { position: absolute; left: 80px; right: 80px; top: 430px; bottom: 470px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.bottom { position: absolute; left: 80px; right: 80px; bottom: 360px; display: flex; flex-direction: column; align-items: center; gap: 26px; text-align: center; }
+.st-eyebrow { font-size: 34px; }
+.st-line { font-size: 120px; }
+.st-price { font-size: 96px; margin-top: 30px; color: var(--gold-300); }
+.st-sub { margin-top: 46px; font-size: 46px; line-height: 1.4; color: rgb(244 239 230 / 0.86); max-width: 880px; text-wrap: balance; }
+.st-q { font-size: 104px; margin-top: 40px; }
+.st-list { list-style: none; margin-top: 50px; display: flex; flex-direction: column; gap: 46px; text-align: left; }
+.st-list li { display: flex; align-items: baseline; gap: 34px; font-size: 54px; line-height: 1.25; }
+.st-list b { font-family: "Cormorant", serif; font-style: italic; font-weight: 500; font-size: 84px; color: var(--gold-400); min-width: 90px; }
+.st-pill { padding: 30px 56px; font-size: 32px; }
+.st-note { font-size: 28px; color: rgb(244 239 230 / 0.7); }
+.frame-img { border: 2px solid rgb(214 183 122 / 0.55); box-shadow: 0 40px 90px -30px rgb(0 0 0 / 0.85); display: block; }
+`;
+
+function storyHtml(st) {
+  const background = st.bg
+    ? `<div class="layer photo" style="background-image:url('${photo(st.bg)}');transform:scale(1.08)"></div><div class="layer shade"></div>`
+    : `<div class="layer glow"></div>`;
+  let mid = "";
+  let bottom = `<span class="pill st-pill">Bewerbung · Link in Bio</span><span class="eyebrow st-note">tisch6.at</span>`;
+  if (st.kind === "question") {
+    mid = `<div class="eyebrow st-eyebrow">Frage des Tages</div><div class="ornament" style="margin-top:34px"><span></span></div><div class="display st-q">${esc(st.q)}</div>`;
+    bottom = `<span class="st-sub" style="margin-top:0">Antworte uns per Nachricht – wir sind gespannt.</span><span class="eyebrow st-note">@tischsechs</span>`;
+  } else {
+    const lines = (st.lines ?? []).map((l) => `<div class="display st-line">${esc(l)}</div>`).join("");
+    const gold = st.gold ? `<div class="display st-line"><span class="gold">${esc(st.gold)}</span></div>` : "";
+    const price = st.price ? `<div class="display st-price">${esc(st.price)}</div>` : "";
+    const list = st.list ? `<ol class="st-list">${st.list.map((t, i) => `<li><b>${["I", "II", "III", "IV"][i]}</b><span>${esc(t)}</span></li>`).join("")}</ol>` : "";
+    const sub = st.sub ? `<p class="st-sub">${esc(st.sub)}</p>` : "";
+    mid = `<div class="eyebrow st-eyebrow">${esc(st.eyebrow)}</div><div class="ornament" style="margin:34px 0 30px"><span></span></div>${lines}${gold}${price}${list}${sub}`;
+  }
+  return page(1080, 1920, `<div class="frame">${background}<div class="top">${brand(60, 52)}</div><div class="mid">${mid}</div><div class="bottom">${bottom}</div></div>`, storyCss);
+}
+
+/** „Neu im Feed“: das Titelbild des Beitrags im Rahmen, darunter der Hinweis aufs Profil */
+function teaserHtml(item) {
+  const isReel = item.type === "REEL";
+  const file = isReel ? `${item.id}-cover.jpg` : item.type === "CAROUSEL" ? `${item.id}-1.jpg` : `${item.id}.jpg`;
+  const img = pathToFileURL(path.join(OUT, file)).href;
+  const size = isReel ? "width:540px;height:960px" : "width:780px;height:975px";
+  const label = isReel ? "Neues Reel" : item.type === "CAROUSEL" ? "Neues Karussell" : "Neu im Feed";
+  return page(
+    1080,
+    1920,
+    `<div class="frame"><div class="layer glow"></div><div class="top">${brand(60, 52)}</div>
+<div class="mid" style="top:400px;bottom:420px"><div class="eyebrow st-eyebrow" style="margin-bottom:40px">${label}</div><img class="frame-img" src="${img}" style="${size}"></div>
+<div class="bottom" style="bottom:330px"><span class="st-sub" style="margin-top:0">Jetzt auf unserem Profil</span><span class="eyebrow st-note">@tischsechs</span></div></div>`,
+    storyCss,
+  );
+}
+
+async function renderStory(browser, id, html) {
+  const pg = await open(browser, html, 1080, 1920, id);
+  await pg.screenshot({ path: path.join(OUT, `${id}.jpg`), type: "jpeg", quality: 90 });
+  await pg.close();
+  return [`${SITE}/${id}.jpg`];
+}
+
+const feedItems = [
+  ...reels.map((r) => ({ id: r.id, type: "REEL" })),
+  ...carousels.map((c) => ({ id: c.id, type: "CAROUSEL" })),
+  ...posts.map((p) => ({ id: p.id, type: "POST" })),
+];
+
 const only = process.argv.slice(2);
 const wanted = (id) => !only.length || only.includes(id);
 mkdirSync(OUT, { recursive: true });
@@ -309,6 +382,8 @@ const done = [];
 for (const r of reels) if (wanted(r.id)) done.push(`${r.id}: ${(await renderReel(browser, r)).length} Datei(en)`);
 for (const c of carousels) if (wanted(c.id)) done.push(`${c.id}: ${(await renderCarousel(browser, c)).length} Datei(en)`);
 for (const p of posts) if (wanted(p.id)) done.push(`${p.id}: ${(await renderPost(browser, p)).length} Datei(en)`);
+for (const st of stories) if (wanted(st.id) || wanted("storys")) done.push(`${st.id}: ${(await renderStory(browser, st.id, storyHtml(st))).length} Datei(en)`);
+for (const f of feedItems) if (wanted(`story-neu-${f.id}`) || wanted("storys")) done.push(`story-neu-${f.id}: ${(await renderStory(browser, `story-neu-${f.id}`, teaserHtml(f))).length} Datei(en)`);
 await browser.close();
 
 // Übersicht für das Einplanen: Dateiadressen auf tisch6.at und Bildunterschriften
@@ -316,6 +391,8 @@ const manifest = [
   ...reels.map((r) => ({ id: r.id, type: "REEL", ai: r.ai, media: [`${SITE}/${r.id}.mp4`], cover: `${SITE}/${r.id}-cover.jpg`, caption: r.caption })),
   ...carousels.map((c) => ({ id: c.id, type: "CAROUSEL", ai: c.ai, media: c.slides.map((_, i) => `${SITE}/${c.id}-${i + 1}.jpg`), caption: c.caption })),
   ...posts.map((p) => ({ id: p.id, type: "POST", ai: p.ai, media: [`${SITE}/${p.id}.jpg`], caption: p.caption })),
+  ...stories.map((st) => ({ id: st.id, type: "STORY", ai: Boolean(st.ai), media: [`${SITE}/${st.id}.jpg`] })),
+  ...feedItems.map((f) => ({ id: `story-neu-${f.id}`, type: "STORY", ai: false, media: [`${SITE}/story-neu-${f.id}.jpg`] })),
 ];
 writeFileSync(path.join(HERE, "manifest.json"), JSON.stringify(manifest, null, 2) + "\n");
 console.log(done.join("\n"));

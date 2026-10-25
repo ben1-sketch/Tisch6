@@ -273,3 +273,32 @@ ${CTA}
 ${TAGS}`,
   },
 ];
+
+/**
+ * Storys: 1080×1920, ohne Text unter dem Bild (Storys haben keine Bildunterschrift).
+ * Inhalte bleiben im sicheren Bereich – oben Profilzeile, unten Antwortfeld von Instagram.
+ */
+export const stories = [
+  { id: "story-single-in-wien", kind: "statement", eyebrow: "Single in Wien?", lines: ["Kein Wischen."], gold: "Kein Ghosting.", sub: "Sechs Singles, ein Tisch, ein Abend." },
+  { id: "story-neue-woche", kind: "statement", eyebrow: "Montag", lines: ["Neue Woche,"], gold: "neue Tische.", sub: "Jede Nacht stellt unsere KI neue Tische zusammen." },
+  { id: "story-so-einfach", kind: "statement", eyebrow: "So einfach geht's", list: ["Bewerben – zehn Minuten Chat", "Die KI stellt den Tisch zusammen", "Hingehen und genießen"] },
+  { id: "story-fuer-frauen", kind: "statement", eyebrow: "Für Frauen", lines: ["Sicher vom"], gold: "ersten Moment an.", sub: "Geprüfte Profile · öffentliches Lokal · deine Nummer bleibt bei dir" },
+  { id: "story-fuer-maenner", kind: "statement", eyebrow: "Für Männer", lines: ["Keine Konkurrenz"], gold: "am Tisch.", sub: "Drei Frauen, drei Männer · keine öffentliche Ablehnung" },
+  { id: "story-sonntag", kind: "statement", eyebrow: "Sonntag", lines: ["Perfekt, um dich"], gold: "zu bewerben.", sub: "Zehn Minuten Chat – den Rest machen wir." },
+  { id: "story-gruendungspaket", kind: "statement", eyebrow: "Gründungspaket", lines: ["Drei Abende."], price: "79 € statt 114 €", sub: "Für die ersten 300 in Wien." },
+  { id: "story-zu-zweit", kind: "statement", eyebrow: "Zu zweit", lines: ["Bring eine Freundin"], gold: "oder einen Freund mit.", sub: "Gleicher Abend, verschiedene Tische." },
+  { id: "story-wiedersehen", kind: "statement", eyebrow: "Und danach?", lines: ["Wiedersehen nur,"], gold: "wenn es beide wollen.", sub: "Anonym, am Tag nach dem Dinner." },
+  { id: "story-rechnung", kind: "statement", eyebrow: "Gut zu wissen", lines: ["Jeder zahlt seine"], gold: "eigene Rechnung.", sub: "38 € pro Tischteilnahme – Essen und Getränke zahlt ihr im Lokal." },
+  { id: "story-ki-gastgeberin", kind: "statement", eyebrow: "Unsere KI-Gastgeberin", lines: ["stellt ungewöhnliche"], gold: "Fragen.", sub: "Antworte aus dem Bauch – dann passt dein Tisch." },
+  { id: "story-foto-wien", kind: "photo", ai: true, bg: "tischrunde.jpg", eyebrow: "Wien bei Kerzenlicht", lines: ["Ein Abend, wie ihn"], gold: "nur Wien kann." },
+  { id: "story-foto-platz", kind: "photo", ai: true, bg: "gedeck.jpg", eyebrow: "Tisch6", lines: ["Dein Platz"], gold: "ist reserviert." },
+  { id: "story-foto-salon", kind: "photo", ai: true, bg: "salon-wien.jpg", eyebrow: "Kein Wischen", lines: ["Echte Menschen"], gold: "am Tisch." },
+  { id: "story-frage-erstes-mal", kind: "question", q: "Wann hast du zuletzt etwas zum ersten Mal gemacht?" },
+  { id: "story-frage-jahr-frei", kind: "question", q: "Du hast ein Jahr frei. Was machst du im zweiten Monat?" },
+  { id: "story-frage-absurd", kind: "question", q: "Was ist das Absurdeste, das dir in Wien je passiert ist?" },
+  { id: "story-frage-meinung", kind: "question", q: "Welche Meinung über Wien vertrittst du, die sonst keiner teilt?" },
+  { id: "story-frage-triest", kind: "question", q: "19 Uhr, jemand ruft an: „Wir fahren jetzt nach Triest.“ Was sagst du?" },
+  { id: "story-frage-detail", kind: "question", q: "Welches kleine Detail sagt dir sofort: Mit dem Menschen kann ich?" },
+  { id: "story-frage-lieblingsplatz", kind: "question", q: "Dein Lieblingsplatz in Wien – und warum genau der?" },
+  { id: "story-frage-nie-gefragt", kind: "question", q: "Welche Frage stellt dir nie jemand, die du gern beantworten würdest?" },
+];
