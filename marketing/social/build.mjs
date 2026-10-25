@@ -368,9 +368,9 @@ async function renderStory(browser, id, html) {
 }
 
 const feedItems = [
-  ...reels.map((r) => ({ id: r.id, type: "REEL" })),
-  ...carousels.map((c) => ({ id: c.id, type: "CAROUSEL" })),
-  ...posts.map((p) => ({ id: p.id, type: "POST" })),
+  ...reels.map((r) => ({ id: r.id, type: "REEL", ai: r.ai })),
+  ...carousels.map((c) => ({ id: c.id, type: "CAROUSEL", ai: c.ai })),
+  ...posts.map((p) => ({ id: p.id, type: "POST", ai: p.ai })),
 ];
 
 const only = process.argv.slice(2);
@@ -392,7 +392,8 @@ const manifest = [
   ...carousels.map((c) => ({ id: c.id, type: "CAROUSEL", ai: c.ai, media: c.slides.map((_, i) => `${SITE}/${c.id}-${i + 1}.jpg`), caption: c.caption })),
   ...posts.map((p) => ({ id: p.id, type: "POST", ai: p.ai, media: [`${SITE}/${p.id}.jpg`], caption: p.caption })),
   ...stories.map((st) => ({ id: st.id, type: "STORY", ai: Boolean(st.ai), media: [`${SITE}/${st.id}.jpg`] })),
-  ...feedItems.map((f) => ({ id: `story-neu-${f.id}`, type: "STORY", ai: false, media: [`${SITE}/story-neu-${f.id}.jpg`] })),
+  // Der Hinweis zeigt das Titelbild des Beitrags – also dieselbe KI-Kennzeichnung wie der Beitrag
+  ...feedItems.map((f) => ({ id: `story-neu-${f.id}`, type: "STORY", ai: f.ai, media: [`${SITE}/story-neu-${f.id}.jpg`] })),
 ];
 writeFileSync(path.join(HERE, "manifest.json"), JSON.stringify(manifest, null, 2) + "\n");
 console.log(done.join("\n"));

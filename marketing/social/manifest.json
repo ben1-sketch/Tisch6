@@ -307,7 +307,7 @@
   {
     "id": "story-neu-reel-kein-wischen",
     "type": "STORY",
-    "ai": false,
+    "ai": true,
     "media": [
       "https://www.tisch6.at/social/story-neu-reel-kein-wischen.jpg"
     ]
@@ -323,7 +323,7 @@
   {
     "id": "story-neu-reel-pov",
     "type": "STORY",
-    "ai": false,
+    "ai": true,
     "media": [
       "https://www.tisch6.at/social/story-neu-reel-pov.jpg"
     ]
@@ -331,7 +331,7 @@
   {
     "id": "story-neu-reel-fuer-frauen",
     "type": "STORY",
-    "ai": false,
+    "ai": true,
     "media": [
       "https://www.tisch6.at/social/story-neu-reel-fuer-frauen.jpg"
     ]
@@ -339,7 +339,7 @@
   {
     "id": "story-neu-reel-fuer-maenner",
     "type": "STORY",
-    "ai": false,
+    "ai": true,
     "media": [
       "https://www.tisch6.at/social/story-neu-reel-fuer-maenner.jpg"
     ]
@@ -395,7 +395,7 @@
   {
     "id": "story-neu-bild-wien",
     "type": "STORY",
-    "ai": false,
+    "ai": true,
     "media": [
       "https://www.tisch6.at/social/story-neu-bild-wien.jpg"
     ]
