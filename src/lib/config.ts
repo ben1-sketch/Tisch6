@@ -25,16 +25,16 @@ export const TABLE = {
   size: 6,
   perGender: 3,
   maxAgeSpan: 10,
-  /** Kulanz bei der gewünschten Altersspanne (Jahre) */
-  ageTolerance: 2,
+  /** Kulanz bei der gewünschten Altersspanne (Jahre) – in der Startphase großzügiger, damit die ersten Tische zustande kommen */
+  ageTolerance: 3,
   /** Höchstens so viele Tische pro Abend und Lokal, falls beim Lokal nichts anderes steht */
   defaultTablesPerEvening: 1,
   /** Dauer eines Abends für Kalendereinträge (Stunden) */
   durationHours: 3,
   /** Ab so vielen bestätigten Gästen findet ein Tisch statt */
   minGuests: 5,
-  /** Temperament (ruhig–extrovertiert) am Tisch ähnlich: größter Abstand auf der Skala 1–5 */
-  maxEnergySpread: 2,
+  /** Temperament (ruhig–extrovertiert) am Tisch ähnlich: größter Abstand auf der Skala 1–5 – in der Startphase großzügiger */
+  maxEnergySpread: 3,
 };
 
 export const TIMING = {
