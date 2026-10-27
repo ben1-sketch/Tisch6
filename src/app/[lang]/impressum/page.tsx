@@ -5,7 +5,7 @@ export const metadata: Metadata = { title: "Impressum" };
 
 export default function Impressum() {
   return (
-    <LegalPage title="Impressum" updated="20. Oktober 2026">
+    <LegalPage title="Impressum" updated="27. Oktober 2026">
       <p>
         Informationspflicht laut §&nbsp;5 E-Commerce-Gesetz, §&nbsp;14 Unternehmensgesetzbuch und §&nbsp;63 Gewerbeordnung sowie Offenlegungspflicht laut
         §&nbsp;25 Mediengesetz.
@@ -28,7 +28,7 @@ export default function Impressum() {
         <br />
         Firmenbuchgericht: Landesgericht Krems an der Donau
         <br />
-        UID-Nummer: ATU70958706
+        UID-Nummer: ATU77696414
       </p>
 
       <h2>Kontakt</h2>
