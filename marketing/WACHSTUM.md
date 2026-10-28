@@ -15,6 +15,8 @@ ein bis zwei Versuche umsetzen, Ergebnis hier festhalten. Neueste Woche oben. In
 - Den Hinweis „Gerade besonders gefragt: …“ beim Einladungslink (`src/i18n/dictionaries/de.ts`, `apply.buddy.wanted`) an den aktuellen Engpass anpassen.
 - Kein Rabatt nur für ein Geschlecht (Gleichbehandlungsgesetz); Werbung gezielt an eine Gruppe ausspielen ist erlaubt.
 - Keine eigene Seite und keine Werbung für „Singles ab 50“ – Wunsch des Inhabers (28.10.2026).
+- Am Tisch höchstens 10 Jahre Altersabstand. Einzige Ausnahme: der erste Tisch am 5.11.2026 (bis 12 Jahre beim Nachrücken,
+  `TABLE_EXCEPTIONS` in `src/lib/config.ts`) – Wunsch des Inhabers. Keine weiteren Ausnahmen ohne seine Zustimmung.
 
 ## Laufende Versuche
 
