@@ -12,6 +12,8 @@ Neueste Woche oben.
 - Standort „Wien“ lässt sich über die Metricool-Schnittstelle nicht setzen, nur im Metricool-Planer von Hand.
 - Dating-Werbung bei Meta braucht eine Genehmigung; Zielgruppe 18+.
 - Keine Bots, keine gekauften Follower, keine automatischen Likes, Kommentare oder Follows.
+- Folgen und Kommentieren macht der Inhaber von Hand, zehn Minuten am Tag (Liste passender Wiener Konten im Dokument
+  „Gratis-Kanäle: Startpaket für Tisch6“). Claude kann nicht folgen – die Schnittstellen erlauben es nicht.
 - Niemals Fotos von Gästen veröffentlichen und Gäste auch nicht danach fragen – Wunsch des Inhabers, ohne Ausnahme.
   Bilder: KI-Bilder (gekennzeichnet) und Fotos ohne Menschen.
 - Echte Stimmen: nur freigegebene Sätze vom Abend (Admin → Wiedersehen & Feedback → „Zitate für Instagram“), immer ohne Namen.
