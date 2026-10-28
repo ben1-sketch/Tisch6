@@ -31,6 +31,27 @@ ein bis zwei Versuche umsetzen, Ergebnis hier festhalten. Neueste Woche oben. In
 | 28.10.2026 | Einladungslink im Konto: Knopf „Per WhatsApp schicken“ und Hinweis „Gerade besonders gefragt: Männer zwischen 35 und 48“ | Bewerberinnen kennen passende Männer | Bewerbungen mit Herkunft „Empfehlung“, davon Männer |
 | 28.10.2026 | Google: Organisations-Angaben auf der Startseite; Search Console wartet auf den Bestätigungs-Code des Inhabers (kein Unternehmensprofil – Richtlinien passen nicht) | Die Suche nach „Tisch6“ zeigt die Marke sauber, Themenseiten werden schneller gefunden | Impressionen und Klicks in der Search Console, Herkunft „Google“ |
 
+## Nächste Schritte aus der Kanal-Recherche (28.10.2026)
+
+Ganzer Bericht: `marketing/recherche/kanaele-2026-10-28.md`. Kernaussage: Die Männer 35–48 gibt es, sie kommen über
+Menschen, die sie kennen, und über Orte, an denen sie schon sind – nicht über mehr Reichweite für alle.
+
+1. Inhaber: Startpaket umsetzen (Facebook-Gruppe, LinkedIn, MeinBezirk, WhatsApp) – Texte fertig.
+2. Inhaber: Search-Console-Code schicken; Dating-Genehmigung bei Meta und Zertifizierung bei Google beantragen.
+   Bis zur Meta-Zusage keine Beiträge bezahlt bewerben.
+3. Claude: Hinweis „Gerade besonders gefragt …“ auch in die Mails an Wartende – Text vorher vom Inhaber freigeben lassen.
+4. Inhaber: Tischkarten zu Neuehoheit, weitere Lokale fragen. Claude: Karten für jedes neue Lokal.
+5. Nach Freigabe durch den Inhaber: neue Medien (Kronehit, 88.6, Radio Arabella, futurezone, Trending Topics, brutkasten,
+   „Wiener“, „Treffpunkt Österreich“) und Nachfassen bei den 13 Redaktionen nach dem ersten Abend am 5.11.
+6. Entscheidung Inhaber: fester Anker-Abend (z. B. donnerstags ein Tisch für 35–45). Erst damit gehen Eventkalender
+   (Eventbrite, Eventfrog, Falter, MeinBezirk) und Veranstaltungsdaten für Google.
+7. Gutschein „Schenk ihm einen Abend“ ab Ende November; vorher die Verfallsregel des Gründungspakets (12 Monate) rechtlich prüfen lassen.
+8. Valentinswoche 8.–12.2.2027 mit Social Run Club Vienna und Padel-Anlagen.
+9. Nach Meta-Freigabe: Test mit 300 € an Männer 35–48 in Wien, gemessen in Kosten pro Bewerbung eines Mannes.
+
+Offen: Männeranteil in Laufclubs und beim Padel; ob die Zahlen der Facebook-Gruppe (Stand 2024) noch stimmen; ob der
+Falter kommerzielle Dating-Abende in den Kalender nimmt.
+
 ## Woche bis 28.10.2026 (Ausgangslage)
 
 - Bewerbungen seit Start (22.10.): 23 angelegt, 22 abgeschickt; Tage: 2 · 7 · 1 · 4 · 5 · 4.
