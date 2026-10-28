@@ -197,6 +197,8 @@ export function SeatPage({ view, t, lang, paid, openReport = false }: { view: Se
         </section>
       )}
 
+      {view.canPhoto && <PhotoBox t={t} token={view.token} initial={view.photoOk} />}
+
       {view.canCancel && (
         <section className="rounded-3xl border border-white/10 p-6 sm:p-8">
           <h2 className="font-display text-lg font-semibold">{t.cancelTitle}</h2>
@@ -215,6 +217,53 @@ export function SeatPage({ view, t, lang, paid, openReport = false }: { view: Se
 
       {view.canReport && view.members.length > 0 && <ReportBox t={t} token={view.token} members={view.members} initiallyOpen={openReport} />}
     </div>
+  );
+}
+
+/** Freiwillige Foto-Erlaubnis – speichert sofort und lässt sich jederzeit ändern */
+function PhotoBox({ t, token, initial }: { t: T; token: string; initial: boolean | null }) {
+  const [value, setValue] = useState(initial);
+  const [state, setState] = useState<"idle" | "busy" | "error">("idle");
+
+  async function save(ok: boolean) {
+    setState("busy");
+    const res = await fetch(`/api/seat/${token}/photo`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ok }),
+    }).catch(() => null);
+    if (res?.ok) setValue(ok);
+    setState(res?.ok ? "idle" : "error");
+  }
+
+  const choice = (ok: boolean, label: string) => (
+    <button
+      type="button"
+      aria-pressed={value === ok}
+      disabled={state === "busy"}
+      onClick={() => save(ok)}
+      className={`rounded-full border px-5 py-2.5 text-sm transition disabled:opacity-50 ${
+        value === ok ? "border-gold-400 bg-gold-400 text-night-950" : "border-white/15 hover:border-white/30"
+      }`}
+    >
+      {label}
+    </button>
+  );
+
+  return (
+    <section className="rounded-3xl border border-white/10 p-6 sm:p-8">
+      <h2 className="font-display text-lg font-semibold">{t.photoTitle}</h2>
+      <p className="mt-2 text-sm text-mist">{t.photoText}</p>
+      <div className="mt-4 flex flex-wrap gap-2">
+        {choice(true, t.photoYes)}
+        {choice(false, t.photoNo)}
+      </div>
+      {state === "error" ? (
+        <p className="mt-3 text-sm text-gold-300">{t.error}</p>
+      ) : (
+        value !== null && <p className="mt-3 text-sm text-cloud">{value ? t.photoSavedYes : t.photoSavedNo}</p>
+      )}
+    </section>
   );
 }
 

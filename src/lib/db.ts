@@ -43,6 +43,9 @@ export type Application = {
   rejected_at: string | null;
   consent_version: string;
   consent_at: string;
+  /** Woher die Bewerbung kommt (SOURCES in lib/source.ts) – Angabe der Person oder Einladungs-/Werbelink */
+  source: string | null;
+  source_detail: string | null;
 };
 
 export type Restaurant = {
@@ -119,6 +122,8 @@ export type Seat = {
   discount_id: string | null;
   /** früher: Eisbrecher-Karte je Person – ersetzt durch die Gesprächskarte am Tisch (dinners.conversation_card) */
   icebreaker: { fragen: string[] } | null;
+  /** Ein Foto vom Tisch darf auf Instagram (ohne Namen) – null = keine Angabe */
+  photo_ok: boolean | null;
 };
 
 export type Payment = {
@@ -165,6 +170,9 @@ export type Feedback = {
   wants_to_see: string[];
   absent: string[];
   share_phone: boolean;
+  /** „Der Abend in einem Satz“ – zitiert wird nur mit quote_ok, ohne Namen */
+  quote: string | null;
+  quote_ok: boolean;
 };
 
 export type Match = { id: string; created_at: string; dinner_id: string; a_id: string; b_id: string };

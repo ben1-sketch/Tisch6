@@ -45,6 +45,7 @@ type FeedbackRow = Feedback & { seats: { dinner_id: string; application_id: stri
 
 const ORDER: SeatStatus[] = ["confirmed", "attended", "no_show", "invited", "offered", "cancelled_late", "cancelled", "removed", "declined", "expired", "postponed", "withdrawn"];
 const PAID_WITH = { stripe: "online bezahlt", package: "mit Guthaben", manual: "von Hand bestätigt" } as const;
+const PHOTO: Record<string, string> = { true: "ja", false: "nein", null: "keine Angabe" };
 
 function average(values: (number | null)[]) {
   const v = values.filter((x): x is number => x !== null);
@@ -148,6 +149,7 @@ export default async function TablePage({ params }: PageProps<"/admin/tische/[id
                         {s.confirmed_at && ` · fix seit ${when(s.confirmed_at)}`}
                         {s.ended_at && !open && ` · beendet ${when(s.ended_at)}`}
                         {p?.unvertraeglichkeiten?.length ? ` · Küche: ${p.unvertraeglichkeiten.join(", ")}` : ""}
+                        {(s.status === "confirmed" || s.status === "attended") && ` · Foto: ${PHOTO[String(s.photo_ok)]}`}
                       </p>
 
                       <div className="mt-3 flex flex-wrap gap-x-4 gap-y-3">
@@ -322,6 +324,13 @@ export default async function TablePage({ params }: PageProps<"/admin/tische/[id
                   .map((f) => (
                     <li key={f.seat_id} className="text-mist">
                       <PersonLink id={f.seats.application_id} name={names.get(f.seats.application_id)} />: „{f.improve}“
+                    </li>
+                  ))}
+                {feedbackRows
+                  .filter((f) => f.quote)
+                  .map((f) => (
+                    <li key={`${f.seat_id}-quote`} className="text-cloud">
+                      Der Abend in einem Satz: „{f.quote}“ {f.quote_ok ? <Chip tone="green">darf zitiert werden</Chip> : <Chip tone="mist">nur intern</Chip>}
                     </li>
                   ))}
               </ul>

@@ -39,6 +39,8 @@ export function FeedbackForm({ view, t }: { view: FeedbackView; t: T }) {
   const [evening, setEvening] = useState<number | null>(s?.rating_evening ?? null);
   const [table, setTable] = useState<number | null>(s?.rating_table ?? null);
   const [improve, setImprove] = useState(s?.improve ?? "");
+  const [quote, setQuote] = useState(s?.quote ?? "");
+  const [quoteOk, setQuoteOk] = useState(s?.quote_ok ?? false);
   const [state, setState] = useState<"idle" | "busy" | "done" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
 
@@ -51,7 +53,7 @@ export function FeedbackForm({ view, t }: { view: FeedbackView; t: T }) {
     const res = await fetch(`/api/seat/${view.token}/feedback`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ratingEvening: evening, ratingTable: table, improve, wantsToSee: wants, absent, sharePhone }),
+      body: JSON.stringify({ ratingEvening: evening, ratingTable: table, improve, wantsToSee: wants, absent, sharePhone, quote, quoteOk }),
     });
     const json = await res.json().catch(() => ({}));
     if (res.ok) setState("done");
@@ -122,6 +124,25 @@ export function FeedbackForm({ view, t }: { view: FeedbackView; t: T }) {
             className="w-full rounded-xl border border-white/15 bg-night-950/60 px-4 py-3 text-cloud placeholder:text-mist/50"
           />
         </label>
+        <div className="space-y-3">
+          <label className="block">
+            <span className="mb-2 block font-medium">{t.q4}</span>
+            <textarea
+              rows={2}
+              maxLength={300}
+              value={quote}
+              onChange={(e) => setQuote(e.target.value)}
+              placeholder={t.q4Placeholder}
+              className="w-full rounded-xl border border-white/15 bg-night-950/60 px-4 py-3 text-cloud placeholder:text-mist/50"
+            />
+          </label>
+          {quote.trim() && (
+            <label className="flex gap-3 text-sm text-mist">
+              <input type="checkbox" checked={quoteOk} onChange={(e) => setQuoteOk(e.target.checked)} className="mt-0.5 h-4 w-4 flex-none accent-gold-400" />
+              <span>{t.quoteOk}</span>
+            </label>
+          )}
+        </div>
       </section>
 
       <section className="rounded-3xl border border-white/10 p-6 sm:p-8">

@@ -18,7 +18,10 @@ const FeedbackSchema = z.object({
   wantsToSee: z.array(z.uuid()).max(TABLE.size).default([]),
   absent: z.array(z.uuid()).max(TABLE.size).default([]),
   sharePhone: z.boolean().default(true),
+  quote: z.string().max(300).default(""),
+  quoteOk: z.boolean().default(false),
 });
+const PhotoSchema = z.object({ ok: z.boolean() });
 const ReportSchema = z.object({ reportedId: z.uuid(), reason: z.string().max(2000).default("") });
 
 const fail = (error: string, status = 400) => NextResponse.json({ error }, { status });
@@ -66,6 +69,15 @@ export async function POST(request: Request, ctx: RouteContext<"/api/seat/[token
         if (!["confirmed", "attended", "no_show"].includes(seat.status) || !inWindow) return fail("Melden ist gerade nicht möglich.", 409);
         const ok = await reportPerson(client, seat, parsed.data.reportedId, parsed.data.reason);
         return ok ? NextResponse.json({ ok: true }) : fail("Bitte wähle eine Person von deinem Tisch aus.");
+      }
+      case "photo": {
+        // Foto-Erlaubnis: jederzeit erteilen oder zurücknehmen, solange der Platz fix ist bzw. war
+        const parsed = PhotoSchema.safeParse(body);
+        if (!parsed.success) return fail("Bitte wähle Ja oder Nein.");
+        if (seat.status !== "confirmed" && seat.status !== "attended") return fail("Das geht erst, wenn dein Platz fix ist.", 409);
+        const { error } = await client.from("seats").update({ photo_ok: parsed.data.ok }).eq("id", seat.id);
+        if (error) throw new Error(error.message);
+        return NextResponse.json({ ok: true });
       }
       case "feedback": {
         if (seat.status !== "attended" || now > start + TIMING.reportUntilDaysAfter * DAY) {

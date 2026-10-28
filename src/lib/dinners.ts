@@ -409,6 +409,8 @@ export type FeedbackInput = {
   wantsToSee: string[];
   absent: string[];
   sharePhone: boolean;
+  quote: string;
+  quoteOk: boolean;
 };
 
 /** Speichert Wiedersehen und Feedback; bei beidseitigem Wunsch gehen die Kontakte an beide. */
@@ -427,6 +429,8 @@ export async function saveFeedback(db: Db, seat: Seat, input: FeedbackInput) {
       wants_to_see: wants,
       absent,
       share_phone: input.sharePhone,
+      quote: input.quote.trim() || null,
+      quote_ok: Boolean(input.quote.trim()) && input.quoteOk,
       updated_at: new Date().toISOString(),
     }),
     "Feedback speichern",

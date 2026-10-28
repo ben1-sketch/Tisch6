@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { ActionForm } from "@/components/admin/ActionForm";
-import { Card, Empty, Notice, PageTitle, PersonLink, Stat } from "@/components/admin/ui";
+import { Card, Chip, Empty, Notice, PageTitle, PersonLink, Stat } from "@/components/admin/ui";
 import { requireAdmin } from "@/lib/admin/auth";
 import { day, when } from "@/lib/admin/format";
 import { TABLE } from "@/lib/config";
@@ -25,6 +25,8 @@ type FeedbackRow = {
   rating_evening: number | null;
   rating_table: number | null;
   improve: string | null;
+  quote: string | null;
+  quote_ok: boolean;
   wants_to_see: string[];
   absent: string[];
   seats: { application_id: string; dinner_id: string };
@@ -88,7 +90,7 @@ export default async function ReunionPage() {
       .limit(200),
     client
       .from("feedback")
-      .select("seat_id, created_at, rating_evening, rating_table, improve, wants_to_see, absent, seats!inner(application_id, dinner_id)")
+      .select("seat_id, created_at, rating_evening, rating_table, improve, quote, quote_ok, wants_to_see, absent, seats!inner(application_id, dinner_id)")
       .order("created_at", { ascending: false })
       .limit(1000),
     client.from("matches").select("*").order("created_at", { ascending: false }).limit(500),
@@ -263,9 +265,31 @@ export default async function ReunionPage() {
                   </span>
                 </div>
                 {f.improve && <p className="mt-1 text-cloud">„{f.improve}“</p>}
+                {f.quote && (
+                  <p className="mt-1 text-cloud">
+                    In einem Satz: „{f.quote}“ {f.quote_ok ? <Chip tone="green">darf zitiert werden</Chip> : <Chip>nur intern</Chip>}
+                  </p>
+                )}
               </li>
             ))}
           </ul>
+        )}
+      </Card>
+
+      <Card title="Zitate für Instagram und die Website" className="mt-4">
+        <p className="mb-3 text-sm text-mist">Nur Sätze, die die Gäste ausdrücklich freigegeben haben – immer ohne Namen verwenden.</p>
+        {fb.some((f) => f.quote && f.quote_ok) ? (
+          <ul className="space-y-2 text-sm">
+            {fb
+              .filter((f) => f.quote && f.quote_ok)
+              .map((f) => (
+                <li key={f.seat_id} className="text-cloud">
+                  „{f.quote}“ <span className="text-mist">· {day(f.created_at)}</span>
+                </li>
+              ))}
+          </ul>
+        ) : (
+          <Empty>Noch keine freigegebenen Zitate.</Empty>
         )}
       </Card>
     </>

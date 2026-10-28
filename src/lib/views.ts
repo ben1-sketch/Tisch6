@@ -37,6 +37,9 @@ export type SeatView = {
   canReport: boolean;
   canFeedback: boolean;
   feedbackDone: boolean;
+  /** Foto-Erlaubnis – fragen, sobald der Platz fix ist; jederzeit änderbar */
+  canPhoto: boolean;
+  photoOk: boolean | null;
 };
 
 /** Alles, was die Einladungsseite braucht – und nur das, was die Person sehen darf. */
@@ -104,6 +107,8 @@ export async function seatView(db: Db, token: string): Promise<SeatView | null> 
     canReport: isGuest && now >= start - TIMING.reportFromHoursBefore * HOUR && now <= start + TIMING.reportUntilDaysAfter * DAY,
     canFeedback: seat.status === "attended" && now <= start + TIMING.reportUntilDaysAfter * DAY,
     feedbackDone: Boolean(feedback),
+    canPhoto: seat.status === "confirmed" || seat.status === "attended",
+    photoOk: seat.photo_ok,
   };
 }
 
@@ -114,7 +119,7 @@ export type FeedbackView = {
   restaurant: string;
   open: boolean;
   members: { id: string; firstName: string }[];
-  saved: Pick<Feedback, "rating_evening" | "rating_table" | "improve" | "wants_to_see" | "absent" | "share_phone"> | null;
+  saved: Pick<Feedback, "rating_evening" | "rating_table" | "improve" | "wants_to_see" | "absent" | "share_phone" | "quote" | "quote_ok"> | null;
 };
 
 export async function feedbackView(db: Db, token: string): Promise<FeedbackView | null> {

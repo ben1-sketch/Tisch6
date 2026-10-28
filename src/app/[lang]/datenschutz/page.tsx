@@ -5,7 +5,7 @@ export const metadata: Metadata = { title: "Datenschutzerklärung" };
 
 export default function Datenschutz() {
   return (
-    <LegalPage title="Datenschutzerklärung" updated="20. Oktober 2026">
+    <LegalPage title="Datenschutzerklärung" updated="28. Oktober 2026">
       <p>
         Der Schutz deiner Daten ist uns wichtig. Hier erklären wir, welche Daten Tisch6 verarbeitet, wofür und welche Rechte du hast. Wir verarbeiten
         personenbezogene Daten ausschließlich auf Grundlage der Datenschutz-Grundverordnung (DSGVO) und des österreichischen Datenschutzgesetzes (DSG).
@@ -27,6 +27,8 @@ export default function Datenschutz() {
         <li>Wenn du dich über einen Einladungslink bewirbst: wer dich eingeladen hat (für das Empfehlungsprogramm) und – bei „Bring eine Freundin oder einen Freund mit“ – die Verknüpfung als Duo.</li>
         <li>Meldungen über das Verhalten am Tisch: wer wen wann gemeldet hat und die Beschreibung. Die gemeldete Person erfährt nicht, wer gemeldet hat.</li>
         <li>Nach dem Dinner: deine anonymen Wiedersehen-Angaben und dein freiwilliges Feedback. Für das lernende Matching merken wir uns daraus, welche Persönlichkeitstypen jemand wiedersehen wollte – nur als Typ, ohne Namen; wird ein Profil gelöscht, bleibt für die anderen nur dieser anonyme Typ.</li>
+        <li>Freiwillig: ob ein Foto vom Tisch, auf dem du zu sehen bist, auf dem Instagram-Kanal von Tisch6 erscheinen darf, und dein Satz „Wie war der Abend?“ samt der Angabe, ob wir ihn ohne Namen zitieren dürfen.</li>
+        <li>Freiwillig: wie du von Tisch6 erfahren hast (z. B. Instagram, Google, Empfehlung) sowie, ob du über einen Werbelink gekommen bist.</li>
         <li>Teilnahmen, Absagen und Nichterscheinen sowie Zahlungsinformationen (die Zahlungsdaten selbst verarbeitet nur Stripe).</li>
         <li>Interne Vermerke des Tisch6-Teams, z. B. zur Prüfung einer Meldung, zu Gutschriften oder zu Absprachen mit dir. Eingriffe des Teams werden ohne Namen protokolliert.</li>
         <li>Zeitpunkt und Version deiner Einwilligungen.</li>
@@ -40,6 +42,8 @@ export default function Datenschutz() {
         <li>Verifizierung per SMS und Foto sowie die Bearbeitung von Meldungen zum Schutz aller Teilnehmer vor Fake-Profilen und Fehlverhalten – Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an Sicherheit).</li>
         <li>Eingangsbestätigung und Antwort auf die Bewerbung, Einladungen, ein Lebenszeichen nach sieben Tagen ohne Tisch, Erinnerungen (drei Tage, einen Tag und zwei Stunden vor dem Dinner), die Gesprächskarte und eine Notfallnummer am Tag des Tisches, Nachrücker-Angebote, Nachrichten bei Verschiebung oder Absage, Wiedersehen-Abfrage und Folgeeinladungen per E-Mail und SMS – Art. 6 Abs. 1 lit. b DSGVO. Folgeeinladungen werden seltener, wenn du nicht buchst (nach zweimaligem Nichtbuchen höchstens einmal im Monat), und lassen sich jederzeit abbestellen.</li>
         <li>Feedback nach dem Dinner zur Verbesserung der Tischzusammenstellung – Art. 6 Abs. 1 lit. f DSGVO.</li>
+        <li>Fotos vom Tisch auf Instagram und Zitate ohne Namen auf Instagram und tisch6.at – nur mit deiner Einwilligung (Art. 6 Abs. 1 lit. a DSGVO). Du kannst sie jederzeit auf deiner Einladungs- bzw. Feedbackseite oder per E-Mail an info@tisch6.at widerrufen; wir löschen dann die betroffenen Beiträge.</li>
+        <li>Auswertung, über welche Wege Bewerbungen zu uns kommen, damit wir Werbung gezielt einsetzen – Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse); ausgewertet wird nur in Summen.</li>
         <li>Technischer Betrieb und Sicherheit der Website – Art. 6 Abs. 1 lit. f DSGVO.</li>
       </ul>
 
