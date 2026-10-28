@@ -44,6 +44,9 @@ export function Footer({ lang, dict }: { lang: string; dict: Dictionary }) {
         </nav>
       </div>
       <nav className="mx-auto flex max-w-6xl flex-wrap justify-center gap-x-5 gap-y-2 px-4 pb-8 text-xs text-mist/70 sm:px-6" aria-label="Themen">
+        <Link href={`/${lang}/ratgeber`} className={linkClass}>
+          Ratgeber
+        </Link>
         {THEMEN.map((t) => (
           <Link key={t.slug} href={`/${lang}/${t.slug}`} className={linkClass}>
             {t.short}

@@ -50,6 +50,9 @@ export default async function ThemaPage({ params }: PageProps<"/[lang]/[thema]">
   const tage = dinnerDaysPhrase(await dinnerWeekdays());
   const apply = `/${lang}/bewerben`;
   const faq = t.faq.map((f) => ({ q: f.q, a: fill(f.a, { tage }) }));
+  // „Mehr zum Thema“: die nächsten fünf Seiten der Liste – so verlinkt jede Seite andere und jede wird verlinkt
+  const index = THEMEN.indexOf(t);
+  const related = Array.from({ length: Math.min(5, THEMEN.length - 1) }, (_, i) => THEMEN[(index + 1 + i) % THEMEN.length]);
   const structured = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -81,13 +84,13 @@ export default async function ThemaPage({ params }: PageProps<"/[lang]/[thema]">
         {t.sections.map((s) => (
           <section key={s.title} className="glass rounded-3xl p-6 sm:p-8">
             <h2 className="font-display text-2xl sm:text-3xl">{s.title}</h2>
-            {s.text && <p className="mt-4 leading-relaxed text-mist">{s.text}</p>}
+            {s.text && <p className="mt-4 leading-relaxed text-mist">{fill(s.text, { tage })}</p>}
             {s.points && (
               <ul className="mt-5 space-y-3">
                 {s.points.map((p) => (
                   <li key={p} className="flex gap-3 leading-relaxed text-mist">
                     <span className="mt-2.5 h-1.5 w-1.5 flex-none rotate-45 bg-gold-400" aria-hidden="true" />
-                    <span>{p}</span>
+                    <span>{fill(p, { tage })}</span>
                   </li>
                 ))}
               </ul>
@@ -129,13 +132,18 @@ export default async function ThemaPage({ params }: PageProps<"/[lang]/[thema]">
           <nav aria-label="Mehr zum Thema" className="mt-14 text-sm text-mist">
             <p className="eyebrow">Mehr zum Thema</p>
             <ul className="mt-4 flex flex-wrap justify-center gap-x-6 gap-y-2">
-              {THEMEN.filter((o) => o.slug !== t.slug).map((o) => (
+              {related.map((o) => (
                 <li key={o.slug}>
                   <Link href={`/${lang}/${o.slug}`} className="underline decoration-gold-400/40 underline-offset-4 transition hover:text-gold-300">
                     {o.short}
                   </Link>
                 </li>
               ))}
+              <li>
+                <Link href={`/${lang}/ratgeber`} className="underline decoration-gold-400/40 underline-offset-4 transition hover:text-gold-300">
+                  Alle Themen
+                </Link>
+              </li>
             </ul>
           </nav>
         </div>
