@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/ratgeber">
   return {
     title: "Ratgeber: Singles in Wien kennenlernen",
     description:
-      "Alles rund um Singles, Dating und Kennenlernen in Wien: Dinner-Dating, Partnersuche, Singles ab 30, 40 und 50, Dating ohne App und wie ein Abend bei Tisch6 abläuft.",
+      "Alles rund um Singles, Dating und Kennenlernen in Wien: Dinner-Dating, Partnersuche, Singles ab 30 und ab 40, Dating ohne App und wie ein Abend bei Tisch6 abläuft.",
     alternates: { canonical: `${canonicalOrigin}/${lang}/ratgeber` },
   };
 }

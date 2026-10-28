@@ -326,42 +326,6 @@ export const THEMEN: Thema[] = [
     ],
   },
   {
-    slug: "singles-ab-50-wien",
-    short: "Singles ab 50 in Wien",
-    title: "Singles ab 50 in Wien: Dinner statt Dating-App",
-    description:
-      "Singles ab 50 in Wien: ein Abend zu sechst in einem ausgewählten Lokal, mit Menschen in deinem Alter. Persönlich statt online, Bewerbung kostenlos.",
-    eyebrow: "Singles ab 50",
-    h1: "Singles ab 50 in Wien: Kennenlernen bei Tisch",
-    lead: "Wer mit 50 plus jemanden kennenlernen möchte, sucht meist keine App, sondern ein gutes Gespräch. Bei Tisch6 sitzt du mit fünf Menschen an einem Tisch, die eine KI nach einem kurzen Kennenlern-Chat für dich ausgewählt hat.",
-    sections: [
-      {
-        title: "Persönlich statt online",
-        text: "Kein Profil, durch das man wischt, kein Chat, der im Nichts endet. Ihr trefft euch in einem öffentlichen Wiener Lokal, reserviert ist auf „Tisch6“. Eine Gesprächskarte mit drei Runden Fragen hilft, falls das Gespräch einmal stockt.",
-      },
-      {
-        title: "Diskret und sicher",
-        points: [
-          "Jede Person ist per SMS-Code und Foto geprüft – das Foto sieht nur unser Team.",
-          "Deine Telefonnummer bleibt bei dir.",
-          "Ob du jemanden wiedersehen möchtest, sagst du am Tag danach anonym. Kontakt gibt es nur, wenn es beidseitig ist.",
-        ],
-      },
-      {
-        title: "Ehrlich gesagt",
-        text: "Ein Tisch entsteht, wenn genug Menschen in deinem Alter dabei sind – höchstens zehn Jahre liegen zwischen der jüngsten und der ältesten Person. Die KI wartet lieber ein paar Tage, als eine Runde zusammenzustellen, die nicht passt.",
-      },
-    ],
-    faq: [
-      { q: "Gibt es eine Altersgrenze nach oben?", a: "Nein. Entscheidend ist, dass genug Menschen in deinem Alter dabei sind." },
-      {
-        q: "Kann ich eine Freundin oder einen Freund mitbringen?",
-        a: "Ja. Ihr bewerbt euch zu zweit, und wir setzen euch möglichst an denselben Abend – an verschiedene Tische.",
-      },
-      { q: "Was kostet es?", a: "Die Bewerbung ist kostenlos, eine Tischteilnahme kostet 38 €. Essen und Getränke zahlt jeder selbst im Lokal." },
-    ],
-  },
-  {
     slug: "single-events-wien",
     short: "Single-Events in Wien",
     title: "Single-Events in Wien: Abendessen statt Singleparty",
@@ -501,7 +465,7 @@ export const THEMEN: Thema[] = [
     faq: [
       {
         q: "Wo treffen Singles ab 40 in Wien andere Singles?",
-        a: "Die meisten Wege oben funktionieren in jedem Alter. Bei Tisch6 sitzt du mit Menschen zusammen, die höchstens zehn Jahre auseinander sind – auch ab 40 oder 50.",
+        a: "Die meisten Wege oben funktionieren in jedem Alter. Bei Tisch6 sitzt du mit Menschen zusammen, die höchstens zehn Jahre auseinander sind – auch ab 40.",
       },
       { q: "Was ist der einfachste Anfang?", a: "Ein fester Termin mit wenig Druck. Bei Tisch6 bewirbst du dich in rund zehn Minuten, den Rest planen wir." },
     ],

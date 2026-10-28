@@ -14,13 +14,14 @@ ein bis zwei Versuche umsetzen, Ergebnis hier festhalten. Neueste Woche oben. In
 - Nie: Fotos von Gästen, Bots oder gekaufte Follower, Zahlen, die sich nicht belegen lassen, Daten einzelner Personen.
 - Den Hinweis „Gerade besonders gefragt: …“ beim Einladungslink (`src/i18n/dictionaries/de.ts`, `apply.buddy.wanted`) an den aktuellen Engpass anpassen.
 - Kein Rabatt nur für ein Geschlecht (Gleichbehandlungsgesetz); Werbung gezielt an eine Gruppe ausspielen ist erlaubt.
+- Keine eigene Seite und keine Werbung für „Singles ab 50“ – Wunsch des Inhabers (28.10.2026).
 
 ## Laufende Versuche
 
 | Seit | Versuch | Annahme | Messgröße |
 | --- | --- | --- | --- |
 | 28.10.2026 | Vier Themenseiten für Google (Dinner-Dating, Singles Wien, Singles ab 40, Speed-Dating-Alternative) | Wer aktiv sucht, bewirbt sich eher | Bewerbungen mit Herkunft „Google“ |
-| 28.10.2026 | Neun weitere Themenseiten und Übersicht `/de/ratgeber` (Frauen kennenlernen, Partnersuche, Dating ohne App, Singles ab 30 und ab 50, Single-Events, Blind Date, Neue Leute kennenlernen, Wo man Singles kennenlernt) – jede mit eigenem Inhalt, keine Massen-Seiten | Mehr Suchbegriffe, mehr Wege zu uns; „Frauen kennenlernen“ zielt auf Männer | Klicks je Seite (Search Console), Herkunft „Google“ |
+| 28.10.2026 | Acht weitere Themenseiten und Übersicht `/de/ratgeber` (Frauen kennenlernen, Partnersuche, Dating ohne App, Singles ab 30, Single-Events, Blind Date, Neue Leute kennenlernen, Wo man Singles kennenlernt) – jede mit eigenem Inhalt, keine Massen-Seiten | Mehr Suchbegriffe, mehr Wege zu uns; „Frauen kennenlernen“ zielt auf Männer | Klicks je Seite (Search Console), Herkunft „Google“ |
 | 28.10.2026 | Pressetext an 13 Wiener Redaktionen verschickt (Liste unten) | Ein Artikel bringt einen Schub, vor allem Ältere | Artikel/Erwähnungen, Herkunft „Presse“ |
 | 28.10.2026 | Matching-Regeln etwas großzügiger (Wunschalter ±3, Temperament-Abstand 3) | Mehr Tische kommen zustande | Tische pro Woche, Feedback „Runde“ |
 | 28.10.2026 | Herkunft jeder Bewerbung erfassen | Grundlage für alle Entscheidungen | Anteil Bewerbungen mit Angabe |
