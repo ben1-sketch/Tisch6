@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import type Stripe from "stripe";
 import { z } from "zod";
 import { FOUNDER, NO_SHOW_LIMIT, PRICES, TIMING, euro } from "../config";
+import { NO_CAMPAIGNS } from "../campaigns";
 import { type Application, type Db, type Dinner, type Payment, type Report, type Restaurant, type Seat, OPEN_SEAT, must } from "../db";
 import { setAvailability } from "../dinners";
 import { eraseApplicant } from "../erase";
@@ -272,6 +273,14 @@ export async function setApplicantAvailability(db: Db, app: Application, availab
   if (!(await setAvailability(db, app, available))) throw new AdminError("Das geht nur bei angenommenen Personen.");
   await logAdmin(db, available ? "Wieder verfügbar" : "Pausiert", { applicationId: app.id });
   return available ? "Die Person wird wieder für Tische berücksichtigt." : "Pausiert – keine neuen Einladungen, bis wieder eingeschaltet.";
+}
+
+/** Antwort „Stopp“ auf einen Aufruf: keine Aufrufe mehr – Einladungen zu Tischen gehen weiter */
+export async function stopCampaigns(db: Db, app: Application) {
+  const { data } = await db.from("admin_log").select("id").eq("application_id", app.id).eq("action", NO_CAMPAIGNS).limit(1);
+  if (data?.length) throw new AdminError("Bekommt schon keine Aufrufe mehr.");
+  await logAdmin(db, NO_CAMPAIGNS, { applicationId: app.id });
+  return "Erledigt – keine Aufrufe mehr. Einladungen zu Tischen bekommt die Person weiterhin.";
 }
 
 export async function saveNote(db: Db, app: Application, note: string) {

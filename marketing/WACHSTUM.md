@@ -17,6 +17,9 @@ ein bis zwei Versuche umsetzen, Ergebnis hier festhalten. Neueste Woche oben. In
 - Keine eigene Seite und keine Werbung für „Singles ab 50“ – Wunsch des Inhabers (28.10.2026).
 - Am Tisch höchstens 10 Jahre Altersabstand. Einzige Ausnahme: der erste Tisch am 5.11.2026 (bis 12 Jahre beim Nachrücken,
   `TABLE_EXCEPTIONS` in `src/lib/config.ts`) – Wunsch des Inhabers. Keine weiteren Ausnahmen ohne seine Zustimmung.
+- Aufrufe an Wartende (`CAMPAIGNS` in `src/lib/config.ts`) nur mit Zustimmung des Inhabers, höchstens einer pro Person im Monat,
+  immer mit „Stopp“-Hinweis. Wer „Stopp“ antwortet, bekommt im Adminbereich „Keine Aufrufe mehr“.
+- Wer jemanden über den Einladungslink einlädt, sitzt nie mit ihm am selben Tisch (wie bei Duos).
 
 ## Laufende Versuche
 
@@ -30,6 +33,7 @@ ein bis zwei Versuche umsetzen, Ergebnis hier festhalten. Neueste Woche oben. In
 | 28.10.2026 | Erinnerung an angefangene Bewerbungen (höchstens 2 Mails, tagsüber; Link `?weiter=1` direkt zur Anmeldung) | Wer nach Foto oder erster Frage abbricht, kommt mit einem Anstoß zurück | Anteil angefangener Bewerbungen, die nach einer Erinnerung abgeschlossen werden (Versandprotokoll, Art „unfinished“) |
 | 28.10.2026 | Freie Plätze laufend nachbesetzen (tagsüber alle 10 Minuten) und keine Warteliste für Bewerbungen, die sofort auf einen freien Platz passen – Anlass: Absage am ersten Tisch (5.11.), keine passende Frau im Pool | Lücken an Tischen schließen sich, sobald jemand Passendes da ist | Tische mit 6 statt 5, Nachrücker-Angebote und Zusagen |
 | 28.10.2026 | Erinnerung an offene Einladungen: zur Halbzeit der Zusagefrist eine E-Mail + SMS (tagsüber, nicht während jemand gerade zahlt, mit „X Personen haben schon fix zugesagt“) – Anlass: am ersten Tisch hatten erst 2 von 6 bezahlt | Wer die Einladung übersehen oder die Zahlung abgebrochen hat, sagt doch noch zu | Anteil offener Einladungen, die nach der Erinnerung bezahlt werden (Versandprotokoll, Art „invite_reminder“) |
+| 28.10.2026 | Aufruf an die wartenden Frauen (E-Mail am 29.10. ab 9 Uhr, Aufruf `maenner-35-47`): „Kennst du einen Single-Mann zwischen 35 und 47?“ mit persönlichem Einladungslink, WhatsApp-Knopf und Empfehlungsrabatt – Anlass: dem zweiten Tisch fehlt genau ein Mann (35–47, Mi/Do/Fr/So) | Frauen kennen passende Männer und schicken ihnen den Link | Bewerbungen mit Herkunft „Empfehlung“ und Detail „aufruf“, davon Männer 35–47; ob der zweite Tisch entsteht |
 | 28.10.2026 | Gratis-Kanäle laut Startpaket (Claude Docs „Gratis-Kanäle: Startpaket für Tisch6“): Facebook-Gruppe „Singles & Freunde Österreich“, LinkedIn-Beitrag des Inhabers, MeinBezirk-Regionaut, WhatsApp ans eigene Netzwerk – jeweils eigener utm-Link | Männer 35–48 sind dort erreichbar, ohne Werbebudget | Bewerbungen je Herkunft (facebook / linkedin / meinbezirk / whatsapp), Anteil Männer 35–48; zuerst prüfen, was der Inhaber davon umgesetzt hat |
 | 28.10.2026 | Tischkarte mit QR-Code im Partnerlokal (`marketing/lokale/`, utm lokal / tischkarte / neuehoheit) | Andere Gäste des Lokals werden neugierig | Bewerbungen mit Detail „lokal / tischkarte / …“ |
 | 28.10.2026 | Einladungslink im Konto: Knopf „Per WhatsApp schicken“ und Hinweis „Gerade besonders gefragt: Männer zwischen 35 und 48“ | Bewerberinnen kennen passende Männer | Bewerbungen mit Herkunft „Empfehlung“, davon Männer |

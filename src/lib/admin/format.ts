@@ -92,6 +92,7 @@ const STEP_LABELS: Record<string, string> = {
   matching: "Tischplanung",
   lebenszeichen: "Lebenszeichen",
   folgeeinladungen: "Folgeeinladungen",
+  aufrufe: "Aufrufe an Wartende",
   lernen: "Lernnotizen",
 };
 

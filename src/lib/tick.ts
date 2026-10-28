@@ -1,4 +1,5 @@
 import "server-only";
+import { sendCampaigns } from "./campaigns";
 import type { Db } from "./db";
 import { TIMING } from "./config";
 import { afterDinners, prepareCards, sendDayOf, sendLebenszeichen, sendNudges, sendReminders, updateLearnings } from "./dinners";
@@ -57,6 +58,7 @@ export async function runTick(client: Db, options: { matching?: "auto" | "force"
     await step("gespraechskarten", () => prepareCards(client, deadline));
     await step("lebenszeichen", () => sendLebenszeichen(client));
     await step("folgeeinladungen", () => sendNudges(client));
+    await step("aufrufe", () => sendCampaigns(client, deadline));
     await step("aufraeumen", () => eraseRejected(client));
     if (Date.now() < deadline - 20_000) await step("lernen", () => updateLearnings(client));
   } finally {

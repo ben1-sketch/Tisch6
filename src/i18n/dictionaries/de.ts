@@ -141,7 +141,7 @@ const de = {
       },
       {
         q: "Bekomme ich etwas, wenn ich Tisch6 weiterempfehle?",
-        a: "Ja. Wird jemand über deinen persönlichen Einladungslink angenommen und nimmt an einem Tisch teil, kostet deine nächste Tischteilnahme 20\u00a0€ statt 38\u00a0€.",
+        a: "Ja. Wird jemand über deinen persönlichen Einladungslink angenommen und nimmt an einem Tisch teil, kostet deine nächste Tischteilnahme 20\u00a0€ statt 38\u00a0€. Ihr sitzt dabei nie am selben Tisch.",
       },
       {
         q: "Was, wenn ich absagen muss?",

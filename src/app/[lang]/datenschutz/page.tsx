@@ -24,7 +24,7 @@ export default function Datenschutz() {
         <li>Angaben aus dem Kennenlern-Chat: Alter, Geschlecht, wen du kennenlernen möchtest, gewünschte Altersspanne, Wunschtage für Dinner, Lebensstil (Rauchen, Kinder/Kinderwunsch, Beruf grob, Ausgehverhalten, Essensvorlieben, Ernährungsform und Unverträglichkeiten) sowie deine Antworten auf Situationsfragen zur Persönlichkeit.</li>
         <li>Dein Beziehungsziel (ernsthafte Beziehung oder erstmal schauen) und grob, wie wichtig dir Glaube, Politik und Familie sind. Angaben zu Glaube und Politik sind besondere Kategorien personenbezogener Daten; wir verarbeiten sie nur mit deiner ausdrücklichen Einwilligung (Art. 9 Abs. 2 lit. a DSGVO), nur für das Matching, und zeigen sie nirgends an – weder anderen Gästen noch auf der Website.</li>
         <li>Ein daraus abgeleitetes Profil (Persönlichkeitstyp auf vier Achsen, Gesprächsthemen), das ausschließlich zur Tischzusammenstellung und für die Gesprächskarte dient.</li>
-        <li>Wenn du dich über einen Einladungslink bewirbst: wer dich eingeladen hat (für das Empfehlungsprogramm) und – bei „Bring eine Freundin oder einen Freund mit“ – die Verknüpfung als Duo.</li>
+        <li>Wenn du dich über einen Einladungslink bewirbst: wer dich eingeladen hat (für das Empfehlungsprogramm und damit ihr nie am selben Tisch sitzt) und – bei „Bring eine Freundin oder einen Freund mit“ – die Verknüpfung als Duo.</li>
         <li>Meldungen über das Verhalten am Tisch: wer wen wann gemeldet hat und die Beschreibung. Die gemeldete Person erfährt nicht, wer gemeldet hat.</li>
         <li>Nach dem Dinner: deine anonymen Wiedersehen-Angaben und dein freiwilliges Feedback. Für das lernende Matching merken wir uns daraus, welche Persönlichkeitstypen jemand wiedersehen wollte – nur als Typ, ohne Namen; wird ein Profil gelöscht, bleibt für die anderen nur dieser anonyme Typ.</li>
         <li>Freiwillig: dein Satz „Wie war der Abend?“ samt der Angabe, ob wir ihn ohne Namen zitieren dürfen.</li>
@@ -42,6 +42,11 @@ export default function Datenschutz() {
         <li>Verifizierung per SMS und Foto sowie die Bearbeitung von Meldungen zum Schutz aller Teilnehmer vor Fake-Profilen und Fehlverhalten – Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an Sicherheit).</li>
         <li>Eingangsbestätigung und Antwort auf die Bewerbung, höchstens zwei Erinnerungen an eine angefangene, nicht abgeschlossene Bewerbung, Einladungen und eine Erinnerung, solange eine Einladung noch offen ist, ein Lebenszeichen nach sieben Tagen ohne Tisch, Erinnerungen (drei Tage, einen Tag und zwei Stunden vor dem Dinner), die Gesprächskarte und eine Notfallnummer am Tag des Tisches, Nachrücker-Angebote, Nachrichten bei Verschiebung oder Absage, Wiedersehen-Abfrage und Folgeeinladungen per E-Mail und SMS – Art. 6 Abs. 1 lit. b DSGVO. Folgeeinladungen werden seltener, wenn du nicht buchst (nach zweimaligem Nichtbuchen höchstens einmal im Monat), und lassen sich jederzeit abbestellen.</li>
         <li>Feedback nach dem Dinner zur Verbesserung der Tischzusammenstellung – Art. 6 Abs. 1 lit. f DSGVO.</li>
+        <li>
+          Höchstens einmal im Monat, solange du auf einen Tisch wartest: die Bitte per E-Mail, deinen Einladungslink an passende Singles
+          weiterzugeben, wenn für Tische gerade Menschen einer bestimmten Altersgruppe fehlen – Art. 6 Abs. 1 lit. f DSGVO (berechtigtes
+          Interesse, dass Tische zustande kommen). Du kannst jederzeit widersprechen; eine Antwort mit „Stopp“ genügt.
+        </li>
         <li>Zitate ohne Namen auf Instagram und tisch6.at – nur mit deiner Einwilligung (Art. 6 Abs. 1 lit. a DSGVO). Du kannst sie jederzeit auf deiner Feedbackseite oder per E-Mail an info@tisch6.at widerrufen; wir löschen dann die betroffenen Beiträge. Fotos von Gästen veröffentlichen wir nie.</li>
         <li>Auswertung, über welche Wege Bewerbungen zu uns kommen, damit wir Werbung gezielt einsetzen – Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse); ausgewertet wird nur in Summen.</li>
         <li>Technischer Betrieb und Sicherheit der Website – Art. 6 Abs. 1 lit. f DSGVO.</li>

@@ -5,6 +5,7 @@ import { z } from "zod";
 import { ActionForm } from "@/components/admin/ActionForm";
 import { Axis, Card, Chip, Empty, Facts, NotificationChip, PageTitle, PersonLink, field } from "@/components/admin/ui";
 import { requireAdmin } from "@/lib/admin/auth";
+import { NO_CAMPAIGNS } from "@/lib/campaigns";
 import { APP_STATUS, DINNER_STATUS, GENDER, SEAT_STATUS, day, relative, when } from "@/lib/admin/format";
 import { WAITLIST_REASONS } from "@/lib/admin/ops";
 import { PRICES, euro } from "@/lib/config";
@@ -33,6 +34,7 @@ import {
   discountAction,
   noteAction,
   rejectAction,
+  stopCampaignsAction,
   unblockAction,
   waitlistAction,
 } from "../../../actions";
@@ -93,6 +95,7 @@ export default async function ApplicationPage({ params }: PageProps<"/admin/bewe
   const p = app.profile;
   const hidden = { id: app.id };
   const active = ["submitted", "accepted", "waitlist"].includes(app.status);
+  const campaignsStopped = ((log.data ?? []) as AdminLog[]).some((e) => e.action === NO_CAMPAIGNS);
   const evaluation = app.evaluation as { serioes?: boolean; eindeutig?: boolean; warnsignale?: string[]; begruendung?: string } | null;
   const decision =
     app.status === "accepted"
@@ -186,6 +189,14 @@ export default async function ApplicationPage({ params }: PageProps<"/admin/bewe
                   action={availabilityAction}
                   hidden={{ ...hidden, available: app.available_since ? "0" : "1" }}
                   submit={app.available_since ? "Pausieren (keine Einladungen)" : "Wieder für Tische berücksichtigen"}
+                />
+              )}
+              {active && !campaignsStopped && (
+                <ActionForm
+                  action={stopCampaignsAction}
+                  hidden={hidden}
+                  submit="Keine Aufrufe mehr (Antwort „Stopp“)"
+                  confirm={`${app.first_name} keine Aufrufe mehr schicken? Einladungen zu Tischen bekommt die Person weiterhin.`}
                 />
               )}
               {active && (

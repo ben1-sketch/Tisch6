@@ -42,6 +42,8 @@ export type Person = {
   intolerances: string[];
   waitingSince: number;
   buddyId: string | null;
+  /** Wer die Person über den persönlichen Einladungslink eingeladen hat */
+  referredBy: string | null;
   notes: string[];
   /** ernsthafte Beziehung oder erstmal schauen – nur fürs Matching, wird nie angezeigt */
   goal: "ernsthaft" | "offen" | null;
@@ -56,11 +58,22 @@ export const AXES = ["ruhig–extrovertiert", "spontan–strukturiert", "humorvo
 
 export const otherGender = (g: Gender): Gender => (g === "frau" ? "mann" : "frau");
 
+/** Kennen sich zwei schon – zu zweit beworben oder über den Einladungslink? Dann sitzen sie nie am selben Tisch. */
+export const knowEachOther = (a: Person, b: Person) =>
+  a.buddyId === b.id || b.buddyId === a.id || a.referredBy === b.id || b.referredBy === a.id;
+
 const clampAxis = (v: number) => Math.min(5, Math.max(1, Math.round(v || 3)));
 
 /** Bewerbung → Person für das Matching (null, wenn Angaben fürs Matching fehlen) */
 export function toPerson(
-  app: { id: string; first_name: string; profile: Profile | null; available_since: string | null; buddy_id: string | null },
+  app: {
+    id: string;
+    first_name: string;
+    profile: Profile | null;
+    available_since: string | null;
+    buddy_id: string | null;
+    referred_by?: string | null;
+  },
   extra: { notes?: string[]; history?: History; lastRestaurantId?: string | null } = {},
 ): Person | null {
   const p = app.profile;
@@ -97,6 +110,7 @@ export function toPerson(
     intolerances: p.unvertraeglichkeiten ?? [],
     waitingSince: app.available_since ? new Date(app.available_since).getTime() : Date.now(),
     buddyId: app.buddy_id,
+    referredBy: app.referred_by ?? null,
     notes: extra.notes ?? [],
     // ältere Profile kennen Beziehungsziel und Werte noch nicht
     goal: p.beziehungsziel ?? null,
@@ -170,8 +184,8 @@ export function validGroup(people: Person[], complete = false): boolean {
   if (women.some((w) => !w.seeks.includes("mann")) || men.some((m) => !m.seeks.includes("frau"))) return false;
   for (const w of women) for (const m of men) if (!mutualAgeOk(w, m)) return false;
 
-  // Wer sich zu zweit beworben hat, sitzt nie am selben Tisch
-  if (people.some((p) => p.buddyId && ids.has(p.buddyId))) return false;
+  // Wer sich schon kennt (zu zweit beworben oder über den Einladungslink), sitzt nie am selben Tisch
+  if (people.some((p) => (p.buddyId && ids.has(p.buddyId)) || (p.referredBy && ids.has(p.referredBy)))) return false;
 
   // Temperament (ruhig–extrovertiert) ähnlich halten – alle sechs im ähnlichen Bereich
   const energy = people.map((p) => p.axes[0]);
@@ -251,11 +265,11 @@ export function candidateTables(anchor: Person, pool: Person[], now: number, lim
   const fit = (a: Person, b: Person) => Number(sameGoal(b)) - Number(sameGoal(a)) || byWaiting(a, b);
 
   const same = pool
-    .filter((p) => p.id !== anchor.id && p.gender === g && p.seeks.includes(o) && near(p) && sharesDay(p) && p.id !== anchor.buddyId)
+    .filter((p) => p.id !== anchor.id && p.gender === g && p.seeks.includes(o) && near(p) && sharesDay(p) && !knowEachOther(anchor, p))
     .sort(fit)
     .slice(0, 10);
   const opposite = pool
-    .filter((p) => p.gender === o && p.seeks.includes(g) && near(p) && sharesDay(p) && mutualAgeOk(anchor, p) && p.id !== anchor.buddyId)
+    .filter((p) => p.gender === o && p.seeks.includes(g) && near(p) && sharesDay(p) && mutualAgeOk(anchor, p) && !knowEachOther(anchor, p))
     .sort(fit)
     .slice(0, 12);
 

@@ -94,6 +94,39 @@ export const TABLE_EXCEPTIONS: Record<string, { maxAgeSpan: number; reason: stri
   "3d6abb86-9555-48ee-a1da-e4306de3a588": { maxAgeSpan: 12, reason: "Erster Tisch: nächstpassende Frau nachrücken" },
 };
 
+export type Campaign = {
+  id: string;
+  /** geht an Wartende dieses Geschlechts */
+  to: "frau" | "mann";
+  /** Zeitfenster (UTC) – außerhalb geht nichts raus */
+  from: string;
+  until: string;
+  /** „Damit dein Tisch zustande kommt, fehlen uns noch …“ */
+  missing: string;
+  /** Bitte, den eigenen Einladungslink weiterzuschicken */
+  ask: string;
+  /** Text vor dem Link in der WhatsApp-Nachricht */
+  share: string;
+};
+
+/**
+ * Aufrufe an Wartende per E-Mail, wenn für Tische bestimmte Menschen fehlen (marketing/WACHSTUM.md):
+ * nur im Zeitfenster und tagsüber, an jede Person höchstens einer im Monat. Wer „Stopp“ antwortet,
+ * bekommt im Adminbereich „Keine Aufrufe mehr“.
+ */
+export const CAMPAIGNS: Campaign[] = [
+  {
+    // Wunsch des Inhabers vom 28.10.2026: für den zweiten Tisch fehlt ein Mann zwischen 35 und 47
+    id: "maenner-35-47",
+    to: "frau",
+    from: "2026-10-29T08:00:00Z",
+    until: "2026-10-30T19:00:00Z",
+    missing: "Männer zwischen 35 und 47 Jahren",
+    ask: "Kennst du einen Single-Mann in diesem Alter, zum Beispiel einen Kollegen, Bruder oder Freund? Dann schick ihm deinen persönlichen Einladungslink:",
+    share: "Schau mal: Tisch6 – Dating-Dinner in Wien, drei Frauen und drei Männer an einem Tisch. Gerade werden Männer zwischen 35 und 47 gesucht:",
+  },
+];
+
 /** So viele Personen darf ein Geschlecht im aktiven Pool vorne liegen, bevor es auf die Warteliste geht */
 export const BALANCE_MARGIN = 4;
 

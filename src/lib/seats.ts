@@ -13,7 +13,7 @@ import {
   OPEN_SEAT,
   must,
 } from "./db";
-import { type Gender, type Person, kitchenNotes, otherGender, tableSummary, toPerson, validGroup } from "./matching-core";
+import { type Gender, type Person, kitchenNotes, knowEachOther, otherGender, tableSummary, toPerson, validGroup } from "./matching-core";
 import {
   type DinnerInfo,
   adminMail,
@@ -261,7 +261,7 @@ function fitsTable(table: OpenTable, p: Person) {
   return (
     Math.max(...ages) - Math.min(...ages) <= exception.maxAgeSpan &&
     p.seeks.includes(otherGender(p.gender)) &&
-    !table.members.some((m) => m.id === p.buddyId || m.buddyId === p.id)
+    !table.members.some((m) => knowEachOther(m, p))
   );
 }
 

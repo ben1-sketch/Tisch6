@@ -36,6 +36,7 @@ import {
   sendTestMessages,
   setApplicantAvailability,
   startTestPayment,
+  stopCampaigns,
   unblockApplicant,
   waitlistApplicant,
 } from "@/lib/admin/ops";
@@ -212,6 +213,10 @@ export async function clearReviewAction(_: ActionResult, form: FormData) {
 
 export async function availabilityAction(_: ActionResult, form: FormData) {
   return run(async () => setApplicantAvailability(db(), await applicationFrom(form), form.get("available") === "1"));
+}
+
+export async function stopCampaignsAction(_: ActionResult, form: FormData) {
+  return run(async () => stopCampaigns(db(), await applicationFrom(form)));
 }
 
 export async function noteAction(_: ActionResult, form: FormData) {

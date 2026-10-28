@@ -1,4 +1,4 @@
-import { PRICES, TIMING, euro } from "./config";
+import { type Campaign, PRICES, TIMING, euro } from "./config";
 import { instagramUrl, siteUrl } from "./site";
 import { formatDate, formatDateTime, formatShortDate, formatTime } from "./time";
 import type { EmailContent } from "./notify";
@@ -91,6 +91,8 @@ export const feedbackUrl = (token: string) => link(`/de/wiedersehen/${token}`);
 export const rejoinUrl = (magicToken: string) => link(`/de/weiter/${magicToken}`);
 export const icsUrl = (token: string) => link(`/api/seat/${token}/ics`);
 const accountUrl = () => link("/de/konto");
+/** Persönlicher Einladungslink (wie im Konto); source markiert, über welchen Aufruf er kam */
+export const inviteUrl = (code: string, source?: string) => link(`/de/bewerben?mit=${code}${source ? `&utm_source=${source}` : ""}`);
 /** Angefangene Bewerbung fortsetzen: Anmeldung per SMS-Code, dann geht es dort weiter, wo die Person aufgehört hat */
 const resumeUrl = () => link("/de/bewerben?weiter=1");
 
@@ -606,6 +608,26 @@ export function referralRewardMail(name: string): EmailContent {
     paragraphs: [
       "Jemand, den du zu Tisch6 eingeladen hast, saß gerade an einem unserer Tische.",
       `Als Dankeschön kostet deine nächste Tischteilnahme nur ${euro(PRICES.referral)} statt ${euro(PRICES.seat)}.`,
+    ],
+  });
+}
+
+/** Aufruf an Wartende (CAMPAIGNS): den eigenen Einladungslink an passende Singles weiterschicken */
+export function campaignMail(o: { name: string; campaign: Campaign; inviteCode: string }): EmailContent {
+  const url = inviteUrl(o.inviteCode, "aufruf");
+  return layout({
+    subject: "Hilf mit, dass dein Tisch zustande kommt",
+    title: `Dein Tisch braucht noch Verstärkung, ${o.name}`,
+    paragraphs: [
+      `Wir stellen gerade die nächsten Tische zusammen. Damit dein Tisch zustande kommt, fehlen uns noch ${o.campaign.missing}.`,
+      o.campaign.ask,
+      url,
+    ],
+    cta: { label: "Per WhatsApp weiterschicken", url: `https://wa.me/?text=${encodeURIComponent(`${o.campaign.share} ${url}`)}` },
+    after: [
+      "Keine Sorge: Ihr sitzt nie am selben Tisch.",
+      `Kommt jemand über deinen Link an einen Tisch, kostet dein nächster Tisch nur ${euro(PRICES.referral)} statt ${euro(PRICES.seat)}.`,
+      "Du möchtest solche Hinweise nicht mehr? Antworte einfach mit „Stopp“.",
     ],
   });
 }
