@@ -12,6 +12,8 @@ ein bis zwei Versuche umsetzen, Ergebnis hier festhalten. Neueste Woche oben. In
 - Selbst umsetzen: Texte, Themenseiten, Mail-Texte, Instagram-Schwerpunkte, kleine Verbesserungen im Ablauf.
 - Nur vorschlagen, der Inhaber entscheidet: Preise, Matching-Regeln, Lokale, Werbebudget, AGB, neue Presse-Empfänger.
 - Nie: Fotos von Gästen, Bots oder gekaufte Follower, Zahlen, die sich nicht belegen lassen, Daten einzelner Personen.
+- Den Hinweis „Gerade besonders gefragt: …“ beim Einladungslink (`src/i18n/dictionaries/de.ts`, `apply.buddy.wanted`) an den aktuellen Engpass anpassen.
+- Kein Rabatt nur für ein Geschlecht (Gleichbehandlungsgesetz); Werbung gezielt an eine Gruppe ausspielen ist erlaubt.
 
 ## Laufende Versuche
 
@@ -22,6 +24,10 @@ ein bis zwei Versuche umsetzen, Ergebnis hier festhalten. Neueste Woche oben. In
 | 28.10.2026 | Matching-Regeln etwas großzügiger (Wunschalter ±3, Temperament-Abstand 3) | Mehr Tische kommen zustande | Tische pro Woche, Feedback „Runde“ |
 | 28.10.2026 | Herkunft jeder Bewerbung erfassen | Grundlage für alle Entscheidungen | Anteil Bewerbungen mit Angabe |
 | 28.10.2026 | Erinnerung an angefangene Bewerbungen (höchstens 2 Mails, tagsüber; Link `?weiter=1` direkt zur Anmeldung) | Wer nach Foto oder erster Frage abbricht, kommt mit einem Anstoß zurück | Anteil angefangener Bewerbungen, die nach einer Erinnerung abgeschlossen werden (Versandprotokoll, Art „unfinished“) |
+| 28.10.2026 | Gratis-Kanäle laut Startpaket (Claude Docs „Gratis-Kanäle: Startpaket für Tisch6“): Facebook-Gruppe „Singles & Freunde Österreich“, LinkedIn-Beitrag des Inhabers, MeinBezirk-Regionaut, WhatsApp ans eigene Netzwerk – jeweils eigener utm-Link | Männer 35–48 sind dort erreichbar, ohne Werbebudget | Bewerbungen je Herkunft (facebook / linkedin / meinbezirk / whatsapp), Anteil Männer 35–48; zuerst prüfen, was der Inhaber davon umgesetzt hat |
+| 28.10.2026 | Tischkarte mit QR-Code im Partnerlokal (`marketing/lokale/`, utm lokal / tischkarte / neuehoheit) | Andere Gäste des Lokals werden neugierig | Bewerbungen mit Detail „lokal / tischkarte / …“ |
+| 28.10.2026 | Einladungslink im Konto: Knopf „Per WhatsApp schicken“ und Hinweis „Gerade besonders gefragt: Männer zwischen 35 und 48“ | Bewerberinnen kennen passende Männer | Bewerbungen mit Herkunft „Empfehlung“, davon Männer |
+| 28.10.2026 | Google: Organisations-Angaben auf der Startseite; Search Console wartet auf den Bestätigungs-Code des Inhabers (kein Unternehmensprofil – Richtlinien passen nicht) | Die Suche nach „Tisch6“ zeigt die Marke sauber, Themenseiten werden schneller gefunden | Impressionen und Klicks in der Search Console, Herkunft „Google“ |
 
 ## Woche bis 28.10.2026 (Ausgangslage)
 
