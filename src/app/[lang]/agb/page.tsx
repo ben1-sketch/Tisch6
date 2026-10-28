@@ -73,8 +73,6 @@ export default function Agb() {
 
       <h2>11. Schlussbestimmungen</h2>
       <p>Es gilt österreichisches Recht unter Ausschluss der Verweisungsnormen. Zwingende Verbraucherschutzbestimmungen bleiben unberührt.</p>
-
-      <p className="!mt-10 !text-sm">Hinweis: Entwurf – vor dem Livegang juristisch prüfen lassen.</p>
     </LegalPage>
   );
 }

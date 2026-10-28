@@ -9,8 +9,3 @@ export function LegalPage({ title, updated, children }: { title: string; updated
     </article>
   );
 }
-
-/** Markiert Angaben, die vor dem Livegang ergänzt werden müssen. */
-export function Todo({ children }: { children: ReactNode }) {
-  return <span className="placeholder">[{children}]</span>;
-}
