@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Dictionary } from "@/i18n/get-dictionary";
 import { instagramUrl } from "@/lib/site";
+import { THEMEN } from "@/lib/themen";
 import { Logo } from "./Logo";
 import { WienSilhouette } from "./WienSilhouette";
 
@@ -42,6 +43,13 @@ export function Footer({ lang, dict }: { lang: string; dict: Dictionary }) {
           </Link>
         </nav>
       </div>
+      <nav className="mx-auto flex max-w-6xl flex-wrap justify-center gap-x-5 gap-y-2 px-4 pb-8 text-xs text-mist/70 sm:px-6" aria-label="Themen">
+        {THEMEN.map((t) => (
+          <Link key={t.slug} href={`/${lang}/${t.slug}`} className={linkClass}>
+            {t.short}
+          </Link>
+        ))}
+      </nav>
       <p className="pb-10 text-center text-[0.65rem] tracking-[0.3em] text-mist/50 uppercase">© {new Date().getFullYear()} Tisch6 · Wien</p>
     </footer>
   );

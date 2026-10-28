@@ -24,3 +24,6 @@ export const instagramUrl = "https://www.instagram.com/tischsechs/";
 export function siteUrl() {
   return configuredSiteUrl() ?? origin(process.env.VERCEL_PROJECT_PRODUCTION_URL) ?? "http://localhost:3000";
 }
+
+/** Adresse, unter der Google die Seiten führen soll – tisch6.at leitet auf www.tisch6.at weiter */
+export const canonicalOrigin = "https://www.tisch6.at";

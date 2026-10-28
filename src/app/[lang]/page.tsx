@@ -1,13 +1,16 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { ApplyLink } from "@/components/ApplyLink";
 import { Foto } from "@/components/Foto";
 import { Logo } from "@/components/Logo";
+import { Ornament } from "@/components/Ornament";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { WienSilhouette } from "@/components/WienSilhouette";
 import { bilder } from "@/lib/bilder";
 import { dinnerDaysPhrase, dinnerWeekdays } from "@/lib/dinner-days";
+import { canonicalOrigin } from "@/lib/site";
 import { fill } from "@/lib/text";
 
 /** Die Dinner-Tage werden alle fünf Minuten neu geladen – sonst bleibt die Seite statisch und schnell. */
@@ -15,13 +18,9 @@ export const revalidate = 300;
 
 const ROMAN = ["I", "II", "III"];
 
-/** Kleines Trennzeichen: Haarlinien mit Raute */
-function Ornament({ className = "" }: { className?: string }) {
-  return (
-    <div className={`ornament ${className}`} aria-hidden="true">
-      <span />
-    </div>
-  );
+export async function generateMetadata({ params }: PageProps<"/[lang]">): Promise<Metadata> {
+  const { lang } = await params;
+  return { alternates: { canonical: `${canonicalOrigin}/${lang}` } };
 }
 
 export default async function Home({ params }: PageProps<"/[lang]">) {
