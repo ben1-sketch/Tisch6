@@ -298,6 +298,22 @@ export async function remindUnfinished(db: Db, now = new Date()) {
   return sent;
 }
 
+/** Angefangene, nie abgeschickte Bewerbungen: nach abandonedRetentionDays ohne Aktivität endgültig löschen (mit Foto und Login) */
+export async function eraseAbandoned(db: Db, now = new Date()) {
+  const rows = must(
+    await db
+      .from("applications")
+      .select("id")
+      .eq("status", "onboarding")
+      .is("submitted_at", null)
+      .lt("updated_at", new Date(now.getTime() - TIMING.abandonedRetentionDays * DAY).toISOString())
+      .limit(50),
+    "Abgebrochene Bewerbungen laden",
+  ) as Pick<Application, "id">[];
+  for (const app of rows) await eraseApplicant(db, app.id);
+  return rows.length;
+}
+
 export async function eraseRejected(db: Db) {
   const rows = must(
     await db.from("applications").select("id, first_name, email, rejected_at, evaluation").eq("status", "rejected").limit(50),

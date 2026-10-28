@@ -3,7 +3,7 @@ import { sendCampaigns } from "./campaigns";
 import type { Db } from "./db";
 import { TIMING } from "./config";
 import { afterDinners, prepareCards, sendDayOf, sendLebenszeichen, sendNudges, sendReminders, updateLearnings } from "./dinners";
-import { eraseRejected, evaluateApplications, remindUnfinished } from "./evaluation";
+import { eraseAbandoned, eraseRejected, evaluateApplications, remindUnfinished } from "./evaluation";
 import { matchTables } from "./matching";
 import { decideDinners, expireSeats, fillGaps, remindOpenInvitations } from "./seats";
 import { viennaHour } from "./time";
@@ -60,6 +60,7 @@ export async function runTick(client: Db, options: { matching?: "auto" | "force"
     await step("folgeeinladungen", () => sendNudges(client));
     await step("aufrufe", () => sendCampaigns(client, deadline));
     await step("aufraeumen", () => eraseRejected(client));
+    await step("abgebrochen", () => eraseAbandoned(client));
     if (Date.now() < deadline - 20_000) await step("lernen", () => updateLearnings(client));
   } finally {
     await client.from("job_locks").update({ locked_until: new Date().toISOString() }).eq("name", "tick");

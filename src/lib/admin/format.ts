@@ -86,6 +86,7 @@ const STEP_LABELS: Record<string, string> = {
   amTag: "Am Tag des Tisches",
   gespraechskarten: "Gesprächskarten",
   aufraeumen: "Aufräumen",
+  abgebrochen: "Abgebrochene Bewerbungen löschen",
   bewerbungen: "Bewerbungen",
   angefangen: "Erinnerung an angefangene Bewerbungen",
   nachruecken: "Freie Plätze nachbesetzen",

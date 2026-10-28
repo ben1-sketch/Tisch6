@@ -74,6 +74,10 @@ export default function Datenschutz() {
         <li>Vercel Inc. – Hosting der Website (USA; Datenübermittlung auf Grundlage des EU-US Data Privacy Framework bzw. Standardvertragsklauseln).</li>
         <li>Anthropic PBC – KI-Kennenlern-Chat (USA; Standardvertragsklauseln). Daten werden laut Anthropic nicht zum Training von Modellen verwendet.</li>
         <li>
+          Anthropic PBC – zusätzlich der KI-Assistent Claude, mit dem das Tisch6-Team Auswertungen und den technischen Betrieb erledigt; er kann
+          dabei auf Daten in unserer Datenbank zugreifen (USA).
+        </li>
+        <li>
           Twilio Ireland Ltd. (Irland) – Versand von Bestätigungscode, Erinnerungen und Nachrücker-Angeboten; Verarbeitung auch durch Twilio Inc.
           (USA; EU-US Data Privacy Framework bzw. Standardvertragsklauseln).
         </li>
@@ -91,7 +95,7 @@ export default function Datenschutz() {
         Wir speichern deine Daten, solange du ein Profil bei Tisch6 hast. Du kannst dein Profil jederzeit unter „Mein Konto“ selbst endgültig löschen –
         dabei werden auch Foto, Chat, Feedback und Wiedersehen-Angaben gelöscht und offene Einladungen abgesagt. Zahlungsbelege bewahren wir wegen
         gesetzlicher Pflichten 7 Jahre auf, getrennt von deinem Profil. Abgelehnte Bewerbungen löschen wir nach 30 Tagen, Bewerbungen von Personen
-        unter 18 Jahren sofort.
+        unter 18 Jahren sofort. Angefangene, nie abgeschickte Bewerbungen löschen wir nach 90 Tagen ohne Aktivität.
       </p>
 
       <h2>8. Deine Rechte</h2>

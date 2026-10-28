@@ -60,6 +60,8 @@ export const TIMING = {
   dayOfHour: 9,
   /** Abgelehnte Bewerbungen werden so lange aufbewahrt und dann gelöscht (Tage) */
   rejectedRetentionDays: 30,
+  /** Angefangene, nie abgeschickte Bewerbungen werden nach so vielen Tagen ohne Aktivität gelöscht */
+  abandonedRetentionDays: 90,
   /** Angefangene Bewerbung: erste Erinnerung nach so vielen Stunden ohne Antwort (Stunden) */
   unfinishedReminderHours: 20,
   /** … die zweite und letzte so lange nach der ersten (Tage) */

@@ -10,6 +10,8 @@ export type ApplicationStatus = "onboarding" | "submitted" | "accepted" | "waitl
 export type Application = {
   id: string;
   created_at: string;
+  /** zuletzt geändert – setzt die Datenbank bei jeder Änderung selbst */
+  updated_at: string;
   status: ApplicationStatus;
   locale: string;
   city: string;
