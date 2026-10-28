@@ -6,7 +6,9 @@ import { type Application, type Db, type Notification, must } from "./db";
 import { eraseApplicant } from "./erase";
 import { acceptedMail, adminMail, minorMail, rejectedMail, unfinishedMail, waitlistMail } from "./messages";
 import { notifyAdmin, sendEmail } from "./notify";
+import { toPerson } from "./matching-core";
 import { extractProfile, type Profile } from "./onboarding";
+import { fitsOpenSeat } from "./seats";
 import { DAY, HOUR, viennaHour } from "./time";
 
 type Gender = "frau" | "mann";
@@ -153,11 +155,17 @@ async function evaluate(db: Db, app: Application, counts: Counts) {
   }
 
   const g = profile.geschlecht;
-  if (counts[g] - counts[otherGender(g)] >= BALANCE_MARGIN) {
+  if (counts[g] - counts[otherGender(g)] >= BALANCE_MARGIN && !(await fitsNow(db, app))) {
     await waitlist(db, app, "balance", { evaluation: assessment });
     return;
   }
   if (await accept(db, app, false, { evaluation: assessment })) counts[g]++;
+}
+
+/** Ist an einem kommenden Tisch gerade ein Platz frei, auf den die Person passt? Dann zählt das Verhältnis nicht. */
+async function fitsNow(db: Db, app: Application) {
+  const person = toPerson(app);
+  return person ? fitsOpenSeat(db, person) : false;
 }
 
 /** Rückt Personen von der Warteliste nach, sobald das Verhältnis es zulässt (älteste Bewerbung zuerst). */
@@ -176,7 +184,7 @@ async function promoteWaitlist(db: Db, counts: Counts) {
   for (const app of waiting) {
     const g = app.profile?.geschlecht;
     if (g !== "frau" && g !== "mann") continue;
-    if (counts[g] - counts[otherGender(g)] >= BALANCE_MARGIN) continue;
+    if (counts[g] - counts[otherGender(g)] >= BALANCE_MARGIN && !(await fitsNow(db, app))) continue;
     if (await accept(db, app, true)) counts[g]++;
   }
 }

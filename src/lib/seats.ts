@@ -33,7 +33,7 @@ import {
 import { notifyAdmin, sendEmail, sendSms } from "./notify";
 import { loadPool } from "./pool";
 import { refund } from "./stripe";
-import { HOUR, hoursUntil, viennaDate, weekdayOf } from "./time";
+import { HOUR, hoursUntil, viennaDate, viennaHour, weekdayOf } from "./time";
 
 // ---------------------------------------------------------------------------
 // Laden
@@ -165,11 +165,8 @@ export async function sendInvitation(
   }
 }
 
-/**
- * Mögliche Nachrücker je Geschlecht: passt in die Runde (Alter, Wunsch-Altersspannen, Wochentag,
- * keine Begleitung am Tisch), wer am längsten wartet zuerst. Null, wenn das Dinner keine Nachrücker mehr nimmt.
- */
-export async function replacementCandidates(db: Db, dinnerId: string, limit = 1) {
+/** Ein Tisch, der noch Nachrücker nimmt: wer dabei ist, was fehlt, wer schon gefragt wurde. Null, wenn er keine mehr nimmt. */
+async function openTable(db: Db, dinnerId: string) {
   const { dinner, restaurant } = await loadDinner(db, dinnerId);
   if (dinner.status !== "inviting" && dinner.status !== "confirmed") return null;
   const hours = hoursUntil(dinner.starts_at);
@@ -184,16 +181,65 @@ export async function replacementCandidates(db: Db, dinnerId: string, limit = 1)
     mann: TABLE.perGender - members.filter((m) => m.gender === "mann").length,
   };
   const tried = new Set(seats.map((s) => s.application_id));
-  const weekday = weekdayOf(viennaDate(new Date(dinner.starts_at)));
-  const pool = missing.frau > 0 || missing.mann > 0 ? await loadPool(db) : [];
+  return { dinner, restaurant, members, missing, tried, weekday: weekdayOf(viennaDate(new Date(dinner.starts_at))) };
+}
+
+type OpenTable = NonNullable<Awaited<ReturnType<typeof openTable>>>;
+
+/** Passt die Person auf einen freien Platz? Alter, Wunsch-Altersspannen, Wochentag, keine Begleitung am Tisch, noch nicht gefragt. */
+function fitsTable(table: OpenTable, p: Person) {
+  return table.missing[p.gender] > 0 && !table.tried.has(p.id) && (!p.days || p.days.includes(table.weekday)) && validGroup([...table.members, p]);
+}
+
+/** Mögliche Nachrücker je Geschlecht, wer am längsten wartet zuerst. Null, wenn das Dinner keine Nachrücker mehr nimmt. */
+export async function replacementCandidates(db: Db, dinnerId: string, limit = 1) {
+  const table = await openTable(db, dinnerId);
+  if (!table) return null;
+  const pool = table.missing.frau > 0 || table.missing.mann > 0 ? await loadPool(db) : [];
   const fits = (g: Gender) =>
-    missing[g] <= 0
-      ? []
-      : pool
-          .filter((p) => p.gender === g && !tried.has(p.id) && (!p.days || p.days.includes(weekday)) && validGroup([...members, p]))
-          .sort((a, b) => a.waitingSince - b.waitingSince)
-          .slice(0, limit);
-  return { dinner, restaurant, members, missing, candidates: { frau: fits("frau"), mann: fits("mann") } };
+    pool
+      .filter((p) => p.gender === g && fitsTable(table, p))
+      .sort((a, b) => a.waitingSince - b.waitingSince)
+      .slice(0, limit);
+  return { ...table, candidates: { frau: fits("frau"), mann: fits("mann") } };
+}
+
+/** Kommende Tische, an denen gerade ein Platz frei ist und die noch Nachrücker nehmen */
+async function tablesWithGaps(db: Db) {
+  const upcoming = must(
+    await db
+      .from("dinners")
+      .select("id")
+      .in("status", ["inviting", "confirmed"])
+      .gt("starts_at", new Date(Date.now() + TIMING.lastReplacementHoursBefore * HOUR).toISOString()),
+    "Kommende Tische laden",
+  ) as { id: string }[];
+  const tables: OpenTable[] = [];
+  for (const { id } of upcoming) {
+    const table = await openTable(db, id);
+    if (table && (table.missing.frau > 0 || table.missing.mann > 0)) tables.push(table);
+  }
+  return tables;
+}
+
+/** Hätte die Person sofort einen Platz? Dann kommt sie trotz Geschlechterverhältnis nicht auf die Warteliste. */
+export async function fitsOpenSeat(db: Db, person: Person) {
+  return (await tablesWithGaps(db)).some((table) => fitsTable(table, person));
+}
+
+/**
+ * Freie Plätze laufend nachbesetzen: Fehlt an einem kommenden Tisch jemand, bekommt die passende Person das Angebot,
+ * sobald es sie gibt – nicht nur im Moment einer Absage. Nur tagsüber, weil das Angebot auch per SMS kommt.
+ */
+export async function fillGaps(db: Db, now = new Date()) {
+  const hour = viennaHour(now);
+  if (hour < TIMING.daytimeFromHour || hour >= TIMING.daytimeToHour) return 0;
+  let offered = 0;
+  for (const table of await tablesWithGaps(db)) {
+    // Ein offenes Angebot zählt schon als Platz – so geht pro Lücke nur ein Angebot gleichzeitig raus
+    if (await findReplacement(db, table.dinner.id, null)) offered++;
+  }
+  return offered;
 }
 
 /** Bietet einer Person einen frei gewordenen Platz an: 12 Stunden Zeit, E-Mail + SMS. */

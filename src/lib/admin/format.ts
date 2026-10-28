@@ -87,6 +87,7 @@ const STEP_LABELS: Record<string, string> = {
   aufraeumen: "Aufräumen",
   bewerbungen: "Bewerbungen",
   angefangen: "Erinnerung an angefangene Bewerbungen",
+  nachruecken: "Freie Plätze nachbesetzen",
   matching: "Tischplanung",
   lebenszeichen: "Lebenszeichen",
   folgeeinladungen: "Folgeeinladungen",
