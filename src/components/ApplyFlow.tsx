@@ -524,6 +524,7 @@ export function InviteBox({ t, lang, code, gender = null }: { t: T["buddy"]; lan
   // Immer die offizielle Domain – auch wenn die Seite über eine Vercel-Vorschau aufgerufen wird
   const origin = process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin;
   const url = `${origin}/${lang}/bewerben?mit=${code}`;
+  const whatsapp = `https://wa.me/?text=${encodeURIComponent(`${t.shareText} ${url}`)}`;
 
   async function share() {
     if (navigator.share) {
@@ -544,6 +545,10 @@ export function InviteBox({ t, lang, code, gender = null }: { t: T["buddy"]; lan
           {copied ? t.copied : t.share}
         </button>
       </div>
+      <a href={whatsapp} target="_blank" rel="noopener noreferrer" className="mt-3 inline-block text-sm text-gold-300 underline hover:text-cloud">
+        {t.whatsapp}
+      </a>
+      <p className="mt-3 text-sm text-gold-300">{t.wanted}</p>
     </div>
   );
 }

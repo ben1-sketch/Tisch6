@@ -10,11 +10,38 @@ import { ScrollReveal } from "@/components/ScrollReveal";
 import { WienSilhouette } from "@/components/WienSilhouette";
 import { bilder } from "@/lib/bilder";
 import { dinnerDaysPhrase, dinnerWeekdays } from "@/lib/dinner-days";
-import { canonicalOrigin } from "@/lib/site";
+import { canonicalOrigin, instagramUrl } from "@/lib/site";
 import { fill } from "@/lib/text";
 
 /** Die Dinner-Tage werden alle fünf Minuten neu geladen – sonst bleibt die Seite statisch und schnell. */
 export const revalidate = 300;
+
+/** Für Google: wer hinter tisch6.at steht – Name, Logo, Kontakt, Instagram, Wien */
+const organisation = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${canonicalOrigin}/#organisation`,
+      name: "Tisch6",
+      alternateName: "Tisch 6",
+      url: canonicalOrigin,
+      logo: `${canonicalOrigin}/icon.svg`,
+      email: "info@tisch6.at",
+      description: "KI-kuratiertes Dinner-Dating für Singles in Wien: sechs Menschen, ein Tisch, ein Abend.",
+      areaServed: { "@type": "City", name: "Wien" },
+      sameAs: [instagramUrl],
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${canonicalOrigin}/#website`,
+      url: canonicalOrigin,
+      name: "Tisch6",
+      inLanguage: "de-AT",
+      publisher: { "@id": `${canonicalOrigin}/#organisation` },
+    },
+  ],
+};
 
 const ROMAN = ["I", "II", "III"];
 
@@ -33,6 +60,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
 
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organisation).replace(/</g, "\\u003c") }} />
       <ScrollReveal />
 
       {/* 1 · Seitenanfang: Vollbild-Foto, Überschrift in der Mitte */}
