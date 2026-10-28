@@ -91,6 +91,8 @@ export const feedbackUrl = (token: string) => link(`/de/wiedersehen/${token}`);
 export const rejoinUrl = (magicToken: string) => link(`/de/weiter/${magicToken}`);
 export const icsUrl = (token: string) => link(`/api/seat/${token}/ics`);
 const accountUrl = () => link("/de/konto");
+/** Angefangene Bewerbung fortsetzen: Anmeldung per SMS-Code, dann geht es dort weiter, wo die Person aufgehört hat */
+const resumeUrl = () => link("/de/bewerben?weiter=1");
 
 /** Reservierungsname im Lokal */
 export const RESERVATION_NAME = "Tisch6";
@@ -111,6 +113,30 @@ export function receivedMail(name: string): EmailContent {
     ],
     cta: { label: "Mein Konto", url: accountUrl() },
     after: [INSTAGRAM_NOTE],
+  });
+}
+
+/** Bewerbung angefangen, Gespräch nicht abgeschlossen – höchstens zwei Erinnerungen, die zweite ist die letzte */
+export function unfinishedMail(o: { name: string; stage: "foto" | "chat" | "mittendrin"; last: boolean }): EmailContent {
+  const missing = {
+    foto: "Es fehlen nur noch dein Foto – das sieht nur unser Team – und das kurze Kennenlern-Gespräch mit unserer KI-Gastgeberin.",
+    chat: "Jetzt fehlt nur noch das kurze Kennenlern-Gespräch mit unserer KI-Gastgeberin. Sie wartet schon mit der ersten Frage auf dich – in rund zehn Minuten bist du fertig.",
+    mittendrin: "Du bist schon mitten im Kennenlern-Gespräch mit unserer KI-Gastgeberin, es fehlen nur noch ein paar Fragen. Deine bisherigen Antworten sind gespeichert.",
+  }[o.stage];
+  return layout({
+    subject: o.last ? "Letzte Erinnerung: deine Bewerbung bei Tisch6" : "Deine Bewerbung bei Tisch6 ist fast fertig",
+    title: o.last ? `${o.name}, deine Bewerbung wartet noch` : `${o.name}, deine Bewerbung ist fast fertig`,
+    paragraphs: [
+      `Du hast deine Bewerbung bei Tisch6 angefangen. ${missing}`,
+      "Erst wenn das Gespräch abgeschlossen ist, kann unsere KI einen Tisch für dich zusammenstellen.",
+      "So geht es weiter: Link öffnen, mit deiner Handynummer anmelden (du bekommst einen SMS-Code) – und du machst genau dort weiter, wo du aufgehört hast.",
+    ],
+    cta: { label: "Jetzt weitermachen", url: resumeUrl() },
+    after: [
+      o.last
+        ? "Das ist unsere letzte Erinnerung, danach schreiben wir dir nicht mehr. Möchtest du deine Angaben lieber löschen? Das geht in deinem Konto unter „Profil löschen“ – oder antworte einfach auf diese Mail."
+        : "Keine Zeit oder keine Lust mehr? Dann ignoriere diese Mail einfach – wir erinnern dich höchstens noch ein Mal.",
+    ],
   });
 }
 

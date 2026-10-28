@@ -17,6 +17,8 @@ export type Application = {
   email: string;
   phone: string | null;
   transcript: ChatMessage[];
+  /** Antworten im Kennenlern-Gespräch */
+  user_turns: number;
   profile: Profile | null;
   personality_type: string | null;
   submitted_at: string | null;

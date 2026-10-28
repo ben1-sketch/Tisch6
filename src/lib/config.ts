@@ -60,6 +60,13 @@ export const TIMING = {
   dayOfHour: 9,
   /** Abgelehnte Bewerbungen werden so lange aufbewahrt und dann gelöscht (Tage) */
   rejectedRetentionDays: 30,
+  /** Angefangene Bewerbung: erste Erinnerung nach so vielen Stunden ohne Antwort (Stunden) */
+  unfinishedReminderHours: 20,
+  /** … die zweite und letzte so lange nach der ersten (Tage) */
+  unfinishedLastReminderDays: 4,
+  /** Erinnerungen, die nicht eilen, nur tagsüber (Stunde in Wien, von–bis) */
+  daytimeFromHour: 9,
+  daytimeToHour: 20,
   /** Bis so lange vorher ist eine Absage kostenlos (Stunden) */
   freeCancelHoursBefore: 48,
   /** Wiedersehen-Abfrage „am Tag danach“ (Stunden nach Beginn) */

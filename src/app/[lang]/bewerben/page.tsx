@@ -13,5 +13,5 @@ export default async function ApplyPage({ params, searchParams }: PageProps<"/[l
   const invitedBy = typeof query.mit === "string" && /^[a-z0-9]{8}$/.test(query.mit) ? query.mit : undefined;
   if (!isLocale(lang)) notFound();
   const dict = await getDictionary(lang);
-  return <ApplyFlow lang={lang} t={dict.apply} invitedBy={invitedBy} campaign={campaignOf(query)} />;
+  return <ApplyFlow lang={lang} t={dict.apply} invitedBy={invitedBy} campaign={campaignOf(query)} resume={query.weiter === "1"} />;
 }

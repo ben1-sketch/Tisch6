@@ -2,12 +2,12 @@ import "server-only";
 import { z } from "zod";
 import { askStructured } from "./claude";
 import { BALANCE_MARGIN, TIMING } from "./config";
-import { type Application, type Db, must } from "./db";
+import { type Application, type Db, type Notification, must } from "./db";
 import { eraseApplicant } from "./erase";
-import { acceptedMail, adminMail, minorMail, rejectedMail, waitlistMail } from "./messages";
+import { acceptedMail, adminMail, minorMail, rejectedMail, unfinishedMail, waitlistMail } from "./messages";
 import { notifyAdmin, sendEmail } from "./notify";
 import { extractProfile, type Profile } from "./onboarding";
-import { DAY } from "./time";
+import { DAY, HOUR, viennaHour } from "./time";
 
 type Gender = "frau" | "mann";
 type Counts = Record<Gender, number>;
@@ -245,6 +245,51 @@ export async function evaluateApplications(db: Db, deadline: number) {
  * Datensparsamkeit: Minderjährige werden sofort gelöscht (mit kurzer E-Mail),
  * abgelehnte Bewerbungen nach TIMING.rejectedRetentionDays Tagen.
  */
+/**
+ * Angefangene Bewerbungen, deren Gespräch nicht abgeschlossen ist: höchstens zwei Erinnerungen, nur tagsüber –
+ * die erste nach knapp einem Tag ohne Antwort, die letzte ein paar Tage später. Danach ist Ruhe.
+ */
+export async function remindUnfinished(db: Db, now = new Date()) {
+  const hour = viennaHour(now);
+  if (hour < TIMING.daytimeFromHour || hour >= TIMING.daytimeToHour) return 0;
+  const quietSince = new Date(now.getTime() - TIMING.unfinishedReminderHours * HOUR).toISOString();
+  const apps = must(
+    await db
+      .from("applications")
+      .select("id, first_name, email, user_turns, photo_path")
+      .eq("status", "onboarding")
+      .is("blocked_at", null)
+      .lte("updated_at", quietSince),
+    "Angefangene Bewerbungen laden",
+  ) as Pick<Application, "id" | "first_name" | "email" | "user_turns" | "photo_path">[];
+  if (!apps.length) return 0;
+  const earlier = must(
+    await db
+      .from("notifications")
+      .select("application_id, created_at")
+      .eq("kind", "unfinished")
+      .in("application_id", apps.map((a) => a.id)),
+    "Erinnerungen laden",
+  ) as Pick<Notification, "application_id" | "created_at">[];
+
+  let sent = 0;
+  for (const app of apps) {
+    const before = earlier.filter((n) => n.application_id === app.id).map((n) => new Date(n.created_at).getTime());
+    if (before.length >= 2) continue;
+    if (before.length === 1 && now.getTime() - before[0] < TIMING.unfinishedLastReminderDays * DAY) continue;
+    const stage = !app.photo_path ? "foto" : app.user_turns === 0 ? "chat" : "mittendrin";
+    const result = await sendEmail(db, {
+      to: app.email,
+      content: unfinishedMail({ name: app.first_name, stage, last: before.length === 1 }),
+      kind: "unfinished",
+      dedupeKey: `unfinished:${before.length + 1}:${app.id}`,
+      applicationId: app.id,
+    });
+    if (result === "sent" || result === "logged") sent++;
+  }
+  return sent;
+}
+
 export async function eraseRejected(db: Db) {
   const rows = must(
     await db.from("applications").select("id, first_name, email, rejected_at, evaluation").eq("status", "rejected").limit(50),

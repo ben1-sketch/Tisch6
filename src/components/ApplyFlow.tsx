@@ -27,7 +27,8 @@ const inputClass =
 const buttonClass =
   "btn btn-primary w-full disabled:transform-none disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none";
 
-export function ApplyFlow({ lang, t, invitedBy, campaign }: { lang: string; t: T; invitedBy?: string; campaign?: string }) {
+/** resume: Link aus der Erinnerungs-Mail – gleich zur Anmeldung, ohne das Startformular noch einmal auszufüllen */
+export function ApplyFlow({ lang, t, invitedBy, campaign, resume = false }: { lang: string; t: T; invitedBy?: string; campaign?: string; resume?: boolean }) {
   const supabase = useRef<ReturnType<typeof createClient> | null>(null);
   const configured = isSupabaseConfigured;
   const [step, setStep] = useState<Step>(configured ? "loading" : "intro");
@@ -67,9 +68,21 @@ export function ApplyFlow({ lang, t, invitedBy, campaign }: { lang: string; t: T
         const json = await res.json().catch(() => ({}));
         if (json.application) return showApplication(json.application);
       }
-      setStep("intro");
+      setStep(resume && !data.user ? "phone" : "intro");
     })();
-  }, [configured]);
+  }, [configured, resume]);
+
+  /** Nach der Anmeldung: eine angefangene Bewerbung geht dort weiter, wo sie aufgehört hat */
+  async function continueOrStart() {
+    const res = await fetch("/api/onboarding");
+    const json = await res.json().catch(() => ({}));
+    if (json.application) return showApplication(json.application);
+    if (!form.firstName) {
+      setStep("intro");
+      throw new Error(t.resume.notFound);
+    }
+    await startApplication();
+  }
 
   async function startApplication() {
     const res = await fetch("/api/onboarding", {
@@ -129,9 +142,11 @@ export function ApplyFlow({ lang, t, invitedBy, campaign }: { lang: string; t: T
       const { error } = await supabase.current!.auth.verifyOtp({ phone, token: code.trim(), type: "sms" });
       if (error) throw new Error(t.errors.code);
       setLoggedIn(true);
-      await startApplication();
+      await continueOrStart();
     });
   };
+
+  const resuming = resume && !form.firstName;
 
   const stepIndex = { loading: 0, intro: 0, phone: 1, code: 2, photo: 3, chat: 4, done: 4 }[step];
 
@@ -223,8 +238,8 @@ export function ApplyFlow({ lang, t, invitedBy, campaign }: { lang: string; t: T
       {step === "phone" && (
         <form onSubmit={onPhone} className="glass space-y-5 rounded-3xl p-6 sm:p-8">
           <div>
-            <h1 className="font-display text-2xl font-semibold sm:text-3xl">{t.phone.title}</h1>
-            <p className="mt-2 text-mist">{t.phone.lead}</p>
+            <h1 className="font-display text-2xl font-semibold sm:text-3xl">{resuming ? t.resume.title : t.phone.title}</h1>
+            <p className="mt-2 text-mist">{resuming ? t.resume.lead : t.phone.lead}</p>
           </div>
           <label className="block">
             <span className="mb-1.5 block text-sm font-medium">{t.phone.label}</span>
@@ -234,6 +249,11 @@ export function ApplyFlow({ lang, t, invitedBy, campaign }: { lang: string; t: T
           <button type="submit" disabled={busy} className={buttonClass}>
             {t.phone.send}
           </button>
+          {resuming && (
+            <button type="button" onClick={() => setStep("intro")} className="w-full text-sm text-mist underline hover:text-cloud">
+              {t.resume.fresh}
+            </button>
+          )}
         </form>
       )}
 

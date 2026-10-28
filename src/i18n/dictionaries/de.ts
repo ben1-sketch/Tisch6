@@ -208,6 +208,12 @@ const de = {
       hint: "Mit Ländervorwahl, z. B. +43 für Österreich.",
       send: "Code senden",
     },
+    resume: {
+      title: "Willkommen zurück!",
+      lead: "Melde dich mit deiner Handynummer an – dann geht es genau dort weiter, wo du aufgehört hast.",
+      fresh: "Noch keine Bewerbung angefangen? Hier starten",
+      notFound: "Zu dieser Nummer gibt es noch keine angefangene Bewerbung – fang einfach hier an.",
+    },
     code: {
       title: "Code eingeben",
       lead: "Wir haben dir einen 6-stelligen Code an {phone} geschickt.",

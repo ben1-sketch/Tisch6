@@ -2,7 +2,7 @@ import "server-only";
 import type { Db } from "./db";
 import { TIMING } from "./config";
 import { afterDinners, prepareCards, sendDayOf, sendLebenszeichen, sendNudges, sendReminders, updateLearnings } from "./dinners";
-import { eraseRejected, evaluateApplications } from "./evaluation";
+import { eraseRejected, evaluateApplications, remindUnfinished } from "./evaluation";
 import { matchTables } from "./matching";
 import { decideDinners, expireSeats } from "./seats";
 import { viennaHour } from "./time";
@@ -50,6 +50,7 @@ export async function runTick(client: Db, options: { matching?: "auto" | "force"
     await step("nachDemDinner", () => afterDinners(client, deadline));
     // … dann alles, was die KI braucht
     await step("bewerbungen", () => evaluateApplications(client, deadline));
+    await step("angefangen", () => remindUnfinished(client));
     if (options.matching === "force" || isMatchingTime()) await step("matching", () => matchTables(client, deadline));
     await step("gespraechskarten", () => prepareCards(client, deadline));
     await step("lebenszeichen", () => sendLebenszeichen(client));
