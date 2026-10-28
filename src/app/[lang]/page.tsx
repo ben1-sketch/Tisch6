@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
+import { ApplyLink } from "@/components/ApplyLink";
 import { Foto } from "@/components/Foto";
 import { Logo } from "@/components/Logo";
 import { ScrollReveal } from "@/components/ScrollReveal";
@@ -53,9 +53,9 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
             {t.hero.lead}
           </p>
           <div className="enter mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row" style={{ animationDelay: "0.45s" }}>
-            <Link href={apply} className="btn btn-primary">
+            <ApplyLink href={apply} className="btn btn-primary">
               {t.hero.cta}
-            </Link>
+            </ApplyLink>
             <a href="#so-gehts" className="btn btn-ghost">
               {t.hero.secondary}
             </a>
@@ -207,9 +207,9 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
                     <li key={p}>{p}</li>
                   ))}
                 </ul>
-                <Link href={apply} className="btn mt-10 bg-night-900 text-gold-200 hover:bg-night-700">
+                <ApplyLink href={apply} className="btn mt-10 bg-night-900 text-gold-200 hover:bg-night-700">
                   {t.founder.cta}
-                </Link>
+                </ApplyLink>
               </div>
             </div>
           </article>
@@ -247,9 +247,9 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
           <Ornament />
           <h2 className="mt-8 font-display text-4xl leading-tight sm:text-6xl">{t.closing.title}</h2>
           <p className="mt-5 text-lg text-cloud/80">{t.closing.text}</p>
-          <Link href={apply} className="btn btn-primary mt-10">
+          <ApplyLink href={apply} className="btn btn-primary mt-10">
             {t.closing.cta}
-          </Link>
+          </ApplyLink>
         </div>
       </section>
     </>

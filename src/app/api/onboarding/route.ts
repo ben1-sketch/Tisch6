@@ -4,6 +4,7 @@ import { getUser } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { openingMessage, type ChatMessage } from "@/lib/onboarding";
 import { CONSENT_VERSION } from "@/lib/consent";
+import { SOURCE_KEYS } from "@/lib/source";
 
 export const dynamic = "force-dynamic";
 
@@ -32,6 +33,9 @@ const StartSchema = z.object({
   inviteCode: z.string().regex(/^[a-z0-9]{8}$/).optional(),
   // true = "Bring eine Freundin mit" (Duo, verschiedene Tische); sonst nur Empfehlung
   together: z.boolean().default(false),
+  // Freiwillig: wie die Person von Tisch6 erfahren hat, und der Werbelink (utm), über den sie kam
+  source: z.enum(SOURCE_KEYS).optional(),
+  campaign: z.string().max(130).optional(),
   consent: z.object({
     adult: z.literal(true),
     privacy: z.literal(true),
@@ -49,7 +53,7 @@ export async function POST(request: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Bitte alle Felder ausfüllen und zustimmen." }, { status: 400 });
   }
-  const { firstName, email, locale, inviteCode, together } = parsed.data;
+  const { firstName, email, locale, inviteCode, together, source, campaign } = parsed.data;
   const admin = createAdminClient();
 
   const { data: existing } = await admin
@@ -71,6 +75,8 @@ export async function POST(request: Request) {
       consent_version: CONSENT_VERSION,
       consent_at: new Date().toISOString(),
       transcript,
+      source: inviteCode ? "empfehlung" : (source ?? null),
+      source_detail: campaign ?? (inviteCode ? "Einladungslink" : null),
     })
     .select(STATE_COLUMNS)
     .single();

@@ -189,6 +189,8 @@ const de = {
       firstName: "Vorname",
       email: "E-Mail-Adresse",
       emailHint: "Hierhin schicken wir Antwort und Einladungen.",
+      source: "Wie hast du von Tisch6 erfahren?",
+      sourceChoose: "Bitte auswählen (freiwillig)",
       adult: "Ich bin mindestens 18 Jahre alt und Single.",
       privacy: "Ich habe die {privacy} gelesen und stimme der Verarbeitung meiner Daten zu.",
       privacyLink: "Datenschutzerklärung",

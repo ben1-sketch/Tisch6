@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { normalizePhone } from "@/lib/phone";
 import { instagramUrl } from "@/lib/site";
+import { SOURCES } from "@/lib/source";
 import type { Dictionary } from "@/i18n/get-dictionary";
 
 type T = Dictionary["apply"];
@@ -26,7 +27,7 @@ const inputClass =
 const buttonClass =
   "btn btn-primary w-full disabled:transform-none disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none";
 
-export function ApplyFlow({ lang, t, invitedBy }: { lang: string; t: T; invitedBy?: string }) {
+export function ApplyFlow({ lang, t, invitedBy, campaign }: { lang: string; t: T; invitedBy?: string; campaign?: string }) {
   const supabase = useRef<ReturnType<typeof createClient> | null>(null);
   const configured = isSupabaseConfigured;
   const [step, setStep] = useState<Step>(configured ? "loading" : "intro");
@@ -35,6 +36,7 @@ export function ApplyFlow({ lang, t, invitedBy }: { lang: string; t: T; invitedB
 
   const [form, setForm] = useState({ firstName: "", email: "", adult: false, privacy: false, terms: false, sensitive: false });
   const [together, setTogether] = useState(true);
+  const [source, setSource] = useState("");
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
   const [messages, setMessages] = useState<Msg[]>([]);
@@ -79,6 +81,8 @@ export function ApplyFlow({ lang, t, invitedBy }: { lang: string; t: T; invitedB
         locale: lang,
         inviteCode: invitedBy,
         together: Boolean(invitedBy) && together,
+        source: source || undefined,
+        campaign,
         consent: { adult: form.adult, privacy: form.privacy, terms: form.terms, sensitive: form.sensitive },
       }),
     });
@@ -176,6 +180,19 @@ export function ApplyFlow({ lang, t, invitedBy }: { lang: string; t: T; invitedB
             <input required type="email" autoComplete="email" className={inputClass} value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
             <span className="mt-1 block text-xs text-mist">{t.intro.emailHint}</span>
           </label>
+          {!invitedBy && (
+            <label className="block">
+              <span className="mb-1.5 block text-sm font-medium">{t.intro.source}</span>
+              <select className={inputClass} value={source} onChange={(e) => setSource(e.target.value)}>
+                <option value="">{t.intro.sourceChoose}</option>
+                {Object.entries(SOURCES).map(([key, label]) => (
+                  <option key={key} value={key}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
           <fieldset className="space-y-3 pt-2">
             {(
               [

@@ -8,6 +8,7 @@ import { requireAdmin } from "@/lib/admin/auth";
 import { APP_STATUS, DINNER_STATUS, GENDER, SEAT_STATUS, day, relative, when } from "@/lib/admin/format";
 import { WAITLIST_REASONS } from "@/lib/admin/ops";
 import { PRICES, euro } from "@/lib/config";
+import { SOURCES, type Source } from "@/lib/source";
 import {
   type AdminLog,
   type Application,
@@ -150,6 +151,10 @@ export default async function ApplicationPage({ params }: PageProps<"/admin/bewe
                 ["Zuletzt eingeladen", when(app.last_invited_at)],
                 ["Nicht gebucht in Folge", String(app.missed_bookings)],
                 ["Einwilligung", `${when(app.consent_at)} (Version ${app.consent_version})`],
+                [
+                  "Erfahren über",
+                  [app.source ? (SOURCES[app.source as Source] ?? app.source) : "keine Angabe", app.source_detail].filter(Boolean).join(" · "),
+                ],
               ]}
             />
           </Card>

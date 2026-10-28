@@ -8,6 +8,7 @@ import { PAYMENT_TEST } from "@/lib/admin/ops";
 import { FOUNDER, TABLE, euro } from "@/lib/config";
 import { type AdminLog, type DinnerStatus, db } from "@/lib/db";
 import { configuredSiteUrl } from "@/lib/site";
+import { SOURCES } from "@/lib/source";
 import { stripeTestMode } from "@/lib/stripe";
 import { DAY, HOUR, WEEKDAY_CODES, addDays, viennaDate, viennaToUtc, weekdayOf } from "@/lib/time";
 import { TIMING } from "@/lib/config";
@@ -17,7 +18,15 @@ export const metadata: Metadata = { title: "Übersicht" };
 // „Durchlauf jetzt starten“ darf so lange laufen wie der automatische Durchlauf
 export const maxDuration = 60;
 
-type AppRow = { status: string; under_review: boolean; available_since: string | null; gender: string | null; created_at: string };
+type AppRow = {
+  status: string;
+  under_review: boolean;
+  available_since: string | null;
+  gender: string | null;
+  created_at: string;
+  source: string | null;
+  source_detail: string | null;
+};
 type DinnerRow = { id: string; starts_at: string; status: DinnerStatus; restaurants: { name: string } | null; seats: { status: string }[] };
 type PaymentRow = { amount_cents: number; status: string; created_at: string };
 type TestRow = Pick<AdminLog, "action" | "detail" | "created_at">;
@@ -71,7 +80,7 @@ async function loadOverview() {
   // Woche ab Montag 0 Uhr (Wien)
   const weekStart = viennaToUtc(addDays(today, -((WEEKDAY_CODES.indexOf(weekdayOf(today)) + 6) % 7)), "00:00").getTime();
   const [apps, dinners, reports, payments, founders, matches, failed, tick, restaurants, log, failedLogins, v4, paymentTest] = await Promise.all([
-    client.from("applications").select("status, under_review, available_since, gender:profile->>geschlecht, created_at"),
+    client.from("applications").select("status, under_review, available_since, gender:profile->>geschlecht, created_at, source, source_detail"),
     client
       .from("dinners")
       .select("id, starts_at, status, restaurants(name), seats(status)")
@@ -125,6 +134,22 @@ export default async function AdminHome() {
   const checks = setupChecks(restaurants.count ?? 0, (tick.data as { locked_until: string } | null)?.locked_until ?? null, !log.error, !v4.error);
   const missing = checks.filter((c) => !c.ok).length;
   const lastTest = paymentTest.data as TestRow | null;
+
+  // Herkunft der abgeschickten Bewerbungen: letzte 30 Tage und gesamt
+  const submitted = rows.filter((a) => a.status !== "onboarding");
+  const recentSince = now - 30 * DAY;
+  const sources = [...Object.entries(SOURCES), ["", "ohne Angabe"] as const]
+    .map(([key, label]) => {
+      const mine = submitted.filter((a) => (a.source ?? "") === key);
+      return { label, total: mine.length, recent: mine.filter((a) => new Date(a.created_at).getTime() >= recentSince).length };
+    })
+    .filter((r) => r.total > 0)
+    .sort((a, b) => b.recent - a.recent || b.total - a.total);
+  const campaignCounts = new Map<string, number>();
+  for (const a of submitted) {
+    if (a.source_detail && a.source_detail !== "Einladungslink") campaignCounts.set(a.source_detail, (campaignCounts.get(a.source_detail) ?? 0) + 1);
+  }
+  const campaigns = [...campaignCounts].sort((a, b) => b[1] - a[1]).slice(0, 5);
 
   return (
     <>
@@ -214,6 +239,27 @@ export default async function AdminHome() {
                 })}
               </ul>
             )}
+          </Card>
+
+          <Card title="Woher kommen die Bewerbungen?" aside={<span className="text-sm text-mist">30 Tage · gesamt</span>}>
+            {sources.length === 0 ? (
+              <Empty>Noch keine Bewerbungen.</Empty>
+            ) : (
+              <ul className="divide-y divide-white/5 text-sm">
+                {sources.map((r) => (
+                  <li key={r.label} className="flex justify-between gap-3 py-2">
+                    <span>{r.label}</span>
+                    <span className="text-mist">
+                      <span className="text-cloud">{r.recent}</span> · {r.total}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {campaigns.length > 0 && (
+              <p className="mt-3 text-sm text-mist">Über Werbe- und Profil-Links: {campaigns.map(([c, n]) => `${c} (${n})`).join(", ")}</p>
+            )}
+            <p className="mt-3 text-xs text-mist">Erfasst seit 28. Oktober 2026 – ältere Bewerbungen stehen unter „ohne Angabe“.</p>
           </Card>
 
           <Card title="Letzte Eingriffe" aside={<Link href="/admin/protokoll" className="text-sm text-gold-300 hover:underline">Protokoll</Link>}>
