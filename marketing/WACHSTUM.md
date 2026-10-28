@@ -20,6 +20,8 @@ ein bis zwei Versuche umsetzen, Ergebnis hier festhalten. Neueste Woche oben. In
 - Aufrufe an Wartende (`CAMPAIGNS` in `src/lib/config.ts`) nur mit Zustimmung des Inhabers, höchstens einer pro Person im Monat,
   immer mit „Stopp“-Hinweis. Wer „Stopp“ antwortet, bekommt im Adminbereich „Keine Aufrufe mehr“.
 - Wer jemanden über den Einladungslink einlädt, sitzt nie mit ihm am selben Tisch (wie bei Duos).
+- Tischplanung nimmt immer den frühesten möglichen Abend; die KI wählt nur unter den Runden an diesem Abend
+  (Wunsch des Inhabers, 28.10.2026: Tisch 2 am 4.11. statt 12.11.).
 
 ## Laufende Versuche
 

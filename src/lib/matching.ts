@@ -183,14 +183,18 @@ export async function matchTables(db: Db, deadline: number) {
     created++;
   };
 
-  const roundsFor = (anchor: Person, options: { onlyDate?: string; preferRestaurantId?: string } = {}) =>
-    candidateTables(
+  const roundsFor = (anchor: Person, options: { onlyDate?: string; preferRestaurantId?: string } = {}) => {
+    const rounds = candidateTables(
       anchor,
       pool.filter((p) => !used.has(p.id)),
       now,
     )
       .map((people) => ({ people, slot: pickSlot(people, restaurants, busy, new Date(now), { ...options, lastUsed }) }))
       .filter((r): r is { people: Person[]; slot: Slot } => r.slot !== null);
+    // Frühester möglicher Abend zuerst (Wunsch des Inhabers): die KI wählt nur unter den Runden an diesem Abend
+    const first = rounds.reduce((min, r) => (r.slot.dateKey < min ? r.slot.dateKey : min), "9999-12-31");
+    return rounds.filter((r) => r.slot.dateKey === first);
+  };
 
   // Wer am längsten wartet, kommt zuerst an die Reihe
   for (const anchor of [...pool].sort((a, b) => a.waitingSince - b.waitingSince)) {
