@@ -84,6 +84,16 @@ export const TIMING = {
   reportUntilDaysAfter: 7,
 };
 
+/**
+ * Ausnahmen des Inhabers für einzelne Tische (Dinner-ID): Beim Nachrücken darf der Altersabstand bis maxAgeSpan gehen,
+ * Wunschalter und Temperament zählen dort nicht, die Person mit dem kleinsten Altersabstand kommt zuerst.
+ * Überall sonst gilt TABLE.maxAgeSpan (höchstens 10 Jahre).
+ */
+export const TABLE_EXCEPTIONS: Record<string, { maxAgeSpan: number; reason: string }> = {
+  // Erster Tisch, 5.11.2026: nach einer Absage passte keine wartende Frau – Wunsch des Inhabers vom 28.10.2026
+  "3d6abb86-9555-48ee-a1da-e4306de3a588": { maxAgeSpan: 12, reason: "Erster Tisch: nächstpassende Frau nachrücken" },
+};
+
 /** So viele Personen darf ein Geschlecht im aktiven Pool vorne liegen, bevor es auf die Warteliste geht */
 export const BALANCE_MARGIN = 4;
 

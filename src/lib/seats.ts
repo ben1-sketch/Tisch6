@@ -1,6 +1,6 @@
 import "server-only";
 import { createHash } from "node:crypto";
-import { FOUNDER, PRICES, TABLE, TIMING, euro } from "./config";
+import { FOUNDER, PRICES, TABLE, TABLE_EXCEPTIONS, TIMING, euro } from "./config";
 import {
   type Application,
   type Db,
@@ -188,18 +188,37 @@ type OpenTable = NonNullable<Awaited<ReturnType<typeof openTable>>>;
 
 /** Passt die Person auf einen freien Platz? Alter, Wunsch-Altersspannen, Wochentag, keine Begleitung am Tisch, noch nicht gefragt. */
 function fitsTable(table: OpenTable, p: Person) {
-  return table.missing[p.gender] > 0 && !table.tried.has(p.id) && (!p.days || p.days.includes(table.weekday)) && validGroup([...table.members, p]);
+  if (table.missing[p.gender] <= 0 || table.tried.has(p.id) || (p.days && !p.days.includes(table.weekday))) return false;
+  const exception = TABLE_EXCEPTIONS[table.dinner.id];
+  if (!exception) return validGroup([...table.members, p]);
+  // Ausnahme des Inhabers: nur Altersabstand (erweitert), gesuchtes Geschlecht und keine Begleitung am Tisch
+  const ages = [...table.members, p].map((m) => m.age);
+  return (
+    Math.max(...ages) - Math.min(...ages) <= exception.maxAgeSpan &&
+    p.seeks.includes(otherGender(p.gender)) &&
+    !table.members.some((m) => m.id === p.buddyId || m.buddyId === p.id)
+  );
 }
 
-/** Mögliche Nachrücker je Geschlecht, wer am längsten wartet zuerst. Null, wenn das Dinner keine Nachrücker mehr nimmt. */
+/** Wie viele Jahre liegt die Person außerhalb der Altersspanne am Tisch? */
+function ageGap(table: OpenTable, p: Person) {
+  const ages = table.members.map((m) => m.age);
+  return ages.length ? Math.max(0, Math.min(...ages) - p.age, p.age - Math.max(...ages)) : 0;
+}
+
+/**
+ * Mögliche Nachrücker je Geschlecht, wer am längsten wartet zuerst – bei einer Ausnahme des Inhabers zuerst,
+ * wer altersmäßig am nächsten dran ist. Null, wenn das Dinner keine Nachrücker mehr nimmt.
+ */
 export async function replacementCandidates(db: Db, dinnerId: string, limit = 1) {
   const table = await openTable(db, dinnerId);
   if (!table) return null;
   const pool = table.missing.frau > 0 || table.missing.mann > 0 ? await loadPool(db) : [];
+  const closestFirst = Boolean(TABLE_EXCEPTIONS[table.dinner.id]);
   const fits = (g: Gender) =>
     pool
       .filter((p) => p.gender === g && fitsTable(table, p))
-      .sort((a, b) => a.waitingSince - b.waitingSince)
+      .sort((a, b) => (closestFirst ? ageGap(table, a) - ageGap(table, b) : 0) || a.waitingSince - b.waitingSince)
       .slice(0, limit);
   return { ...table, candidates: { frau: fits("frau"), mann: fits("mann") } };
 }
