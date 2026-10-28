@@ -122,8 +122,6 @@ export type Seat = {
   discount_id: string | null;
   /** früher: Eisbrecher-Karte je Person – ersetzt durch die Gesprächskarte am Tisch (dinners.conversation_card) */
   icebreaker: { fragen: string[] } | null;
-  /** Ein Foto vom Tisch darf auf Instagram (ohne Namen) – null = keine Angabe */
-  photo_ok: boolean | null;
 };
 
 export type Payment = {

@@ -1,4 +1,4 @@
--- Tisch6 · Komplette Datenbank in einem Schritt (enthält 0001–0007 aus supabase/migrations)
+-- Tisch6 · Komplette Datenbank in einem Schritt (enthält 0001–0008 aus supabase/migrations)
 -- Supabase → SQL Editor → New query → alles einfügen → Run. Am Ende steht „Fertig – die Datenbank ist komplett eingerichtet“.
 -- Kann gefahrlos mehrfach ausgeführt werden: ergänzt nur, was fehlt – vorhandene Daten bleiben unverändert.
 -- Kommt eine neue Migration dazu, diese Datei mit ergänzen.
@@ -332,10 +332,8 @@ create unique index if not exists affinities_once on public.affinities (dinner_i
 alter table public.affinities enable row level security;
 grant select, insert, update, delete on public.affinities to service_role;
 
--- 0007 Marketing: Foto-Erlaubnis, Zitate, Herkunft der Bewerbungen
--- Freiwillig: Ein Foto vom Tisch darf auf Instagram (ohne Namen) – jederzeit widerrufbar.
--- null = keine Angabe
-alter table public.seats add column if not exists photo_ok boolean;
+-- 0007/0008 Marketing: Zitate nach dem Abend, Herkunft der Bewerbungen (keine Foto-Erlaubnis – Fotos von Gästen werden nie veröffentlicht)
+alter table public.seats drop column if exists photo_ok;
 
 -- „Wie war der Abend – in einem Satz?“ Nur mit Einwilligung anonym auf Instagram und tisch6.at
 alter table public.feedback

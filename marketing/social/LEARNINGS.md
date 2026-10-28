@@ -12,8 +12,9 @@ Neueste Woche oben.
 - Standort „Wien“ lässt sich über die Metricool-Schnittstelle nicht setzen, nur im Metricool-Planer von Hand.
 - Dating-Werbung bei Meta braucht eine Genehmigung; Zielgruppe 18+.
 - Keine Bots, keine gekauften Follower, keine automatischen Likes, Kommentare oder Follows.
-- Echte Inhalte haben Vorrang: freigegebene Sätze vom Abend (Admin → Wiedersehen & Feedback → „Zitate für Instagram“, immer ohne Namen)
-  und Fotos nur von Gästen mit Foto-Erlaubnis (Admin → Tisch → „Foto: ja“).
+- Niemals Fotos von Gästen veröffentlichen und Gäste auch nicht danach fragen – Wunsch des Inhabers, ohne Ausnahme.
+  Bilder: KI-Bilder (gekennzeichnet) und Fotos ohne Menschen.
+- Echte Stimmen: nur freigegebene Sätze vom Abend (Admin → Wiedersehen & Feedback → „Zitate für Instagram“), immer ohne Namen.
 - Woher Bewerbungen kommen, steht im Admin auf der Übersicht – Inhalte und Werbung danach ausrichten.
 
 ## Woche bis 28.10.2026 (Start)

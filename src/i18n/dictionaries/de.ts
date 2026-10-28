@@ -369,13 +369,6 @@ const de = {
     cancelConfirm: "Möchtest du deinen Platz wirklich absagen?",
     feedback: "Wiedersehen & Feedback",
     feedbackDone: "Danke für dein Feedback! Du kannst es noch ändern.",
-    photoTitle: "Fotos vom Abend",
-    photoText:
-      "Wir zeigen auf Instagram gern, wie schön eure Abende sind. Darf ein Foto vom Tisch, auf dem du zu sehen bist, dabei sein? Namen nennen wir nie. Deine Antwort kannst du hier jederzeit ändern.",
-    photoYes: "Ja, gern",
-    photoNo: "Lieber nicht",
-    photoSavedYes: "Danke! Du darfst auf Fotos vom Tisch zu sehen sein.",
-    photoSavedNo: "Alles klar – auf unseren Fotos bist du nicht zu sehen.",
     reportOpen: "Person melden",
     reportTitle: "Jemand hat dich unwohl fühlen lassen?",
     reportText: "Deine Meldung geht vertraulich an unser Team. Die Person erfährt nicht, wer gemeldet hat.",

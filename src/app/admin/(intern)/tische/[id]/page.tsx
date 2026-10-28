@@ -45,7 +45,6 @@ type FeedbackRow = Feedback & { seats: { dinner_id: string; application_id: stri
 
 const ORDER: SeatStatus[] = ["confirmed", "attended", "no_show", "invited", "offered", "cancelled_late", "cancelled", "removed", "declined", "expired", "postponed", "withdrawn"];
 const PAID_WITH = { stripe: "online bezahlt", package: "mit Guthaben", manual: "von Hand bestätigt" } as const;
-const PHOTO: Record<string, string> = { true: "ja", false: "nein", null: "keine Angabe" };
 
 function average(values: (number | null)[]) {
   const v = values.filter((x): x is number => x !== null);
@@ -149,7 +148,6 @@ export default async function TablePage({ params }: PageProps<"/admin/tische/[id
                         {s.confirmed_at && ` · fix seit ${when(s.confirmed_at)}`}
                         {s.ended_at && !open && ` · beendet ${when(s.ended_at)}`}
                         {p?.unvertraeglichkeiten?.length ? ` · Küche: ${p.unvertraeglichkeiten.join(", ")}` : ""}
-                        {(s.status === "confirmed" || s.status === "attended") && ` · Foto: ${PHOTO[String(s.photo_ok)]}`}
                       </p>
 
                       <div className="mt-3 flex flex-wrap gap-x-4 gap-y-3">
