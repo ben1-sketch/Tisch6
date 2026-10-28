@@ -21,6 +21,7 @@ ein bis zwei Versuche umsetzen, Ergebnis hier festhalten. Neueste Woche oben. In
 | 28.10.2026 | Pressetext an 13 Wiener Redaktionen verschickt (Liste unten) | Ein Artikel bringt einen Schub, vor allem Ältere | Artikel/Erwähnungen, Herkunft „Presse“ |
 | 28.10.2026 | Matching-Regeln etwas großzügiger (Wunschalter ±3, Temperament-Abstand 3) | Mehr Tische kommen zustande | Tische pro Woche, Feedback „Runde“ |
 | 28.10.2026 | Herkunft jeder Bewerbung erfassen | Grundlage für alle Entscheidungen | Anteil Bewerbungen mit Angabe |
+| 28.10.2026 | Erinnerung an angefangene Bewerbungen (höchstens 2 Mails, tagsüber; Link `?weiter=1` direkt zur Anmeldung) | Wer nach Foto oder erster Frage abbricht, kommt mit einem Anstoß zurück | Anteil angefangener Bewerbungen, die nach einer Erinnerung abgeschlossen werden (Versandprotokoll, Art „unfinished“) |
 
 ## Woche bis 28.10.2026 (Ausgangslage)
 
