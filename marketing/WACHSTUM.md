@@ -18,7 +18,7 @@ ein bis zwei Versuche umsetzen, Ergebnis hier festhalten. Neueste Woche oben. In
 | Seit | Versuch | Annahme | Messgröße |
 | --- | --- | --- | --- |
 | 28.10.2026 | Vier Themenseiten für Google (Dinner-Dating, Singles Wien, Singles ab 40, Speed-Dating-Alternative) | Wer aktiv sucht, bewirbt sich eher | Bewerbungen mit Herkunft „Google“ |
-| 28.10.2026 | Pressetext an Wiener Redaktionen | Ein Artikel bringt einen Schub, vor allem Ältere | Artikel/Erwähnungen, Herkunft „Presse“ |
+| 28.10.2026 | Pressetext an 13 Wiener Redaktionen verschickt (Liste unten) | Ein Artikel bringt einen Schub, vor allem Ältere | Artikel/Erwähnungen, Herkunft „Presse“ |
 | 28.10.2026 | Matching-Regeln etwas großzügiger (Wunschalter ±3, Temperament-Abstand 3) | Mehr Tische kommen zustande | Tische pro Woche, Feedback „Runde“ |
 | 28.10.2026 | Herkunft jeder Bewerbung erfassen | Grundlage für alle Entscheidungen | Anteil Bewerbungen mit Angabe |
 
@@ -30,3 +30,29 @@ ein bis zwei Versuche umsetzen, Ergebnis hier festhalten. Neueste Woche oben. In
 - Engpass: Männer zwischen 35 und 48; bei den Jüngeren fehlte eine Frau Ende 20.
 - Erster Tisch: am 28.10. geplant, Dinner am 5.11. (3 Frauen, 3 Männer, 25–30), Zusage bis 30.10.
 - Herkunft: erfasst ab 28.10., noch keine Zahlen.
+
+### Presse-Versand am 28.10.2026
+
+Von info@tisch6.at über Resend, je Redaktion eine eigene Mail (Anschreiben + Pressetext), alle 13 laut Resend zugestellt.
+Adressen aus dem Impressum bzw. der Kontaktseite des Mediums (über die Websuche gelesen, nur Treffer von der eigenen Website).
+Antworten kommen im Postfach info@tisch6.at an.
+
+| Medium | Adresse |
+| --- | --- |
+| 1000things | redaktion@1000thingsmagazine.com |
+| STADTBEKANNT | office@stadtbekannt.at |
+| VIENNA.AT | redaktion@vienna.at |
+| MeinBezirk Wien | redaktion.wien@meinbezirk.at |
+| DER STANDARD | redaktion@derstandard.at |
+| WIENERIN | office@wienerin.at |
+| WOMAN | redaktion@woman.at, online@woman.at |
+| FALTER | redaktion@falter.at |
+| Falstaff | redaktion@falstaff.at |
+| Radio Wien / „Wien heute“ | radiowien@orf.at |
+| Ö3 | hitradio@oe3.at |
+| W24 | redaktion@w24.at |
+| PULS 4 („Café Puls“) | contact@prosiebensat1puls4.com (allgemeine Adresse aus dem Impressum) |
+
+Noch ohne Mail: Krone, Kurier, Die Presse (sperren KI-Werkzeuge), Heute und Kronehit (Adresse im Impressum verschleiert),
+biber (nicht gefunden). Nur mit Adresse vom Inhaber nachschicken. Metropole erscheint nicht mehr.
+Nachfassen nur nach Rückfrage beim Inhaber – Aufhänger wäre der erste Abend am 5.11.
