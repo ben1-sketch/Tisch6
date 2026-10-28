@@ -243,6 +243,36 @@ export function invitationMail(o: {
   });
 }
 
+/** Einladung noch offen: eine Erinnerung zur Halbzeit der Zusagefrist */
+export function inviteReminderMail(o: {
+  name: string;
+  dinner: DinnerInfo;
+  priceText: string;
+  deadline: Date;
+  token: string;
+  confirmed: number;
+}): EmailContent {
+  return layout({
+    subject: `Erinnerung: Dein Tisch am ${formatDate(o.dinner.startsAt)}`,
+    title: `Dein Platz wartet noch, ${o.name}`,
+    paragraphs: [
+      `Deine Einladung zu einem Tisch6-Abend ist noch offen – fix ist dein Platz erst mit der Zahlung. Wir halten ihn bis ${formatDateTime(o.deadline)} für dich frei, danach geht er an jemand anderen.`,
+      ...(o.confirmed > 0 ? [`${o.confirmed === 1 ? "Eine Person hat" : `${o.confirmed} Personen haben`} schon fix zugesagt.`] : []),
+    ],
+    details: [
+      ["Wann", formatDateTime(o.dinner.startsAt)],
+      ["Wo", place(o.dinner)],
+      ["Preis", o.priceText],
+    ],
+    cta: { label: "Jetzt zusagen", url: seatUrl(o.token) },
+    after: ["Du kannst nicht? Dann sag auf derselben Seite kurz ab – so kann jemand anderes nachrücken.", BILL_NOTE],
+  });
+}
+
+export function inviteReminderSms(o: { dinner: DinnerInfo; deadline: Date; token: string }) {
+  return `Tisch6: Dein Platz am ${formatShortDate(o.dinner.startsAt)} um ${formatTime(o.dinner.startsAt)} Uhr ist noch für dich reserviert, fix aber erst mit der Zahlung. Bitte bis ${formatShortDate(o.deadline)}, ${formatTime(o.deadline)} Uhr zusagen: ${seatUrl(o.token)}`;
+}
+
 export function replacementSms(o: { dinner: DinnerInfo; token: string }) {
   return `Tisch6: Ein Platz ist frei geworden! ${formatShortDate(o.dinner.startsAt)}, ${formatTime(o.dinner.startsAt)} Uhr. Du hast ${TIMING.replacementHours} Std. Zeit zum Zusagen: ${seatUrl(o.token)}`;
 }

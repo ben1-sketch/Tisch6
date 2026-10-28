@@ -81,6 +81,7 @@ const STEP_LABELS: Record<string, string> = {
   abgelaufen: "Abgelaufene Einladungen",
   entscheidung: "Entscheidung 24 h vorher",
   erinnerungen: "Erinnerungen",
+  zusagen: "Erinnerung an offene Einladungen",
   nachDemDinner: "Nach dem Abend",
   amTag: "Am Tag des Tisches",
   gespraechskarten: "Gesprächskarten",
