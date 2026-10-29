@@ -162,6 +162,7 @@ export function PersonLink({ id, name }: { id: string | null; name: string | nul
 
 const NOTIFICATION_STATUS = {
   sent: ["verschickt", "green"],
+  delivered: ["zugestellt", "green"],
   logged: ["nur protokolliert", "mist"],
   failed: ["fehlgeschlagen", "red"],
   pending: ["wird verschickt", "blue"],

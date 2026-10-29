@@ -94,6 +94,7 @@ const STEP_LABELS: Record<string, string> = {
   lebenszeichen: "Lebenszeichen",
   folgeeinladungen: "Folgeeinladungen",
   aufrufe: "Aufrufe an Wartende",
+  smsZustellung: "Nicht zugestellte SMS",
   lernen: "Lernnotizen",
 };
 

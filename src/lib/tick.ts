@@ -6,6 +6,7 @@ import { afterDinners, prepareCards, sendDayOf, sendLebenszeichen, sendNudges, s
 import { eraseAbandoned, eraseRejected, evaluateApplications, remindUnfinished } from "./evaluation";
 import { matchTables } from "./matching";
 import { decideDinners, expireSeats, fillGaps, remindOpenInvitations } from "./seats";
+import { checkSmsDelivery } from "./sms-delivery";
 import { viennaHour } from "./time";
 
 export type TickReport = { skipped?: string } & Record<string, unknown>;
@@ -59,6 +60,7 @@ export async function runTick(client: Db, options: { matching?: "auto" | "force"
     await step("lebenszeichen", () => sendLebenszeichen(client));
     await step("folgeeinladungen", () => sendNudges(client));
     await step("aufrufe", () => sendCampaigns(client, deadline));
+    await step("smsZustellung", () => checkSmsDelivery(client, deadline));
     await step("aufraeumen", () => eraseRejected(client));
     await step("abgebrochen", () => eraseAbandoned(client));
     if (Date.now() < deadline - 20_000) await step("lernen", () => updateLearnings(client));

@@ -200,7 +200,7 @@ export type Notification = {
   dedupe_key: string | null;
   recipient: string;
   subject: string | null;
-  status: "pending" | "sent" | "failed" | "logged";
+  status: "pending" | "sent" | "delivered" | "failed" | "logged";
   provider_id: string | null;
   error: string | null;
 };
