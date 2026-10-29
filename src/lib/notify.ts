@@ -1,7 +1,8 @@
 import "server-only";
 import type { Db } from "./db";
 
-export type EmailContent = { subject: string; html: string; text: string };
+/** headers: zusätzliche Kopfzeilen der E-Mail, z. B. List-Unsubscribe bei Aufrufen */
+export type EmailContent = { subject: string; html: string; text: string; headers?: Record<string, string> };
 export type SendResult = "sent" | "logged" | "duplicate" | "failed" | "retry";
 
 /**
@@ -73,6 +74,7 @@ export async function sendEmail(
         subject: options.content.subject,
         html: options.content.html,
         text: options.content.text,
+        headers: options.content.headers,
       }),
     });
     const body = await res.json().catch(() => ({}));

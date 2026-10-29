@@ -96,6 +96,8 @@ export const icsUrl = (token: string) => link(`/api/seat/${token}/ics`);
 const accountUrl = () => link("/de/konto");
 /** Aufrufe mit einem Klick abbestellen (signierter Link je Person, siehe lib/campaigns.ts) */
 export const optOutUrl = (token: string) => link(`/de/aufrufe/${token}`);
+/** Dasselbe direkt aus dem Postfach („Abbestellen“ neben dem Absender, List-Unsubscribe-Post): ein POST, keine Rückfrage */
+const optOutPostUrl = (token: string) => link(`/api/aufrufe/${token}`);
 /** Persönlicher Einladungslink (wie im Konto); source markiert, über welchen Aufruf er kam */
 export const inviteUrl = (code: string, source?: string) => link(`/de/bewerben?mit=${code}${source ? `&utm_source=${source}` : ""}`);
 /** Angefangene Bewerbung fortsetzen: Anmeldung per SMS-Code, dann geht es dort weiter, wo die Person aufgehört hat */
@@ -621,7 +623,7 @@ export function referralRewardMail(name: string): EmailContent {
 /** Aufruf an Wartende (CAMPAIGNS): den eigenen Einladungslink an passende Singles weiterschicken */
 export function campaignMail(o: { name: string; campaign: Campaign; inviteCode: string; optOutToken: string }): EmailContent {
   const url = inviteUrl(o.inviteCode, "aufruf");
-  return layout({
+  const mail = layout({
     subject: "Hilf mit, dass dein Tisch zustande kommt",
     title: `Dein Tisch braucht noch Verstärkung, ${o.name}`,
     paragraphs: [
@@ -637,6 +639,8 @@ export function campaignMail(o: { name: string; campaign: Campaign; inviteCode: 
     ],
     footerLink: { label: "Keine solchen Hinweise mehr – hier abbestellen", url: optOutUrl(o.optOutToken) },
   });
+  // Gmail, Outlook und GMX zeigen damit „Abbestellen“ neben dem Absender – wer keine Aufrufe will, drückt das statt „Spam“
+  return { ...mail, headers: { "List-Unsubscribe": `<${optOutPostUrl(o.optOutToken)}>`, "List-Unsubscribe-Post": "List-Unsubscribe=One-Click" } };
 }
 
 export function fivePersonMail(name: string): EmailContent {
