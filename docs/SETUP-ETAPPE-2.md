@@ -89,6 +89,11 @@ zusätzlich Vercel jede Nacht einmal auf (steht schon in `vercel.json`, dafür i
 2. **Domains → Add Domain** → `tisch6.at` (eine Region in der EU wählen, falls angeboten).
 3. Resend zeigt DNS-Einträge (typisch: `MX` und `TXT` für `send`, `TXT` für `resend._domainkey`). Diese bei GoDaddy eintragen (Schritt 6), danach in Resend **Verify**.
 4. **API Keys → Create API Key** (Berechtigung „Sending access“) → wird `RESEND_API_KEY`.
+5. **Webhooks → Add Webhook** – damit Resend meldet, ob jede E-Mail angekommen ist (der Schlüssel aus Schritt 4 darf
+   nur senden, nicht nachschauen):
+   - URL: `https://DEINE-ADRESSE/api/resend/webhook`
+   - Ereignisse: `email.delivered`, `email.delivery_delayed`, `email.bounced`, `email.complained`, `email.failed`, `email.suppressed`
+   - Danach „Signing secret“ (`whsec_…`) kopieren → wird `RESEND_WEBHOOK_SECRET`.
 
 Bis die Domain bestätigt ist, verschickt Resend nur an deine eigene Adresse. Ohne `RESEND_API_KEY` werden E-Mails
 gar nicht verschickt, sondern nur im Vercel-Log protokolliert – praktisch zum gefahrlosen Ausprobieren.
@@ -125,6 +130,7 @@ plus Nachrücker-Angebote und – selten – eine SMS bei Verschiebung oder Absa
 | Name | Wert |
 |---|---|
 | `RESEND_API_KEY` | aus Schritt 2.4 |
+| `RESEND_WEBHOOK_SECRET` | aus Schritt 2.5 |
 | `EMAIL_FROM` | `Tisch6 <hallo@tisch6.at>` (erst nach bestätigter Domain) |
 | `EMAIL_REPLY_TO` | `info@tisch6.at` (Antworten der Gäste landen im Tisch6-Postfach) |
 | `ADMIN_EMAIL` | deine E-Mail-Adresse – Meldungen vom Meldeknopf, abgesagte Tische, Hinweise |

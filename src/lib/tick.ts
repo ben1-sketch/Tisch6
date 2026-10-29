@@ -63,7 +63,7 @@ export async function runTick(client: Db, options: { matching?: "auto" | "force"
     await step("folgeeinladungen", () => sendNudges(client));
     await step("aufrufe", () => sendCampaigns(client, deadline));
     await step("smsZustellung", () => checkSmsDelivery(client, deadline));
-    await step("emailZustellung", () => checkEmailDelivery(client, deadline));
+    await step("emailZustellung", () => checkEmailDelivery(client));
     // Twilio-Registrierungen ändern sich selten – einmal pro Stunde nachfragen genügt
     if (new Date().getUTCMinutes() < 10) await step("twilioRegistrierung", () => checkTwilioRegistrations(client));
     await step("aufraeumen", () => eraseRejected(client));

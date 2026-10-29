@@ -54,6 +54,11 @@ function setupChecks(activeRestaurants: number, lastTick: string | null, migrate
     { label: "Claude API (ANTHROPIC_API_KEY)", ok: Boolean(env.ANTHROPIC_API_KEY) },
     { label: "Foto-Verschlüsselung (PHOTO_ENCRYPTION_KEY)", ok: (env.PHOTO_ENCRYPTION_KEY ?? "").length >= 32 },
     { label: "E-Mails (RESEND_API_KEY)", ok: Boolean(env.RESEND_API_KEY), hint: env.RESEND_API_KEY ? undefined : "ohne: E-Mails werden nur protokolliert" },
+    {
+      label: "Zustellmeldungen von Resend (RESEND_WEBHOOK_SECRET)",
+      ok: Boolean(env.RESEND_WEBHOOK_SECRET),
+      hint: env.RESEND_WEBHOOK_SECRET ? undefined : "ohne: abgeprallte E-Mails werden nicht gemeldet",
+    },
     { label: "Absender (EMAIL_FROM)", ok: Boolean(env.EMAIL_FROM) },
     { label: "Hinweise ans Team (ADMIN_EMAIL)", ok: Boolean(env.ADMIN_EMAIL) },
     { label: "Zahlungen (STRIPE_SECRET_KEY)", ok: Boolean(env.STRIPE_SECRET_KEY), hint: stripeTestMode() ? "Testmodus" : undefined },
