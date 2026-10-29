@@ -117,6 +117,7 @@ export function receivedMail(name: string): EmailContent {
     paragraphs: [
       "Schön, dass du dabei sein willst. Wir schauen uns deine Bewerbung jetzt an – innerhalb von 24 Stunden bekommst du eine Antwort per E-Mail.",
       "Wie es dann weitergeht: Unsere KI stellt einen Tisch mit fünf Menschen zusammen, die zu dir passen. Bezahlt wird erst, wenn dein Tisch steht.",
+      "Damit nichts verloren geht: Speichere hallo@tisch6.at in deinen Kontakten. Ist diese E-Mail im Spam-Ordner gelandet, tipp dort auf „Kein Spam“ – dann kommen auch deine Einladung und alle weiteren Infos sicher an.",
     ],
     cta: { label: "Mein Konto", url: accountUrl() },
     after: [INSTAGRAM_NOTE],

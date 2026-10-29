@@ -249,6 +249,7 @@ const de = {
     done: {
       title: "Danke – deine Bewerbung ist da!",
       text: "Wir prüfen sie jetzt. Innerhalb von 24 Stunden bekommst du eine Antwort an {email}.",
+      spam: "Du bekommst gleich eine E-Mail von hallo@tisch6.at. Findest du sie nicht, schau bitte im Spam-Ordner nach und tipp dort auf „Kein Spam“ – dann kommt auch deine Einladung sicher an.",
       rejectedTitle: "Danke für dein Interesse",
       rejectedText: "Tisch6 ist leider erst ab 18 Jahren. Wir freuen uns, wenn du später wiederkommst.",
       home: "Zur Startseite",

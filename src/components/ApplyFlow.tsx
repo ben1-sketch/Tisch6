@@ -315,6 +315,7 @@ export function ApplyFlow({ lang, t, invitedBy, campaign, resume = false }: { la
           <p className="mt-4 text-mist">
             {status === "rejected" ? t.done.rejectedText : fill(t.done.text, { email: <strong className="text-cloud">{form.email || "deine E-Mail-Adresse"}</strong> })}
           </p>
+          {status !== "rejected" && <p className="mt-3 text-sm text-gold-300">{t.done.spam}</p>}
           {status !== "rejected" && ownInvite && <InviteBox t={t.buddy} lang={lang} code={ownInvite} />}
           {status !== "rejected" && (
             <a href={instagramUrl} target="_blank" rel="noopener noreferrer" className="mt-6 block text-gold-400 underline underline-offset-4 hover:text-gold-300">
