@@ -95,6 +95,7 @@ const STEP_LABELS: Record<string, string> = {
   folgeeinladungen: "Folgeeinladungen",
   aufrufe: "Aufrufe an Wartende",
   smsZustellung: "Nicht zugestellte SMS",
+  twilioRegistrierung: "Registrierung bei Twilio",
   lernen: "Lernnotizen",
 };
 

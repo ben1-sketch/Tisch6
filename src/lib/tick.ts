@@ -7,6 +7,7 @@ import { eraseAbandoned, eraseRejected, evaluateApplications, remindUnfinished }
 import { matchTables } from "./matching";
 import { decideDinners, expireSeats, fillGaps, remindOpenInvitations } from "./seats";
 import { checkSmsDelivery } from "./sms-delivery";
+import { checkTwilioRegistrations } from "./twilio-registration";
 import { viennaHour } from "./time";
 
 export type TickReport = { skipped?: string } & Record<string, unknown>;
@@ -61,6 +62,8 @@ export async function runTick(client: Db, options: { matching?: "auto" | "force"
     await step("folgeeinladungen", () => sendNudges(client));
     await step("aufrufe", () => sendCampaigns(client, deadline));
     await step("smsZustellung", () => checkSmsDelivery(client, deadline));
+    // Twilio-Registrierungen ändern sich selten – einmal pro Stunde nachfragen genügt
+    if (new Date().getUTCMinutes() < 10) await step("twilioRegistrierung", () => checkTwilioRegistrations(client));
     await step("aufraeumen", () => eraseRejected(client));
     await step("abgebrochen", () => eraseAbandoned(client));
     if (Date.now() < deadline - 20_000) await step("lernen", () => updateLearnings(client));
