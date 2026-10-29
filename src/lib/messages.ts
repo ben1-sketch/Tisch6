@@ -18,6 +18,8 @@ type Layout = {
   lists?: { title: string; items: string[] }[];
   cta?: { label: string; url: string };
   after?: string[];
+  /** kleiner Link in der Fußzeile, z. B. zum Abbestellen */
+  footerLink?: { label: string; url: string };
 };
 
 function layout(o: Layout): EmailContent {
@@ -53,7 +55,7 @@ function layout(o: Layout): EmailContent {
 <h1 style="${serif}font-size:28px;font-weight:normal;line-height:1.25;margin:22px 0 14px;color:#f4efe6;">${esc(o.title)}</h1>
 ${o.paragraphs.map(p).join("")}${details}${list}${cta}${(o.after ?? []).map(p).join("")}
 </td></tr>
-<tr><td style="${font}padding:12px 28px 26px;font-size:12px;line-height:1.5;color:#8a90a3;">Diese E-Mail wurde automatisch verschickt. Fragen? Antworte einfach darauf oder schreib an <a href="mailto:info@tisch6.at" style="color:#8a90a3;">info@tisch6.at</a> – hier antwortet ein Mensch, keine Warteschleife.<br>Tisch6 · KI-kuratierte Dating-Dinner<br><a href="${siteUrl()}" style="color:#8a90a3;">${esc(siteUrl().replace(/^https?:\/\//, ""))}</a> · <a href="${instagramUrl}" style="color:#8a90a3;">Instagram @tischsechs</a></td></tr>
+<tr><td style="${font}padding:12px 28px 26px;font-size:12px;line-height:1.5;color:#8a90a3;">Diese E-Mail wurde automatisch verschickt. Fragen? Antworte einfach darauf oder schreib an <a href="mailto:info@tisch6.at" style="color:#8a90a3;">info@tisch6.at</a> – hier antwortet ein Mensch, keine Warteschleife.<br>Tisch6 · KI-kuratierte Dating-Dinner<br><a href="${siteUrl()}" style="color:#8a90a3;">${esc(siteUrl().replace(/^https?:\/\//, ""))}</a> · <a href="${instagramUrl}" style="color:#8a90a3;">Instagram @tischsechs</a>${o.footerLink ? `<br><a href="${esc(o.footerLink.url)}" style="color:#8a90a3;">${esc(o.footerLink.label)}</a>` : ""}</td></tr>
 </table></td></tr></table></body></html>`;
 
   const text = [
@@ -68,6 +70,7 @@ ${o.paragraphs.map(p).join("")}${details}${list}${cta}${(o.after ?? []).map(p).j
     "Diese E-Mail wurde automatisch verschickt. Fragen? Antworte einfach darauf oder schreib an info@tisch6.at – hier antwortet ein Mensch.",
     "Tisch6 · KI-kuratierte Dating-Dinner",
     `Instagram: ${instagramUrl}`,
+    ...(o.footerLink ? [`${o.footerLink.label}: ${o.footerLink.url}`] : []),
   ].join("\n");
 
   return { subject: o.subject, html, text };
@@ -91,6 +94,8 @@ export const feedbackUrl = (token: string) => link(`/de/wiedersehen/${token}`);
 export const rejoinUrl = (magicToken: string) => link(`/de/weiter/${magicToken}`);
 export const icsUrl = (token: string) => link(`/api/seat/${token}/ics`);
 const accountUrl = () => link("/de/konto");
+/** Aufrufe mit einem Klick abbestellen (signierter Link je Person, siehe lib/campaigns.ts) */
+export const optOutUrl = (token: string) => link(`/de/aufrufe/${token}`);
 /** Persönlicher Einladungslink (wie im Konto); source markiert, über welchen Aufruf er kam */
 export const inviteUrl = (code: string, source?: string) => link(`/de/bewerben?mit=${code}${source ? `&utm_source=${source}` : ""}`);
 /** Angefangene Bewerbung fortsetzen: Anmeldung per SMS-Code, dann geht es dort weiter, wo die Person aufgehört hat */
@@ -613,7 +618,7 @@ export function referralRewardMail(name: string): EmailContent {
 }
 
 /** Aufruf an Wartende (CAMPAIGNS): den eigenen Einladungslink an passende Singles weiterschicken */
-export function campaignMail(o: { name: string; campaign: Campaign; inviteCode: string }): EmailContent {
+export function campaignMail(o: { name: string; campaign: Campaign; inviteCode: string; optOutToken: string }): EmailContent {
   const url = inviteUrl(o.inviteCode, "aufruf");
   return layout({
     subject: "Hilf mit, dass dein Tisch zustande kommt",
@@ -627,8 +632,9 @@ export function campaignMail(o: { name: string; campaign: Campaign; inviteCode: 
     after: [
       "Keine Sorge: Ihr sitzt nie am selben Tisch.",
       `Kommt jemand über deinen Link an einen Tisch, kostet dein nächster Tisch nur ${euro(PRICES.referral)} statt ${euro(PRICES.seat)}.`,
-      "Du möchtest solche Hinweise nicht mehr? Antworte einfach mit „Stopp“.",
+      "Du möchtest solche Hinweise nicht mehr? Ganz unten in dieser E-Mail kannst du sie mit einem Klick abbestellen.",
     ],
+    footerLink: { label: "Keine solchen Hinweise mehr – hier abbestellen", url: optOutUrl(o.optOutToken) },
   });
 }
 

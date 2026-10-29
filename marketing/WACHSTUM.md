@@ -18,7 +18,8 @@ ein bis zwei Versuche umsetzen, Ergebnis hier festhalten. Neueste Woche oben. In
 - Am Tisch höchstens 10 Jahre Altersabstand. Einzige Ausnahme: der erste Tisch am 5.11.2026 (bis 12 Jahre beim Nachrücken,
   `TABLE_EXCEPTIONS` in `src/lib/config.ts`) – Wunsch des Inhabers. Keine weiteren Ausnahmen ohne seine Zustimmung.
 - Aufrufe an Wartende (`CAMPAIGNS` in `src/lib/config.ts`) nur mit Zustimmung des Inhabers, höchstens einer pro Person im Monat,
-  immer mit „Stopp“-Hinweis. Wer „Stopp“ antwortet, bekommt im Adminbereich „Keine Aufrufe mehr“.
+  immer mit Abbestell-Link (ein Klick trägt automatisch aus). Wer stattdessen „Stopp“ antwortet, bekommt im Adminbereich
+  „Keine Aufrufe mehr“.
 - Wer jemanden über den Einladungslink einlädt, sitzt nie mit ihm am selben Tisch (wie bei Duos).
 - Tischplanung nimmt immer den frühesten möglichen Abend; die KI wählt nur unter den Runden an diesem Abend
   (Wunsch des Inhabers, 28.10.2026: Tisch 2 am 4.11. statt 12.11.).

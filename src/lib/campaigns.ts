@@ -1,4 +1,5 @@
 import "server-only";
+import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 import { CAMPAIGNS, TIMING } from "./config";
 import { type Application, type Db, OPEN_SEAT, must } from "./db";
 import { campaignMail } from "./messages";
@@ -7,6 +8,37 @@ import { DAY, viennaHour } from "./time";
 
 /** Vermerk im Eingriffs-Protokoll: Diese Person bekommt keine Aufrufe mehr (z. B. Antwort „Stopp“) */
 export const NO_CAMPAIGNS = "Keine Aufrufe mehr";
+
+/** Schlüssel der Abbestell-Links – hängt am CRON_SECRET; ein neues Secret macht alte Links ungültig */
+function optOutKey() {
+  const secret = process.env.CRON_SECRET;
+  if (!secret) throw new Error("CRON_SECRET fehlt");
+  return createHash("sha256").update(`tisch6-aufrufe:${secret}`).digest();
+}
+
+/** Abbestell-Link je Person: „<Bewerbungs-ID>.<Signatur>“ – erlaubt nichts außer Aufrufe abzubestellen */
+export function optOutToken(applicationId: string) {
+  return `${applicationId}.${createHmac("sha256", optOutKey()).update(applicationId).digest("base64url").slice(0, 22)}`;
+}
+
+export const OPT_OUT_TOKEN = /^[0-9a-f-]{36}\.[A-Za-z0-9_-]{22}$/;
+
+/** Prüft einen Abbestell-Link; gibt die Bewerbungs-ID zurück oder null */
+export function verifyOptOutToken(token: string) {
+  if (!OPT_OUT_TOKEN.test(token)) return null;
+  const id = token.split(".")[0];
+  const digest = (s: string) => createHash("sha256").update(s).digest();
+  return timingSafeEqual(digest(token), digest(optOutToken(id))) ? id : null;
+}
+
+/** Keine Aufrufe mehr für diese Person (Link in der Mail oder Adminbereich); false, wenn schon ausgetragen */
+export async function stopCampaignsFor(db: Db, applicationId: string, detail: string) {
+  const { data } = await db.from("admin_log").select("id").eq("application_id", applicationId).eq("action", NO_CAMPAIGNS).limit(1);
+  if (data?.length) return false;
+  const { error } = await db.from("admin_log").insert({ action: NO_CAMPAIGNS, application_id: applicationId, detail });
+  if (error) throw new Error(`Abbestellen: ${error.message}`);
+  return true;
+}
 
 /** Kurze Pause zwischen zwei Aufrufen – der E-Mail-Dienst nimmt nur wenige Mails pro Sekunde an */
 const PAUSE_MS = 600;
@@ -53,7 +85,7 @@ export async function sendCampaigns(db: Db, deadline = Infinity, now = new Date(
       if (Date.now() > deadline) return sent;
       const result = await sendEmail(db, {
         to: app.email,
-        content: campaignMail({ name: app.first_name, campaign, inviteCode: app.invite_code }),
+        content: campaignMail({ name: app.first_name, campaign, inviteCode: app.invite_code, optOutToken: optOutToken(app.id) }),
         kind: "campaign",
         dedupeKey: `campaign:${campaign.id}:${app.id}`,
         applicationId: app.id,

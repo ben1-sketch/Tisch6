@@ -416,6 +416,14 @@ const de = {
     retry: "Nochmal versuchen",
     account: "Zum Konto",
   },
+  optOut: {
+    working: "Einen Moment …",
+    done: "Erledigt, {name} – du bekommst keine solchen Hinweise mehr.",
+    doneText: "Einladungen zu Tischen bekommst du weiterhin.",
+    failed: "Das hat leider nicht geklappt.",
+    retry: "Nochmal versuchen",
+    home: "Zur Startseite",
+  },
 };
 
 export default de;

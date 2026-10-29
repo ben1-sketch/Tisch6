@@ -45,7 +45,7 @@ export default function Datenschutz() {
         <li>
           Höchstens einmal im Monat, solange du auf einen Tisch wartest: die Bitte per E-Mail, deinen Einladungslink an passende Singles
           weiterzugeben, wenn für Tische gerade Menschen einer bestimmten Altersgruppe fehlen – Art. 6 Abs. 1 lit. f DSGVO (berechtigtes
-          Interesse, dass Tische zustande kommen). Du kannst jederzeit widersprechen; eine Antwort mit „Stopp“ genügt.
+          Interesse, dass Tische zustande kommen). Du kannst jederzeit widersprechen: mit einem Klick auf „abbestellen“ in der E-Mail oder mit einer Antwort „Stopp“.
         </li>
         <li>Zitate ohne Namen auf Instagram und tisch6.at – nur mit deiner Einwilligung (Art. 6 Abs. 1 lit. a DSGVO). Du kannst sie jederzeit auf deiner Feedbackseite oder per E-Mail an info@tisch6.at widerrufen; wir löschen dann die betroffenen Beiträge. Fotos von Gästen veröffentlichen wir nie.</li>
         <li>Auswertung, über welche Wege Bewerbungen zu uns kommen, damit wir Werbung gezielt einsetzen – Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse); ausgewertet wird nur in Summen.</li>
