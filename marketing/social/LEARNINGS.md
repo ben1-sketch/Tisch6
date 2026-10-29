@@ -19,6 +19,13 @@ Neueste Woche oben.
 - Echte Stimmen: nur freigegebene Sätze vom Abend (Admin → Wiedersehen & Feedback → „Zitate für Instagram“), immer ohne Namen.
 - Woher Bewerbungen kommen, steht im Admin auf der Übersicht – Inhalte und Werbung danach ausrichten.
 
+## Hinweis vom Wachstums-Check 29.10.2026 (für den Montags-Check)
+
+- Schwerpunkt bleibt Männer 35–47 – jetzt genauer: mit Zeit am Mittwoch, Donnerstag oder Freitag.
+- Ideen: ein Reel „Mittwochabend statt Swipen“ (Dinner unter der Woche, drei Frauen und drei Männer, keine Konkurrenz)
+  und eine Story „Bring einen Freund mit“ (gleicher Abend, verschiedene Tische).
+- Herkunft wird seit 28.10. erfasst: Instagram brachte 1 Bewerbung. Follower 22 (24.10.) → 67 (27.10.).
+
 ## Woche bis 28.10.2026 (Start)
 
 - Kanal läuft seit 24.10.; ein Beitrag wurde einmal bezahlt beworben.

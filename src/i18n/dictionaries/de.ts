@@ -263,7 +263,7 @@ const de = {
       shareText: "Komm mit zu Tisch6 – KI-kuratierte Dating-Dinner in Wien:",
       whatsapp: "Per WhatsApp schicken",
       /** Der aktuelle Engpass – beim wöchentlichen Wachstums-Check anpassen (marketing/WACHSTUM.md) */
-      wanted: "Gerade besonders gefragt: Männer zwischen 35 und 48. Kennst du einen, der gut an einen Tisch passt?",
+      wanted: "Gerade besonders gefragt: Männer zwischen 35 und 47, die mittwochs, donnerstags oder freitags Zeit haben. Kennst du einen, der gut an einen Tisch passt?",
     },
     errors: {
       generic: "Da ist etwas schiefgelaufen. Bitte versuch es nochmal.",

@@ -40,6 +40,8 @@ ein bis zwei Versuche umsetzen, Ergebnis hier festhalten. Neueste Woche oben. In
 | 28.10.2026 | Tischkarte mit QR-Code im Partnerlokal (`marketing/lokale/`, utm lokal / tischkarte / neuehoheit) | Andere Gäste des Lokals werden neugierig | Bewerbungen mit Detail „lokal / tischkarte / …“ |
 | 28.10.2026 | Einladungslink im Konto: Knopf „Per WhatsApp schicken“ und Hinweis „Gerade besonders gefragt: Männer zwischen 35 und 48“ | Bewerberinnen kennen passende Männer | Bewerbungen mit Herkunft „Empfehlung“, davon Männer |
 | 28.10.2026 | Google: Organisations-Angaben auf der Startseite; Search Console wartet auf den Bestätigungs-Code des Inhabers (kein Unternehmensprofil – Richtlinien passen nicht) | Die Suche nach „Tisch6“ zeigt die Marke sauber, Themenseiten werden schneller gefunden | Impressionen und Klicks in der Search Console, Herkunft „Google“ |
+| 29.10.2026 | KI-Suche: Kurzbeschreibung `tisch6.at/llms.txt` für ChatGPT und Co. (Ablauf, Preise, für wen, „gerade gesucht: Männer 35–47“, Links zu den Themenseiten) – Anlass: ein Mann (46) kam über ChatGPT | Wer eine KI fragt, wo man in Wien Singles kennenlernt, bekommt Tisch6 genannt | Bewerbungen mit Herkunft-Detail „chatgpt.com“ oder „perplexity“, davon Männer 35–47 |
+| 29.10.2026 | Hinweis beim Einladungslink genauer: „Männer zwischen 35 und 47, die mittwochs, donnerstags oder freitags Zeit haben“ | Eine genaue Bitte bringt passendere Empfehlungen | Bewerbungen über Einladungslinks, davon Männer 35–47 mit Mi/Do/Fr |
 
 ## Nächste Schritte aus der Kanal-Recherche (28.10.2026)
 
@@ -61,6 +63,26 @@ Menschen, die sie kennen, und über Orte, an denen sie schon sind – nicht übe
 
 Offen: Männeranteil in Laufclubs und beim Padel; ob die Zahlen der Facebook-Gruppe (Stand 2024) noch stimmen; ob der
 Falter kommerzielle Dating-Abende in den Kalender nimmt.
+
+## Woche bis 29.10.2026 (Wachstums-Check)
+
+- Bewerbungen: 25 abgeschickt seit dem Start am 22.10. (Vorwoche: noch kein Betrieb), alle angenommen – 15 Frauen, 10 Männer;
+  1 angefangen, nicht abgeschickt.
+- Herkunft (erfasst seit 28.10.): 3 von 3 mit Angabe – Instagram 1, Empfehlung über Einladungslink 1, ChatGPT 1 (Mann, 46).
+- Wartend: 12 Frauen (30–34: 1 · 35–39: 1 · 40–44: 7 · 45–49: 3) und 6 Männer (unter 30: 1 · 35–39: 2 · 40–44: 1 ·
+  45–49: 1 · 50+: 1); 1 Mann pausiert.
+- Tische: 1 geplant (Do 5.11.): 2 bezahlt, 4 offen (Frist 31.10., 01:00), 1 Absage nachbesetzt. Noch kein Abend – daher
+  noch kein Feedback und kein Wiedersehen.
+- Zusagequote: 2 von 3 entschiedenen Einladungen; 4 offen. Umsatz der Woche: 76 € (2 Plätze).
+- Instagram: 67 Follower am 27.10. (24.10.: 22), 7 Beiträge, Reichweite 22.–27.10. zusammen rund 27.800 (Tagessummen).
+- Engpass: Männer 35–47 mit Zeit am Mittwoch, Donnerstag oder Freitag. Mit den Regeln aus `matching-core.ts` geprüft:
+  Aus den Wartenden entsteht kein Tisch; ein einziger Mann (37–47 mit Mittwoch, 36–47 mit Donnerstag oder 34–45 mit
+  Freitag) würde reichen. Zweiter Engpass: Für die drei Frauen 45–49 fehlen Männer 42–55 (keine eigene Werbung für 50+).
+- Ergebnisse: Alle Versuche laufen erst seit 28.10. – zu früh. Erste Auswertung am 12.11.; die Herkunft wird erfasst (3 von 3).
+- Neu umgesetzt: `llms.txt` für KI-Suche; genauerer Hinweis beim Einladungslink (Mi/Do/Fr). Heute ab 9 Uhr: Aufruf an
+  die wartenden Frauen.
+- Vorschlag an den Inhaber: dieselbe Bitte an die 6 wartenden Männer („Bring einen Freund zwischen 35 und 47 mit“) –
+  ein Aufruf, braucht seine Zustimmung.
 
 ## Woche bis 28.10.2026 (Ausgangslage)
 
