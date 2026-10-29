@@ -159,6 +159,12 @@ export async function testSendAction(_: ActionResult, form: FormData) {
   return run(async () => sendTestMessages(db(), String(form.get("phone") ?? "")));
 }
 
+/** Fehlerliste unter Versand geöffnet: alle Fehler als gesehen markieren – der gelbe Hinweis zeigt danach nur neue */
+export async function markFailuresSeenAction() {
+  await requireAdmin();
+  await db().from("notifications").update({ seen_at: new Date().toISOString() }).eq("status", "failed").is("seen_at", null);
+}
+
 /** Leitet zur Stripe-Bezahlseite über 1 € weiter; Stripe schickt danach zurück in die Übersicht */
 export async function testPaymentAction(): Promise<ActionResult> {
   await requireAdmin();

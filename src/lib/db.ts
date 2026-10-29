@@ -203,6 +203,8 @@ export type Notification = {
   status: "pending" | "sent" | "delivered" | "failed" | "logged";
   provider_id: string | null;
   error: string | null;
+  /** Fehler im Adminbereich angesehen – der gelbe Hinweis zeigt nur ungesehene */
+  seen_at: string | null;
 };
 
 export type AdminLog = {

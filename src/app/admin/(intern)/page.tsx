@@ -96,6 +96,7 @@ async function loadOverview() {
       .from("notifications")
       .select("id", { count: "exact", head: true })
       .eq("status", "failed")
+      .is("seen_at", null)
       .neq("kind", "test")
       .gte("created_at", iso(now - 7 * DAY)),
     client.from("job_locks").select("locked_until").eq("name", "tick").maybeSingle(),
@@ -163,7 +164,8 @@ export default async function AdminHome() {
         )}
         {(failed.count ?? 0) > 0 && (
           <Notice>
-            {failed.count} {failed.count === 1 ? "Nachricht konnte" : "Nachrichten konnten"} in den letzten 7 Tagen nicht zugestellt werden.{" "}
+            {failed.count} {failed.count === 1 ? "Nachricht konnte" : "Nachrichten konnten"} in den letzten 7 Tagen nicht zugestellt werden (neu seit
+            dem letzten Ansehen).{" "}
             <Link href="/admin/versand?filter=fehler" className="underline">
               Ansehen
             </Link>

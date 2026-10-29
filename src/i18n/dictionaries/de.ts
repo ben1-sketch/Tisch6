@@ -189,6 +189,7 @@ const de = {
       firstName: "Vorname",
       email: "E-Mail-Adresse",
       emailHint: "Hierhin schicken wir Antwort und Einladungen.",
+      emailTypo: "Meintest du {email}? Hier tippen, um es zu übernehmen.",
       source: "Wie hast du von Tisch6 erfahren?",
       sourceChoose: "Bitte auswählen (freiwillig)",
       adult: "Ich bin mindestens 18 Jahre alt und Single.",

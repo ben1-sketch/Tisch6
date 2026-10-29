@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { MarkFailuresSeen } from "@/components/admin/MarkFailuresSeen";
 import { Empty, Notice, NotificationChip, PageTitle, Pager, PersonLink, Tabs } from "@/components/admin/ui";
 import { requireAdmin } from "@/lib/admin/auth";
 import { when } from "@/lib/admin/format";
@@ -37,6 +38,7 @@ export default async function NotificationsPage({ searchParams }: PageProps<"/ad
         sub="Jede E-Mail und SMS, die Tisch6 verschickt. „Nur protokolliert“ heißt: Resend bzw. Twilio ist noch nicht eingerichtet."
       />
       <Tabs active={filter} items={FILTERS.map((f) => ({ key: f.key, label: f.label, href: `/admin/versand?filter=${f.key}` }))} />
+      {filter === "fehler" && <MarkFailuresSeen />}
       {error && <Notice tone="red">Datenbank: {error.message}</Notice>}
       {rows.length === 0 ? (
         <Empty>Nichts hier.</Empty>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
+import { emailTypo } from "@/lib/email-typo";
 import { normalizePhone } from "@/lib/phone";
 import { instagramUrl } from "@/lib/site";
 import { SOURCES } from "@/lib/source";
@@ -44,6 +45,7 @@ export function ApplyFlow({ lang, t, invitedBy, campaign, resume = false }: { la
   const [status, setStatus] = useState("onboarding");
   const [loggedIn, setLoggedIn] = useState(false);
   const [ownInvite, setOwnInvite] = useState<string | null>(null);
+  const emailSuggestion = emailTypo(form.email);
 
   // Bei jedem Schritt nach oben, damit Fortschritt und Überschrift sichtbar sind
   useEffect(() => {
@@ -195,6 +197,11 @@ export function ApplyFlow({ lang, t, invitedBy, campaign, resume = false }: { la
             <input required type="email" autoComplete="email" className={inputClass} value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
             <span className="mt-1 block text-xs text-mist">{t.intro.emailHint}</span>
           </label>
+          {emailSuggestion && (
+            <button type="button" className="-mt-2 block text-left text-sm text-gold-300 underline" onClick={() => setForm({ ...form, email: emailSuggestion })}>
+              {fill(t.intro.emailTypo, { email: <strong>{emailSuggestion}</strong> })}
+            </button>
+          )}
           {!invitedBy && (
             <label className="block">
               <span className="mb-1.5 block text-sm font-medium">{t.intro.source}</span>
