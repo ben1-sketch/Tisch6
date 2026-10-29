@@ -99,6 +99,14 @@ export function formatTime(date: Date) {
   return clock.format(date);
 }
 
+/** Frist aus Sicht von `now`: „heute um 18:00 Uhr“, „heute Nacht um 01:00 Uhr“ oder „Sa., 31. Okt., 01:00 Uhr“ */
+export function formatDeadline(deadline: Date, now = new Date()) {
+  const day = dateKey(viennaDate(deadline));
+  if (day === dateKey(viennaDate(now))) return `heute um ${formatTime(deadline)} Uhr`;
+  if (day === dateKey(addDays(viennaDate(now), 1)) && viennaHour(deadline) < 6) return `heute Nacht um ${formatTime(deadline)} Uhr`;
+  return `${formatShortDate(deadline)}, ${formatTime(deadline)} Uhr`;
+}
+
 export function hoursUntil(date: Date | string, now = new Date()) {
   return (new Date(date).getTime() - now.getTime()) / HOUR;
 }

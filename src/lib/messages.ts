@@ -1,6 +1,6 @@
 import { type Campaign, PRICES, TIMING, euro } from "./config";
 import { instagramUrl, siteUrl } from "./site";
-import { formatDate, formatDateTime, formatShortDate, formatTime } from "./time";
+import { formatDate, formatDateTime, formatDeadline, formatShortDate, formatTime } from "./time";
 import type { EmailContent } from "./notify";
 
 // ---------------------------------------------------------------------------
@@ -278,6 +278,28 @@ export function inviteReminderMail(o: {
 
 export function inviteReminderSms(o: { dinner: DinnerInfo; deadline: Date; token: string }) {
   return `Tisch6: Dein Platz am ${formatShortDate(o.dinner.startsAt)} um ${formatTime(o.dinner.startsAt)} Uhr ist noch für dich reserviert, fix aber erst mit der Zahlung. Bitte bis ${formatShortDate(o.deadline)}, ${formatTime(o.deadline)} Uhr zusagen: ${seatUrl(o.token)}`;
+}
+
+export function inviteLastCallMail(o: { name: string; dinner: DinnerInfo; priceText: string; deadline: Date; now: Date; token: string }): EmailContent {
+  return layout({
+    subject: `Letzte Erinnerung: Dein Tisch am ${formatDate(o.dinner.startsAt)}`,
+    title: `Dein Platz ist nur noch kurz reserviert, ${o.name}`,
+    paragraphs: [
+      `Dein Platz am ${formatDateTime(o.dinner.startsAt)} ist nur noch bis ${formatDeadline(o.deadline, o.now)} für dich reserviert. Danach geht er an jemand anderen.`,
+      "Fix ist er erst mit der Zahlung.",
+    ],
+    details: [
+      ["Wann", formatDateTime(o.dinner.startsAt)],
+      ["Wo", place(o.dinner)],
+      ["Preis", o.priceText],
+    ],
+    cta: { label: "Jetzt zusagen und bezahlen", url: seatUrl(o.token) },
+    after: ["Du kannst nicht? Dann sag auf derselben Seite kurz ab – so kann jemand anderes nachrücken.", BILL_NOTE],
+  });
+}
+
+export function inviteLastCallSms(o: { dinner: DinnerInfo; deadline: Date; now: Date; token: string }) {
+  return `Tisch6: Letzte Erinnerung! Dein Platz am ${formatShortDate(o.dinner.startsAt)} um ${formatTime(o.dinner.startsAt)} Uhr ist nur noch bis ${formatDeadline(o.deadline, o.now)} für dich reserviert. Danach geht er an jemand anderen. Hier zusagen und bezahlen: ${seatUrl(o.token)}`;
 }
 
 export function replacementSms(o: { dinner: DinnerInfo; token: string }) {
