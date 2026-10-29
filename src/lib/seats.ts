@@ -255,7 +255,7 @@ type OpenTable = NonNullable<Awaited<ReturnType<typeof openTable>>>;
 function fitsTable(table: OpenTable, p: Person) {
   if (table.missing[p.gender] <= 0 || table.tried.has(p.id) || (p.days && !p.days.includes(table.weekday))) return false;
   const exception = TABLE_EXCEPTIONS[table.dinner.id];
-  if (!exception) return validGroup([...table.members, p]);
+  if (!exception || (exception.only && !exception.only.includes(p.id))) return validGroup([...table.members, p]);
   // Ausnahme des Inhabers: nur Altersabstand (erweitert), gesuchtes Geschlecht und keine Begleitung am Tisch
   const ages = [...table.members, p].map((m) => m.age);
   return (
@@ -272,18 +272,21 @@ function ageGap(table: OpenTable, p: Person) {
 }
 
 /**
- * Mögliche Nachrücker je Geschlecht, wer am längsten wartet zuerst – bei einer Ausnahme des Inhabers zuerst,
- * wer altersmäßig am nächsten dran ist. Null, wenn das Dinner keine Nachrücker mehr nimmt.
+ * Mögliche Nachrücker je Geschlecht, wer am längsten wartet zuerst – bei einer Ausnahme des Inhabers zuerst die dort
+ * genannten Personen in ihrer Reihenfolge, dann wer altersmäßig am nächsten dran ist. Null, wenn das Dinner keine
+ * Nachrücker mehr nimmt.
  */
 export async function replacementCandidates(db: Db, dinnerId: string, limit = 1) {
   const table = await openTable(db, dinnerId);
   if (!table) return null;
   const pool = table.missing.frau > 0 || table.missing.mann > 0 ? await loadPool(db) : [];
-  const closestFirst = Boolean(TABLE_EXCEPTIONS[table.dinner.id]);
+  const exception = TABLE_EXCEPTIONS[table.dinner.id];
+  const only = exception?.only ?? [];
+  const rank = (p: Person) => (only.includes(p.id) ? only.indexOf(p.id) : only.length);
   const fits = (g: Gender) =>
     pool
       .filter((p) => p.gender === g && fitsTable(table, p))
-      .sort((a, b) => (closestFirst ? ageGap(table, a) - ageGap(table, b) : 0) || a.waitingSince - b.waitingSince)
+      .sort((a, b) => rank(a) - rank(b) || (exception ? ageGap(table, a) - ageGap(table, b) : 0) || a.waitingSince - b.waitingSince)
       .slice(0, limit);
   return { ...table, candidates: { frau: fits("frau"), mann: fits("mann") } };
 }

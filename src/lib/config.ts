@@ -89,11 +89,20 @@ export const TIMING = {
 /**
  * Ausnahmen des Inhabers für einzelne Tische (Dinner-ID): Beim Nachrücken darf der Altersabstand bis maxAgeSpan gehen,
  * Wunschalter und Temperament zählen dort nicht, die Person mit dem kleinsten Altersabstand kommt zuerst.
+ * Mit „only“ gilt die Ausnahme nur für diese Personen (Bewerbungs-IDs) – in dieser Reihenfolge, vor allen anderen;
+ * alle anderen müssen dann die normalen Regeln erfüllen.
  * Überall sonst gilt TABLE.maxAgeSpan (höchstens 10 Jahre).
  */
-export const TABLE_EXCEPTIONS: Record<string, { maxAgeSpan: number; reason: string }> = {
+export const TABLE_EXCEPTIONS: Record<string, { maxAgeSpan: number; reason: string; only?: string[] }> = {
   // Erster Tisch, 5.11.2026: nach einer Absage passte keine wartende Frau – Wunsch des Inhabers vom 28.10.2026
   "3d6abb86-9555-48ee-a1da-e4306de3a588": { maxAgeSpan: 12, reason: "Erster Tisch: nächstpassende Frau nachrücken" },
+  // Zweiter Tisch, 6.11.2026: nach einer Absage passte keine wartende Frau – Wunsch des Inhabers vom 29.10.2026:
+  // zuerst die erste (12 Jahre Abstand am Tisch), sagt sie nicht zu, die zweite (wünscht sich etwas ältere Männer)
+  "4cebc923-7a54-4f0a-9557-3641d4bc3a89": {
+    maxAgeSpan: 12,
+    reason: "Zweiter Tisch: zwei vom Inhaber gewählte Frauen nachrücken",
+    only: ["8ccee1be-362c-407e-96f0-21d6b88765d9", "3e31abd0-17c4-4700-acaf-c2f24647016a"],
+  },
 };
 
 export type Campaign = {
