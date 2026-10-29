@@ -24,8 +24,6 @@ import {
   dinnerCancelledSms,
   expiredMail,
   invitationMail,
-  inviteLastCallMail,
-  inviteLastCallSms,
   inviteReminderMail,
   inviteReminderSms,
   refundText,
@@ -169,10 +167,6 @@ export async function sendInvitation(
   }
 }
 
-/** Wer gerade auf der Bezahlseite ist, bekommt 35 Minuten Ruhe – keine Erinnerung, kein Verfall */
-const isPaying = (seat: Seat, now: number) =>
-  !!seat.checkout_started_at && now - new Date(seat.checkout_started_at).getTime() < 35 * 60_000;
-
 /**
  * Offene Einladung: zur Halbzeit der Zusagefrist eine Erinnerung per E-Mail und SMS – nur tagsüber,
  * nicht während jemand gerade bezahlt, und nur, wenn noch mindestens zwei Stunden bleiben.
@@ -190,7 +184,8 @@ export async function remindOpenInvitations(db: Db, now = new Date()) {
   ) as Seat[];
   const due = open.filter((s) => {
     const total = new Date(s.expires_at!).getTime() - new Date(s.created_at).getTime();
-    return new Date(s.expires_at!).getTime() - now.getTime() <= total / 2 && !isPaying(s, now.getTime());
+    const paying = s.checkout_started_at && now.getTime() - new Date(s.checkout_started_at).getTime() < 35 * 60_000;
+    return new Date(s.expires_at!).getTime() - now.getTime() <= total / 2 && !paying;
   });
   if (!due.length) return 0;
   const done = new Set(
@@ -228,70 +223,6 @@ export async function remindOpenInvitations(db: Db, now = new Date()) {
       body: inviteReminderSms({ dinner: info, deadline, token: seat.token }),
       kind: "invite_reminder",
       dedupeKey: `invite_reminder_sms:${seat.id}`,
-      applicationId: app.id,
-    });
-    sent++;
-  }
-  return sent;
-}
-
-/**
- * Letzte Erinnerung an eine offene Einladung per E-Mail und SMS, 12 Stunden vor Ablauf – nur tagsüber, nicht während
- * jemand gerade bezahlt, solange noch eine Stunde bleibt, nie vor der Halbzeit der Frist und frühestens sechs Stunden
- * nach der ersten Erinnerung. Nachrücker-Angebote (12 Stunden) bekommen deshalb nur die erste.
- */
-export async function lastCallOpenInvitations(db: Db, now = new Date()) {
-  const hour = viennaHour(now);
-  if (hour < TIMING.daytimeFromHour || hour >= TIMING.daytimeToHour) return 0;
-  const open = must(
-    await db
-      .from("seats")
-      .select("*")
-      .in("status", ["invited", "offered"])
-      .gt("expires_at", new Date(now.getTime() + HOUR).toISOString())
-      .lte("expires_at", new Date(now.getTime() + TIMING.lastCallHoursBefore * HOUR).toISOString()),
-    "Offene Einladungen laden",
-  ) as Seat[];
-  const due = open.filter((s) => {
-    const end = new Date(s.expires_at!).getTime();
-    return end - now.getTime() <= (end - new Date(s.created_at).getTime()) / 2 && !isPaying(s, now.getTime());
-  });
-  if (!due.length) return 0;
-  const sentAt = new Map(
-    (
-      must(
-        await db
-          .from("notifications")
-          .select("dedupe_key, created_at")
-          .in("dedupe_key", due.flatMap((s) => [`invite_reminder:${s.id}`, `invite_last_call:${s.id}`])),
-        "Erinnerungen laden",
-      ) as { dedupe_key: string; created_at: string }[]
-    ).map((n) => [n.dedupe_key, new Date(n.created_at).getTime()]),
-  );
-
-  let sent = 0;
-  for (const seat of due) {
-    if (sentAt.has(`invite_last_call:${seat.id}`)) continue;
-    const first = sentAt.get(`invite_reminder:${seat.id}`);
-    if (first !== undefined && now.getTime() - first < 6 * HOUR) continue;
-    const { dinner, restaurant } = await loadDinner(db, seat.dinner_id);
-    if (dinner.status !== "inviting" && dinner.status !== "confirmed") continue;
-    const app = await loadApplication(db, seat.application_id);
-    const info = dinnerInfo(dinner, restaurant);
-    const deadline = new Date(seat.expires_at!);
-    const result = await sendEmail(db, {
-      to: app.email,
-      content: inviteLastCallMail({ name: app.first_name, dinner: info, priceText: priceText(await offerFor(db, app)), deadline, now, token: seat.token }),
-      kind: "invite_last_call",
-      dedupeKey: `invite_last_call:${seat.id}`,
-      applicationId: app.id,
-    });
-    if (result === "duplicate" || result === "retry") continue;
-    await sendSms(db, {
-      to: app.phone,
-      body: inviteLastCallSms({ dinner: info, deadline, now, token: seat.token }),
-      kind: "invite_last_call",
-      dedupeKey: `invite_last_call_sms:${seat.id}`,
       applicationId: app.id,
     });
     sent++;
@@ -642,7 +573,7 @@ export async function expireSeats(db: Db) {
   ) as Seat[];
   let expired = 0;
   for (const seat of due) {
-    if (isPaying(seat, now)) continue;
+    if (seat.checkout_started_at && now - new Date(seat.checkout_started_at).getTime() < 35 * 60_000) continue;
     const { data } = await db
       .from("seats")
       .update({ status: "expired", ended_at: new Date().toISOString() })

@@ -5,7 +5,7 @@ import { TIMING } from "./config";
 import { afterDinners, prepareCards, sendDayOf, sendLebenszeichen, sendNudges, sendReminders, updateLearnings } from "./dinners";
 import { eraseAbandoned, eraseRejected, evaluateApplications, remindUnfinished } from "./evaluation";
 import { matchTables } from "./matching";
-import { decideDinners, expireSeats, fillGaps, lastCallOpenInvitations, remindOpenInvitations } from "./seats";
+import { decideDinners, expireSeats, fillGaps, remindOpenInvitations } from "./seats";
 import { viennaHour } from "./time";
 
 export type TickReport = { skipped?: string } & Record<string, unknown>;
@@ -48,7 +48,6 @@ export async function runTick(client: Db, options: { matching?: "auto" | "force"
     await step("entscheidung", () => decideDinners(client));
     await step("erinnerungen", () => sendReminders(client, deadline));
     await step("zusagen", () => remindOpenInvitations(client));
-    await step("letzteErinnerung", () => lastCallOpenInvitations(client));
     await step("amTag", () => sendDayOf(client, deadline));
     await step("nachDemDinner", () => afterDinners(client, deadline));
     // … dann alles, was die KI braucht

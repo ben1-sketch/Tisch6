@@ -46,8 +46,6 @@ export const TIMING = {
   inviteHours: 48,
   /** Zeit für Nachrücker (Stunden) */
   replacementHours: 12,
-  /** Letzte Erinnerung an eine offene Einladung, so lange vor Ablauf der Frist (Stunden) */
-  lastCallHoursBefore: 12,
   /** Frühester und spätester Termin nach Tischbildung (Tage) */
   leadDaysMin: 6,
   leadDaysMax: 21,
