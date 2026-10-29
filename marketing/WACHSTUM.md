@@ -41,6 +41,7 @@ ein bis zwei Versuche umsetzen, Ergebnis hier festhalten. Neueste Woche oben. In
 | 28.10.2026 | Einladungslink im Konto: Knopf „Per WhatsApp schicken“ und Hinweis „Gerade besonders gefragt: Männer zwischen 35 und 48“ | Bewerberinnen kennen passende Männer | Bewerbungen mit Herkunft „Empfehlung“, davon Männer |
 | 28.10.2026 | Google: Organisations-Angaben auf der Startseite; Search Console wartet auf den Bestätigungs-Code des Inhabers (kein Unternehmensprofil – Richtlinien passen nicht) | Die Suche nach „Tisch6“ zeigt die Marke sauber, Themenseiten werden schneller gefunden | Impressionen und Klicks in der Search Console, Herkunft „Google“ |
 | 29.10.2026 | KI-Suche: Kurzbeschreibung `tisch6.at/llms.txt` für ChatGPT und Co. (Ablauf, Preise, für wen, „gerade gesucht: Männer 35–47“, Links zu den Themenseiten) – Anlass: ein Mann (46) kam über ChatGPT | Wer eine KI fragt, wo man in Wien Singles kennenlernt, bekommt Tisch6 genannt | Bewerbungen mit Herkunft-Detail „chatgpt.com“ oder „perplexity“, davon Männer 35–47 |
+| 29.10.2026 | Aufruf an die wartenden Männer (Aufruf `freund-35-47`, Zustimmung des Inhabers am 29.10.): „Kennst du einen Mann zwischen 35 und 47, der Single ist?“ mit persönlichem Einladungslink und WhatsApp-Knopf | Männer kennen passende Männer – Freunde, Kollegen, Brüder | Bewerbungen mit Herkunft „Empfehlung“ und Detail „aufruf“ von Männern 35–47, getrennt nach einladender Person (Mann/Frau) |
 | 29.10.2026 | Hinweis beim Einladungslink genauer: „Männer zwischen 35 und 47, die mittwochs, donnerstags oder freitags Zeit haben“ | Eine genaue Bitte bringt passendere Empfehlungen | Bewerbungen über Einladungslinks, davon Männer 35–47 mit Mi/Do/Fr |
 
 ## Nächste Schritte aus der Kanal-Recherche (28.10.2026)
@@ -81,8 +82,8 @@ Falter kommerzielle Dating-Abende in den Kalender nimmt.
 - Ergebnisse: Alle Versuche laufen erst seit 28.10. – zu früh. Erste Auswertung am 12.11.; die Herkunft wird erfasst (3 von 3).
 - Neu umgesetzt: `llms.txt` für KI-Suche; genauerer Hinweis beim Einladungslink (Mi/Do/Fr). Heute ab 9 Uhr: Aufruf an
   die wartenden Frauen.
-- Vorschlag an den Inhaber: dieselbe Bitte an die 6 wartenden Männer („Bring einen Freund zwischen 35 und 47 mit“) –
-  ein Aufruf, braucht seine Zustimmung.
+- Dieselbe Bitte an die 6 wartenden Männer („Bring einen Freund zwischen 35 und 47 mit“) – vom Inhaber am 29.10. freigegeben,
+  läuft als Aufruf `freund-35-47`.
 
 ## Woche bis 28.10.2026 (Ausgangslage)
 

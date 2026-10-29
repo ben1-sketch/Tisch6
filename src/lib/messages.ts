@@ -619,7 +619,7 @@ export function campaignMail(o: { name: string; campaign: Campaign; inviteCode: 
     subject: "Hilf mit, dass dein Tisch zustande kommt",
     title: `Dein Tisch braucht noch Verstärkung, ${o.name}`,
     paragraphs: [
-      `Wir stellen gerade die nächsten Tische zusammen. Damit dein Tisch zustande kommt, fehlen uns noch ${o.campaign.missing}.`,
+      o.campaign.lead ?? `Wir stellen gerade die nächsten Tische zusammen. Damit dein Tisch zustande kommt, fehlen uns noch ${o.campaign.missing}.`,
       o.campaign.ask,
       url,
     ],

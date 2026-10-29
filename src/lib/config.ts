@@ -105,6 +105,8 @@ export type Campaign = {
   until: string;
   /** „Damit dein Tisch zustande kommt, fehlen uns noch …“ */
   missing: string;
+  /** Eigener erster Absatz, wenn der Satz mit `missing` für diese Empfänger nicht passt */
+  lead?: string;
   /** Bitte, den eigenen Einladungslink weiterzuschicken */
   ask: string;
   /** Text vor dem Link in der WhatsApp-Nachricht */
@@ -125,6 +127,17 @@ export const CAMPAIGNS: Campaign[] = [
     until: "2026-10-30T19:00:00Z",
     missing: "Männer zwischen 35 und 47 Jahren",
     ask: "Kennst du einen Single-Mann in diesem Alter, zum Beispiel einen Kollegen, Bruder oder Freund? Dann schick ihm deinen persönlichen Einladungslink:",
+    share: "Schau mal: Tisch6 – Dating-Dinner in Wien, drei Frauen und drei Männer an einem Tisch. Gerade werden Männer zwischen 35 und 47 gesucht:",
+  },
+  {
+    // Wunsch des Inhabers vom 29.10.2026: dieselbe Bitte an die wartenden Männer („Bring einen Freund mit“)
+    id: "freund-35-47",
+    to: "mann",
+    from: "2026-10-29T08:00:00Z",
+    until: "2026-10-31T19:00:00Z",
+    missing: "Männer zwischen 35 und 47 Jahren",
+    lead: "Wir stellen gerade die nächsten Tische zusammen. Damit mehr Tische zustande kommen, fehlen uns vor allem Männer zwischen 35 und 47 Jahren.",
+    ask: "Kennst du einen Mann in diesem Alter, der Single ist – zum Beispiel einen Freund, Kollegen oder Bruder? Dann schick ihm deinen persönlichen Einladungslink:",
     share: "Schau mal: Tisch6 – Dating-Dinner in Wien, drei Frauen und drei Männer an einem Tisch. Gerade werden Männer zwischen 35 und 47 gesucht:",
   },
 ];
