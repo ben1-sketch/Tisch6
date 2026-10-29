@@ -13,7 +13,18 @@ import {
   OPEN_SEAT,
   must,
 } from "./db";
-import { type Gender, type Person, kitchenNotes, knowEachOther, otherGender, tableSummary, toPerson, validGroup } from "./matching-core";
+import {
+  type Gender,
+  type Person,
+  ageMiss,
+  commonDays,
+  kitchenNotes,
+  knowEachOther,
+  otherGender,
+  tableSummary,
+  toPerson,
+  validGroup,
+} from "./matching-core";
 import {
   type DinnerInfo,
   adminMail,
@@ -35,7 +46,7 @@ import {
 import { notifyAdmin, sendEmail, sendSms } from "./notify";
 import { loadPool } from "./pool";
 import { refund } from "./stripe";
-import { HOUR, hoursUntil, viennaDate, viennaHour, weekdayOf } from "./time";
+import { HOUR, WEEKDAY_NAMES, hoursUntil, viennaDate, viennaHour, weekdayOf } from "./time";
 
 // ---------------------------------------------------------------------------
 // Laden
@@ -271,24 +282,95 @@ function ageGap(table: OpenTable, p: Person) {
   return ages.length ? Math.max(0, Math.min(...ages) - p.age, p.age - Math.max(...ages)) : 0;
 }
 
+const ageRange = (p: Person) =>
+  p.minAge !== null && p.maxAge !== null ? `von ${p.minAge} bis ${p.maxAge}` : p.minAge !== null ? `ab ${p.minAge}` : `bis ${p.maxAge}`;
+const plural = (g: Gender) => (g === "frau" ? "Frauen" : "Männer");
+
 /**
- * Mögliche Nachrücker je Geschlecht, wer am längsten wartet zuerst – bei einer Ausnahme des Inhabers zuerst die dort
- * genannten Personen in ihrer Reihenfolge, dann wer altersmäßig am nächsten dran ist. Null, wenn das Dinner keine
- * Nachrücker mehr nimmt.
+ * Warum passt die Person nach den Regeln nicht an den Tisch – in einfachen Worten für den Adminbereich.
+ * Null, wenn sie gar nicht infrage kommt: kein Platz für ihr Geschlecht, schon gefragt, sucht das andere Geschlecht
+ * nicht oder kennt jemanden am Tisch (Begleitung, Einladungslink).
  */
-export async function replacementCandidates(db: Db, dinnerId: string, limit = 1) {
+export function fitProblems(table: OpenTable, p: Person): string[] | null {
+  if (table.missing[p.gender] <= 0 || table.tried.has(p.id) || !p.seeks.includes(otherGender(p.gender))) return null;
+  if (table.members.some((m) => knowEachOther(m, p))) return null;
+  const problems: string[] = [];
+  if (p.days && !p.days.includes(table.weekday)) problems.push(`hat laut Bewerbung ${WEEKDAY_NAMES[table.weekday].toLowerCase()}s keine Zeit`);
+  const ages = [...table.members, p].map((m) => m.age);
+  const span = Math.max(...ages) - Math.min(...ages);
+  if (span > TABLE.maxAgeSpan) problems.push(`${span} Jahre Altersabstand am Tisch (sonst höchstens ${TABLE.maxAgeSpan})`);
+  const others = table.members.filter((m) => m.gender !== p.gender);
+  const tooFar = others.filter((m) => ageMiss(p, m) > TABLE.ageTolerance);
+  if (tooFar.length) {
+    problems.push(`wünscht sich ${plural(otherGender(p.gender))} ${ageRange(p)} – ${tooFar.map((m) => `${m.firstName} ist ${m.age}`).join(", ")}`);
+  }
+  for (const m of others) if (ageMiss(m, p) > TABLE.ageTolerance) problems.push(`${m.firstName} (${m.age}) wünscht sich ${plural(p.gender)} ${ageRange(m)}`);
+  const own = p.axes[0];
+  const group = table.members.map((m) => m.axes[0]);
+  if (group.length && Math.max(own, ...group) - Math.min(own, ...group) > TABLE.maxEnergySpread) {
+    problems.push(
+      own < Math.min(...group) ? "deutlich ruhiger als die anderen am Tisch" : own > Math.max(...group) ? "deutlich lebhafter als die anderen am Tisch" : "Temperament passt nicht ganz zur Runde",
+    );
+  }
+  if (!problems.length && !commonDays([...table.members, p]).length) problems.push("die Wunschtage passen nicht zur Runde");
+  return problems;
+}
+
+/** Ein Tisch, der Nachrücker nimmt, mit dem Pool – geladen nur, wenn gerade ein Platz frei ist */
+async function openTableWithPool(db: Db, dinnerId: string) {
   const table = await openTable(db, dinnerId);
   if (!table) return null;
   const pool = table.missing.frau > 0 || table.missing.mann > 0 ? await loadPool(db) : [];
+  return { table, pool };
+}
+
+/**
+ * Wer nach den Regeln passt, wer am längsten wartet zuerst – bei einer Ausnahme des Inhabers zuerst die dort genannten
+ * Personen in ihrer Reihenfolge, dann wer altersmäßig am nächsten dran ist.
+ */
+function fittingCandidates(table: OpenTable, pool: Person[], g: Gender, limit: number) {
   const exception = TABLE_EXCEPTIONS[table.dinner.id];
   const only = exception?.only ?? [];
   const rank = (p: Person) => (only.includes(p.id) ? only.indexOf(p.id) : only.length);
-  const fits = (g: Gender) =>
+  return pool
+    .filter((p) => p.gender === g && fitsTable(table, p))
+    .sort((a, b) => rank(a) - rank(b) || (exception ? ageGap(table, a) - ageGap(table, b) : 0) || a.waitingSince - b.waitingSince)
+    .slice(0, limit);
+}
+
+/** Mögliche Nachrücker je Geschlecht (siehe fittingCandidates). Null, wenn das Dinner keine Nachrücker mehr nimmt. */
+export async function replacementCandidates(db: Db, dinnerId: string, limit = 1) {
+  const found = await openTableWithPool(db, dinnerId);
+  if (!found) return null;
+  const { table, pool } = found;
+  return { ...table, candidates: { frau: fittingCandidates(table, pool, "frau", limit), mann: fittingCandidates(table, pool, "mann", limit) } };
+}
+
+/** „Knapp daneben“ heißt: höchstens so viele Gründe, warum die Person nicht passt */
+const NEAR_MISS_MAX_PROBLEMS = 2;
+
+/**
+ * Für den Adminbereich: passende Nachrücker und wer knapp danebenliegt – mit dem Grund, wer die wenigsten Gründe hat
+ * zuerst. Wer knapp danebenliegt, kann der Inhaber trotzdem einladen (inviteAnyway).
+ */
+export async function replacementOptions(db: Db, dinnerId: string, limit = 5) {
+  const found = await openTableWithPool(db, dinnerId);
+  if (!found) return null;
+  const { table, pool } = found;
+  const nearMisses = (g: Gender) =>
     pool
-      .filter((p) => p.gender === g && fitsTable(table, p))
-      .sort((a, b) => rank(a) - rank(b) || (exception ? ageGap(table, a) - ageGap(table, b) : 0) || a.waitingSince - b.waitingSince)
+      .filter((p) => p.gender === g && !fitsTable(table, p))
+      .flatMap((p) => {
+        const problems = fitProblems(table, p);
+        return problems?.length && problems.length <= NEAR_MISS_MAX_PROBLEMS ? [{ person: p, problems }] : [];
+      })
+      .sort((a, b) => a.problems.length - b.problems.length || a.person.waitingSince - b.person.waitingSince)
       .slice(0, limit);
-  return { ...table, candidates: { frau: fits("frau"), mann: fits("mann") } };
+  return {
+    ...table,
+    candidates: { frau: fittingCandidates(table, pool, "frau", limit), mann: fittingCandidates(table, pool, "mann", limit) },
+    nearMisses: { frau: nearMisses("frau"), mann: nearMisses("mann") },
+  };
 }
 
 /** Kommende Tische, an denen gerade ein Platz frei ist und die noch Nachrücker nehmen */

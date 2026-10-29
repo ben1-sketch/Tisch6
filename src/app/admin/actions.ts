@@ -19,6 +19,7 @@ import {
   extendInvite,
   grantCredit,
   grantDiscount,
+  inviteAnyway,
   inviteToDinner,
   logAdmin,
   markNoShow,
@@ -279,6 +280,10 @@ export async function replaceNowAction(_: ActionResult, form: FormData) {
 
 export async function inviteAction(_: ActionResult, form: FormData) {
   return run(async () => inviteToDinner(db(), idFrom(form), idFrom(form, "person")));
+}
+
+export async function inviteAnywayAction(_: ActionResult, form: FormData) {
+  return run(async () => inviteAnyway(db(), idFrom(form), idFrom(form, "person")));
 }
 
 export async function resendReservationAction(_: ActionResult, form: FormData) {

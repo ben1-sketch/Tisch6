@@ -38,6 +38,7 @@ import {
   loadDinner,
   offerSeat,
   replacementCandidates,
+  replacementOptions,
   seatsOf,
   sendReservation,
 } from "../seats";
@@ -545,6 +546,18 @@ export async function inviteToDinner(db: Db, dinnerId: string, applicationId: st
   if (!seat) throw stale();
   await logAdmin(db, "Von Hand eingeladen", { applicationId, dinnerId });
   return `${candidate.firstName} hat die Einladung per E-Mail und SMS bekommen (12 Stunden Zeit).`;
+}
+
+/** Entscheidung des Inhabers: Person einladen, die nach den Regeln knapp nicht passt (Alter, Wunschalter, Temperament, Wochentag) */
+export async function inviteAnyway(db: Db, dinnerId: string, applicationId: string) {
+  const found = await replacementOptions(db, dinnerId, 100);
+  if (!found) throw new AdminError("Dieser Tisch nimmt keine Nachrücker mehr (abgesagt, vorbei oder zu knapp vor Beginn).");
+  const near = [...found.nearMisses.frau, ...found.nearMisses.mann].find((x) => x.person.id === applicationId);
+  if (!near) throw new AdminError("Die Person kann an diesen Tisch nicht eingeladen werden – kein Platz frei, schon gefragt oder sie kennt jemanden am Tisch.");
+  const seat = await offerSeat(db, found, near.person);
+  if (!seat) throw stale();
+  await logAdmin(db, "Trotzdem eingeladen", { applicationId, dinnerId, detail: near.problems.join("; ") });
+  return `${near.person.firstName} hat die Einladung per E-Mail und SMS bekommen (${TIMING.replacementHours} Stunden Zeit).`;
 }
 
 export async function replaceNow(db: Db, dinnerId: string) {

@@ -22,7 +22,7 @@ import {
 } from "@/lib/db";
 import type { Person } from "@/lib/matching-core";
 import { CARD_RULES, RESERVATION_NAME } from "@/lib/messages";
-import { replacementCandidates } from "@/lib/seats";
+import { replacementOptions } from "@/lib/seats";
 import { dateKey, formatDateTime, formatTime, hoursUntil, viennaDate } from "@/lib/time";
 import {
   cancelDinnerAction,
@@ -30,6 +30,7 @@ import {
   confirmManuallyAction,
   extendInviteAction,
   inviteAction,
+  inviteAnywayAction,
   moveDinnerAction,
   noShowAction,
   removeSeatAction,
@@ -84,7 +85,7 @@ export default async function TablePage({ params }: PageProps<"/admin/tische/[id
   const planned = dinner.status === "inviting" || dinner.status === "confirmed";
   const future = hoursUntil(dinner.starts_at) > 0;
   const started = !future;
-  const candidates = planned && future ? await replacementCandidates(client, dinner.id, 5).catch(() => null) : null;
+  const candidates = planned && future ? await replacementOptions(client, dinner.id, 5).catch(() => null) : null;
   const missing = candidates ? candidates.missing.frau + candidates.missing.mann : 0;
   const fixed = seatRows.filter((s) => TAKING_PART.includes(s.status)).length;
   const matching = dinner.matching as { begruendung?: string } | null;
@@ -242,6 +243,40 @@ export default async function TablePage({ params }: PageProps<"/admin/tische/[id
                           </li>
                         ))}
                       </ul>
+                    )}
+                    {candidates.nearMisses[g].length > 0 && (
+                      <div className="mt-4">
+                        <h4 className="mb-2 text-sm font-medium">Knapp daneben</h4>
+                        <p className="mb-2 text-sm text-mist">
+                          Passen nach den Regeln nicht ganz – du kannst sie trotzdem einladen. Das System macht das nie von selbst.
+                        </p>
+                        <ul className="space-y-2">
+                          {candidates.nearMisses[g].map(({ person: c, problems }) => (
+                            <li key={c.id} className="rounded-xl border border-amber-400/30 p-3 text-sm">
+                              <div className="flex flex-wrap items-center justify-between gap-2">
+                                <span>
+                                  <PersonLink id={c.id} name={c.firstName} />
+                                  <span className="text-mist">
+                                    {" "}
+                                    · {c.age} · {c.typ} · wartet {relative(new Date(c.waitingSince).toISOString()).replace(/^vor /, "seit ")}
+                                  </span>
+                                </span>
+                                <ActionForm
+                                  action={inviteAnywayAction}
+                                  hidden={{ id: dinner.id, person: c.id }}
+                                  submit="Trotzdem einladen"
+                                  confirm={`${c.firstName} trotzdem einladen? Passt nicht ganz: ${problems.join("; ")}. E-Mail + SMS, ${TIMING.replacementHours} Stunden Zeit zum Zusagen.`}
+                                />
+                              </div>
+                              <ul className="mt-2 list-disc space-y-0.5 pl-5 text-amber-200">
+                                {problems.map((t) => (
+                                  <li key={t}>{t}</li>
+                                ))}
+                              </ul>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
                     )}
                   </div>
                 ) : null,
