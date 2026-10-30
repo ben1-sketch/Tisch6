@@ -30,6 +30,9 @@ Neueste Woche oben.
   Facebook-Support-Nachrichten.
 - Metricool: Starter-Abo seit 29.10. (Beiträge ohne Monatsgrenze).
 - Spam-Kommentare „can we repost? send me this post“ (z. B. european.circle) nicht beantworten, löschen.
+- Anzeige „So funktioniert's“ für Meta: `public/social/anzeige-so-funktionierts-feed.jpg` (4:5) und `-story.jpg` (9:16),
+  Text in `content.mjs` unter `ads`. Foto ist das KI-Bild `gedeck.jpg` → als KI-Bild kennzeichnen. Fotoseiten wie
+  Unsplash oder Pexels sind in Claudes Umgebung gesperrt – echte Fotos schickt der Inhaber im Chat.
 
 ## Hinweis vom Wachstums-Check 29.10.2026 (für den Montags-Check)
 

@@ -275,6 +275,38 @@ ${TAGS}`,
 ];
 
 /**
+ * Anzeigen (bezahlte Werbung bei Meta, geht auch als normaler Beitrag): Foto oben, darunter der Ablauf.
+ * Je ein Bild für den Feed (1080×1350) und für Storys/Reels (1080×1920).
+ * Bezahlt erst schalten, wenn Meta die Dating-Werbung freigegeben hat.
+ */
+export const ads = [
+  {
+    id: "anzeige-so-funktionierts",
+    ai: true,
+    bg: "gedeck.jpg",
+    eyebrow: "Dinner-Dating in Wien",
+    title: "Sechs Singles.",
+    gold: "Ein Tisch.",
+    steps: [
+      { title: "Bewerben", text: "10 Minuten Chat mit unserer KI-Gastgeberin – kostenlos." },
+      { title: "Die KI stellt den Tisch zusammen", text: "3 Frauen · 3 Männer · max. 10 Jahre auseinander" },
+      { title: "Dinner in einem Wiener Lokal", text: "Danach Kontakt nur, wenn es beide wollen." },
+    ],
+    note: "38 € pro Abend · bezahlt wird erst mit der Einladung",
+    caption: `Sechs Singles, ein Tisch, ein Abend in Wien. 🕯️
+
+So funktioniert Tisch6:
+1. Bewerben: zehn Minuten Chat mit unserer KI-Gastgeberin – kostenlos.
+2. Die KI stellt deinen Tisch zusammen: drei Frauen, drei Männer, maximal zehn Jahre auseinander.
+3. Dinner in einem ausgewählten Wiener Lokal, reserviert auf „Tisch6“. Am Tag danach gibt es Kontakt nur, wenn es beide wollen.
+
+38 € pro Abend, bezahlt wird erst mit der Einladung. Essen und Getränke zahlt jeder selbst im Lokal.
+
+Jetzt kostenlos bewerben: tisch6.at`,
+  },
+];
+
+/**
  * Storys: 1080×1920, ohne Text unter dem Bild (Storys haben keine Bildunterschrift).
  * Inhalte bleiben im sicheren Bereich – oben Profilzeile, unten Antwortfeld von Instagram.
  */

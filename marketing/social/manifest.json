@@ -129,6 +129,24 @@
     "caption": "Ein gedeckter Tisch, warmes Licht, sechs Menschen, die sich etwas zu sagen haben. 🕯️\n\nWir kümmern uns um alles davor – ihr um das Gespräch. Tisch6: KI-kuratierte Dating-Dinner für Singles in Wien.\n\nBewerbung kostenlos – Link in der Bio. Folge @tischsechs, damit du nichts verpasst.\n\n#wien #singleswien #datingwien #wienerleben #vienna"
   },
   {
+    "id": "anzeige-so-funktionierts-feed",
+    "type": "ANZEIGE",
+    "ai": true,
+    "media": [
+      "https://www.tisch6.at/social/anzeige-so-funktionierts-feed.jpg"
+    ],
+    "caption": "Sechs Singles, ein Tisch, ein Abend in Wien. 🕯️\n\nSo funktioniert Tisch6:\n1. Bewerben: zehn Minuten Chat mit unserer KI-Gastgeberin – kostenlos.\n2. Die KI stellt deinen Tisch zusammen: drei Frauen, drei Männer, maximal zehn Jahre auseinander.\n3. Dinner in einem ausgewählten Wiener Lokal, reserviert auf „Tisch6“. Am Tag danach gibt es Kontakt nur, wenn es beide wollen.\n\n38 € pro Abend, bezahlt wird erst mit der Einladung. Essen und Getränke zahlt jeder selbst im Lokal.\n\nJetzt kostenlos bewerben: tisch6.at"
+  },
+  {
+    "id": "anzeige-so-funktionierts-story",
+    "type": "ANZEIGE",
+    "ai": true,
+    "media": [
+      "https://www.tisch6.at/social/anzeige-so-funktionierts-story.jpg"
+    ],
+    "caption": "Sechs Singles, ein Tisch, ein Abend in Wien. 🕯️\n\nSo funktioniert Tisch6:\n1. Bewerben: zehn Minuten Chat mit unserer KI-Gastgeberin – kostenlos.\n2. Die KI stellt deinen Tisch zusammen: drei Frauen, drei Männer, maximal zehn Jahre auseinander.\n3. Dinner in einem ausgewählten Wiener Lokal, reserviert auf „Tisch6“. Am Tag danach gibt es Kontakt nur, wenn es beide wollen.\n\n38 € pro Abend, bezahlt wird erst mit der Einladung. Essen und Getränke zahlt jeder selbst im Lokal.\n\nJetzt kostenlos bewerben: tisch6.at"
+  },
+  {
     "id": "story-single-in-wien",
     "type": "STORY",
     "ai": false,

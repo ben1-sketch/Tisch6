@@ -10,7 +10,7 @@ import { spawn } from "node:child_process";
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { carousels, posts, reels, stories } from "./content.mjs";
+import { ads, carousels, posts, reels, stories } from "./content.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "../..");
@@ -248,6 +248,53 @@ function postHtml(post) {
 }
 
 // ---------------------------------------------------------------------------
+// Anzeigen: Foto oben mit Überschrift, darunter „So funktioniert's“ – Feed (1080×1350) und Story (1080×1920)
+// ---------------------------------------------------------------------------
+
+const adFormats = { feed: [1080, 1350], story: [1080, 1920] };
+
+function adHtml(ad, format) {
+  const story = format === "story";
+  const [w, h] = adFormats[format];
+  // Story: oben und unten je rund 250 px frei lassen – dort liegen Profilzeile und Knopf der Anzeige.
+  // Das Foto sitzt so, dass Teller und Serviette zwischen Überschrift und Ablauf frei zu sehen sind.
+  const v = story
+    ? { photoTop: 80, photo: 980, dark: 45, top: 250, mark: 62, brand: 54, eyebrow: 40, title: 100, how: 965, num: 66, step: 48, text: 31, gap: 28, bottom: 265 }
+    : { photoTop: 0, photo: 760, dark: 40, top: 64, mark: 54, brand: 46, eyebrow: 56, title: 100, how: 710, num: 58, step: 42, text: 28, gap: 22, bottom: 64 };
+  const extra = `
+.ad-bg { background: radial-gradient(ellipse 80% 30% at 50% 100%, rgb(40 50 85 / 0.5), transparent 70%), var(--night-950); }
+.ad-photo, .ad-shade { top: ${v.photoTop}px; height: ${v.photo}px; bottom: auto; }
+.ad-photo { background-position: center bottom; }
+.ad-shade { background: linear-gradient(180deg, ${story ? "var(--night-950)" : "rgb(6 9 19 / 0.9)"} 0%, rgb(6 9 19 / ${story ? 0.7 : 0.6}) ${v.dark}%, rgb(6 9 19 / 0.08) 62%, rgb(6 9 19 / 0.4) 80%, var(--night-950) 100%); }
+.ad-head { position: absolute; top: ${v.top}px; left: 76px; right: 76px; }
+.ad-eyebrow { font-size: ${story ? 30 : 26}px; margin-top: ${v.eyebrow}px; }
+.ad-title { font-size: ${v.title}px; margin-top: 20px; }
+.ad-how { position: absolute; left: 76px; right: 76px; top: ${v.how}px; }
+.ad-label { display: flex; align-items: center; gap: 24px; font-size: ${story ? 28 : 24}px; }
+.ad-label::after { content: ""; flex: 1; height: 2px; background: linear-gradient(90deg, rgb(214 183 122 / 0.6), transparent); }
+.ad-steps { list-style: none; margin-top: ${v.gap + 8}px; display: flex; flex-direction: column; gap: ${v.gap}px; }
+.ad-steps li { display: grid; grid-template-columns: ${v.num + 30}px 1fr; align-items: baseline; }
+.ad-steps b { font-family: "Cormorant", serif; font-style: italic; font-weight: 500; font-size: ${v.num}px; line-height: 1; color: var(--gold-400); }
+.ad-steps strong { display: block; font-family: "Cormorant", serif; font-weight: 600; font-size: ${v.step}px; line-height: 1.1; }
+.ad-steps span { display: block; margin-top: 8px; font-size: ${v.text}px; line-height: 1.35; color: rgb(244 239 230 / 0.8); }
+.ad-note { margin-top: ${v.gap + 4}px; padding-left: ${v.num + 30}px; font-size: ${story ? 28 : 25}px; color: var(--gold-200); }
+.ad-foot { position: absolute; left: 76px; right: 76px; bottom: ${v.bottom}px; display: flex; align-items: center; justify-content: space-between; }
+.ad-pill { white-space: nowrap; padding: ${story ? "30px 52px" : "26px 44px"}; font-size: ${story ? 28 : 25}px; }
+.ad-site { font-size: ${story ? 28 : 24}px; }
+`;
+  const steps = ad.steps.map((s, i) => `<li><b>${["I", "II", "III"][i]}</b><div><strong>${esc(s.title)}</strong><span>${esc(s.text)}</span></div></li>`).join("");
+  return page(
+    w,
+    h,
+    `<div class="frame"><div class="layer ad-bg"></div><div class="layer photo ad-photo" style="background-image:url('${photo(ad.bg)}')"></div><div class="layer ad-shade"></div>
+<div class="ad-head">${brand(v.mark, v.brand)}<div class="eyebrow ad-eyebrow">${esc(ad.eyebrow)}</div><div class="display ad-title">${esc(ad.title)}<br><span class="gold">${esc(ad.gold)}</span></div></div>
+<div class="ad-how"><div class="eyebrow ad-label">So funktioniert's</div><ol class="ad-steps">${steps}</ol><p class="ad-note">${esc(ad.note)}</p></div>
+<div class="ad-foot"><span class="pill ad-pill">Jetzt kostenlos bewerben</span><span class="eyebrow ad-site">tisch6.at</span></div></div>`,
+    extra,
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Ausgabe
 // ---------------------------------------------------------------------------
 
@@ -298,6 +345,18 @@ async function renderPost(browser, post) {
   await pg.screenshot({ path: path.join(OUT, `${post.id}.jpg`), type: "jpeg", quality: 92 });
   await pg.close();
   return [`${SITE}/${post.id}.jpg`];
+}
+
+async function renderAd(browser, ad) {
+  const urls = [];
+  for (const [format, [w, h]] of Object.entries(adFormats)) {
+    const name = `${ad.id}-${format}`;
+    const pg = await open(browser, adHtml(ad, format), w, h, name);
+    await pg.screenshot({ path: path.join(OUT, `${name}.jpg`), type: "jpeg", quality: 92 });
+    await pg.close();
+    urls.push(`${SITE}/${name}.jpg`);
+  }
+  return urls;
 }
 
 
@@ -382,6 +441,7 @@ const done = [];
 for (const r of reels) if (wanted(r.id)) done.push(`${r.id}: ${(await renderReel(browser, r)).length} Datei(en)`);
 for (const c of carousels) if (wanted(c.id)) done.push(`${c.id}: ${(await renderCarousel(browser, c)).length} Datei(en)`);
 for (const p of posts) if (wanted(p.id)) done.push(`${p.id}: ${(await renderPost(browser, p)).length} Datei(en)`);
+for (const a of ads) if (wanted(a.id)) done.push(`${a.id}: ${(await renderAd(browser, a)).length} Datei(en)`);
 for (const st of stories) if (wanted(st.id) || wanted("storys")) done.push(`${st.id}: ${(await renderStory(browser, st.id, storyHtml(st))).length} Datei(en)`);
 for (const f of feedItems) if (wanted(`story-neu-${f.id}`) || wanted("storys")) done.push(`story-neu-${f.id}: ${(await renderStory(browser, `story-neu-${f.id}`, teaserHtml(f))).length} Datei(en)`);
 await browser.close();
@@ -391,6 +451,8 @@ const manifest = [
   ...reels.map((r) => ({ id: r.id, type: "REEL", ai: r.ai, media: [`${SITE}/${r.id}.mp4`], cover: `${SITE}/${r.id}-cover.jpg`, caption: r.caption })),
   ...carousels.map((c) => ({ id: c.id, type: "CAROUSEL", ai: c.ai, media: c.slides.map((_, i) => `${SITE}/${c.id}-${i + 1}.jpg`), caption: c.caption })),
   ...posts.map((p) => ({ id: p.id, type: "POST", ai: p.ai, media: [`${SITE}/${p.id}.jpg`], caption: p.caption })),
+  // Anzeigen werden nicht automatisch eingeplant – Bild und Text kommen von Hand in den Werbeanzeigenmanager
+  ...ads.flatMap((a) => Object.keys(adFormats).map((f) => ({ id: `${a.id}-${f}`, type: "ANZEIGE", ai: a.ai, media: [`${SITE}/${a.id}-${f}.jpg`], caption: a.caption }))),
   ...stories.map((st) => ({ id: st.id, type: "STORY", ai: Boolean(st.ai), media: [`${SITE}/${st.id}.jpg`] })),
   // Der Hinweis zeigt das Titelbild des Beitrags – also dieselbe KI-Kennzeichnung wie der Beitrag
   ...feedItems.map((f) => ({ id: `story-neu-${f.id}`, type: "STORY", ai: f.ai, media: [`${SITE}/story-neu-${f.id}.jpg`] })),
