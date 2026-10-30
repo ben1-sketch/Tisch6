@@ -19,6 +19,18 @@ Neueste Woche oben.
 - Echte Stimmen: nur freigegebene Sätze vom Abend (Admin → Wiedersehen & Feedback → „Zitate für Instagram“), immer ohne Namen.
 - Woher Bewerbungen kommen, steht im Admin auf der Übersicht – Inhalte und Werbung danach ausrichten.
 
+## Stand 30.10.2026 (Auswertung mit dem Inhaber)
+
+- Bild-Posts vom 27.–29.10. erreichten nur 36–57 Personen, also fast nur die Follower (77). Bestes Reel: „Kennst du die
+  Stille …“ mit 298 Personen. Einziger weitergeschickter Post: „40 Matches, 3 Gespräche, 0 Treffen“ (6-mal).
+- Vorschlag „Uns fehlen Männer 35–47“ (ehrliche Zahlen zum Weiterschicken) hat der Inhaber abgelehnt – er sieht genug
+  Männer. Nicht erneut vorschlagen.
+- Bezahlte Werbung lief schon (Herkunft „ig / paid“ am 29.10.). Am 30.10. hat der Inhaber das Werbekonto „Arben Murseli“
+  bestätigt (Firma Arben Murseli e.U.) und den Antrag für Dating-Werbung bei Meta eingereicht – Antwort kommt in den
+  Facebook-Support-Nachrichten.
+- Metricool: Starter-Abo seit 29.10. (Beiträge ohne Monatsgrenze).
+- Spam-Kommentare „can we repost? send me this post“ (z. B. european.circle) nicht beantworten, löschen.
+
 ## Hinweis vom Wachstums-Check 29.10.2026 (für den Montags-Check)
 
 - Schwerpunkt bleibt Männer 35–47 – jetzt genauer: mit Zeit am Mittwoch, Donnerstag oder Freitag.

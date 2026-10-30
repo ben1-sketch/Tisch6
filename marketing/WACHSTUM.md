@@ -51,7 +51,7 @@ Ganzer Bericht: `marketing/recherche/kanaele-2026-10-28.md`. Kernaussage: Die M�
 Menschen, die sie kennen, und über Orte, an denen sie schon sind – nicht über mehr Reichweite für alle.
 
 1. Inhaber: Startpaket umsetzen (Facebook-Gruppe, LinkedIn, MeinBezirk, WhatsApp) – Texte fertig.
-2. Inhaber: Search-Console-Code schicken; Dating-Genehmigung bei Meta und Zertifizierung bei Google beantragen.
+2. Inhaber: Search-Console-Code schicken; Dating-Genehmigung bei Meta (am 30.10.2026 beantragt) und Zertifizierung bei Google beantragen.
    Bis zur Meta-Zusage keine Beiträge bezahlt bewerben.
 3. Claude: Hinweis „Gerade besonders gefragt …“ auch in die Mails an Wartende – Text vorher vom Inhaber freigeben lassen.
 4. Inhaber: Tischkarten zu Neuehoheit, weitere Lokale fragen. Claude: Karten für jedes neue Lokal.
