@@ -47,8 +47,11 @@ export type Person = {
   notes: string[];
   /** ernsthafte Beziehung oder erstmal schauen – nur fürs Matching, wird nie angezeigt */
   goal: "ernsthaft" | "offen" | null;
-  /** Wie wichtig Familie ist (1–3) und was der Person im Leben wichtig ist – nur fürs Matching, wird nie angezeigt */
-  values: { familie: number | null; wichtig: string[] };
+  /**
+   * Wichtigkeit von Glaube, Politik, Familie (1–3) und was der Person im Leben wichtig ist – nur fürs Matching, wird nie angezeigt.
+   * Glaube und Politik gibt es nur, wenn die Person selbst davon erzählt und zugestimmt hat.
+   */
+  values: { glaube: number | null; politik: number | null; familie: number | null; wichtig: string[] };
   history: History;
   /** Lokal des letzten Abends – niemand sitzt zweimal hintereinander im selben Lokal */
   lastRestaurantId: string | null;
@@ -114,8 +117,12 @@ export function toPerson(
     notes: extra.notes ?? [],
     // ältere Profile kennen Beziehungsziel und Werte noch nicht
     goal: p.beziehungsziel ?? null,
-    // Glaube und Politik älterer Profile bleiben bewusst außen vor – danach fragt Tisch6 nicht mehr
-    values: { familie: p.werte?.familie ?? null, wichtig: p.wichtig_im_leben ?? [] },
+    values: {
+      glaube: p.werte?.glaube ?? null,
+      politik: p.werte?.politik ?? null,
+      familie: p.werte?.familie ?? null,
+      wichtig: p.wichtig_im_leben ?? [],
+    },
     history: extra.history ?? { liked: [], likedBy: [] },
     lastRestaurantId: extra.lastRestaurantId ?? null,
   };
@@ -232,10 +239,12 @@ export function scoreGroup(people: Person[], now: number) {
     for (const m of men) {
       score -= (ageMiss(w, m) + ageMiss(m, w)) * 2;
       if ((w.childWish === "ja" && m.childWish === "nein") || (w.childWish === "nein" && m.childWish === "ja")) score -= 1.5;
-      // Werte: wem Familie sehr wichtig ist, sitzt nicht neben jemandem, dem sie völlig egal ist
-      const a = w.values.familie;
-      const b = m.values.familie;
-      if (a !== null && b !== null && Math.abs(a - b) >= 2) score -= 1;
+      // Werte: wem Glaube, Politik oder Familie sehr wichtig ist, sitzt nicht neben jemandem, dem es völlig egal ist
+      for (const key of ["glaube", "politik", "familie"] as const) {
+        const a = w.values[key];
+        const b = m.values[key];
+        if (a !== null && b !== null && Math.abs(a - b) >= 2) score -= 1;
+      }
     }
   }
   return score;
