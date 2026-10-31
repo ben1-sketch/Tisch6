@@ -23,7 +23,7 @@ export function AdminAppCard({ teamToken, vapidKey }: { teamToken: string; vapid
     <div className="space-y-4 text-sm">
       <p className="text-mist">
         Leg den Adminbereich als eigene App auf deinen Home-Bildschirm – mit goldenem Symbol „Tisch6 Admin“. Hinweise wie „Bewerbung zur Prüfung“
-        kommen dann zusätzlich zur E-Mail als Nachricht aufs Handy: von 8 bis 22 Uhr, was nachts passiert, am Morgen.
+        kommen dann zusätzlich zur E-Mail als Nachricht aufs Handy – rund um die Uhr.
       </p>
 
       {env &&

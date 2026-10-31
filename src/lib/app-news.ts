@@ -78,14 +78,12 @@ export async function sendAppNews(db: Db, now = new Date(), send = appPush) {
 }
 
 /**
- * Hinweise ans Team (dieselben wie per E-Mail an ADMIN_EMAIL) zusätzlich als Nachricht an die Admin-App:
- * von 8 bis 22 Uhr, was nachts kommt, am Morgen. Erst ab dem ersten eingeschalteten Team-Gerät, jeder Hinweis einmal.
+ * Hinweise ans Team (dieselben wie per E-Mail an ADMIN_EMAIL) zusätzlich als Nachricht an die Admin-App –
+ * rund um die Uhr (Wunsch des Inhabers). Erst ab dem ersten eingeschalteten Team-Gerät, jeder Hinweis einmal.
  */
 export async function sendAdminNews(db: Db, now = new Date(), send = sendPush) {
   const to = process.env.ADMIN_EMAIL?.trim().toLowerCase();
   if (!to) return { skipped: "ADMIN_EMAIL fehlt" };
-  const hour = viennaHour(now);
-  if (hour < TIMING.adminFromHour || hour >= TIMING.adminToHour) return { skipped: "nachts" };
 
   const devices = await pushDevices(db, null);
   if (!devices.length) return { gesendet: 0 };

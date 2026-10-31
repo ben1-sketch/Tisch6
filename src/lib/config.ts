@@ -69,9 +69,6 @@ export const TIMING = {
   /** Erinnerungen, die nicht eilen, nur tagsüber (Stunde in Wien, von–bis) */
   daytimeFromHour: 9,
   daytimeToHour: 20,
-  /** Hinweise ans Team als Nachricht an die Admin-App nur in diesem Zeitfenster (Stunde in Wien, von–bis) – nachts gesammelt bis zum Morgen */
-  adminFromHour: 8,
-  adminToHour: 22,
   /** Bis so lange vorher ist eine Absage kostenlos (Stunden) */
   freeCancelHoursBefore: 48,
   /** Wiedersehen-Abfrage „am Tag danach“ (Stunden nach Beginn) */
