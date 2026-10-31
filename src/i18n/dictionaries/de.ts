@@ -198,7 +198,7 @@ const de = {
       terms: "Ich akzeptiere die {terms}.",
       termsLink: "AGB",
       sensitive:
-        "Ich willige ausdrücklich ein, dass Angaben zu meiner Partnersuche (wen ich kennenlernen möchte), zu meinen Werten (wie wichtig mir Glaube und Politik sind) und zu Essens-Unverträglichkeiten verarbeitet werden, um passende Tische zusammenzustellen (Art. 9 Abs. 2 lit. a DSGVO). Diese Angaben sieht niemand am Tisch. Widerruf jederzeit möglich.",
+        "Ich willige ausdrücklich ein, dass Angaben zu meiner Partnersuche (wen ich kennenlernen möchte) und zu Essens-Unverträglichkeiten verarbeitet werden, um passende Tische zusammenzustellen (Art. 9 Abs. 2 lit. a DSGVO). Diese Angaben sieht niemand am Tisch. Widerruf jederzeit möglich.",
       next: "Weiter",
     },
     phone: {

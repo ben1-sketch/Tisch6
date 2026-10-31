@@ -23,7 +23,7 @@ Du bekommst mehrere mögliche Runden. Alle erfüllen bereits die festen Regeln (
 Wähle die Runde, in der die Gespräche am besten fließen und die beste Chance auf ein Wiedersehen besteht:
 - Temperament (ruhig–extrovertiert) soll am Tisch ähnlich sein – je näher beieinander, desto besser. Die anderen drei Achsen dürfen gemischt sein.
 - Das Beziehungsziel soll möglichst übereinstimmen: alle suchen etwas Ernsthaftes oder alle wollen erstmal schauen.
-- Werte (wie wichtig Glaube, Politik und Familie sind) sollen zwischen Frauen und Männern nicht stark auseinandergehen.
+- Was den Personen im Leben wichtig ist (auch wie wichtig Familie ist), soll zwischen Frauen und Männern zusammenpassen.
 - Lernendes Matching: Bevorzuge Konstellationen, die bei einer Person bisher funktioniert haben – Gegenüber, die den Typen ähneln, die sie wiedersehen wollte oder von denen sie wiedersehen gewollt wurde.
 - Gemeinsame oder sich ergänzende Gesprächsthemen helfen; Lebensentwürfe sollen nicht offensichtlich kollidieren (z. B. Kinderwunsch).
 - Ein Tisch braucht Erzählende und Fragende, und die Humorstile sollen sich vertragen. Niemand soll genau das mitbringen, was für eine andere Person ein No-Go ist; was jemand an anderen mag, darf am Tisch vorkommen.
@@ -53,7 +53,7 @@ function describe(p: Person, label: string) {
     ...(p.passions.length || p.likesInOthers.length || p.noGos.length
       ? [`  Begeistert von: ${p.passions.join(", ") || "–"}; mag an anderen: ${p.likesInOthers.join(", ") || "–"}; No-Gos: ${p.noGos.join(", ") || "–"}`]
       : []),
-    `  Beziehungsziel: ${p.goal ?? "–"}; Werte Glaube/Politik/Familie (1–3): ${v.glaube ?? "–"}/${v.politik ?? "–"}/${v.familie ?? "–"}`,
+    `  Beziehungsziel: ${p.goal ?? "–"}; Familie wichtig (1–3): ${v.familie ?? "–"}; wichtig im Leben: ${v.wichtig.join(", ") || "–"}`,
     ...(p.history.liked.length ? [`  Wollte bisher wiedersehen: ${summarize(p.history.liked)}`] : []),
     ...(p.history.likedBy.length ? [`  Wurde bisher wiedersehen gewollt von: ${summarize(p.history.likedBy)}`] : []),
     ...(p.notes.length ? [`  Feedback nach früheren Abenden: ${p.notes.join(" | ")}`] : []),
