@@ -116,6 +116,8 @@ export type Seat = {
   status: SeatStatus;
   replacement: boolean;
   expires_at: string | null;
+  /** wann der Gast die offene Einladung zum ersten Mal im Browser geöffnet hat – zählt als Reaktion */
+  viewed_at: string | null;
   checkout_started_at: string | null;
   confirmed_at: string | null;
   ended_at: string | null;

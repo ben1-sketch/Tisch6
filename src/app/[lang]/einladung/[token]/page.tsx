@@ -5,6 +5,7 @@ import { getDictionary } from "@/i18n/get-dictionary";
 import { db } from "@/lib/db";
 import { seatView } from "@/lib/views";
 import { MarkVisitor } from "@/components/MarkVisitor";
+import { SeatSeen } from "@/components/SeatSeen";
 import { SeatPage } from "@/components/SeatPage";
 
 export const dynamic = "force-dynamic";
@@ -20,6 +21,8 @@ export default async function InvitationPage({ params, searchParams }: PageProps
   const active = ["invited", "offered", "confirmed"].includes(view.status) && view.dinnerStatus !== "cancelled";
   return (
     <>
+      {/* vor MarkVisitor, damit Geräte des Teams noch als solche erkannt werden */}
+      {(view.status === "invited" || view.status === "offered") && <SeatSeen token={token} />}
       <MarkVisitor status={active ? "eingeladen" : "beworben"} app={view.appToken} keep={!active} />
       <SeatPage view={view} t={dict.seat} lang={lang} paid={bezahlt === "1"} openReport={melden === "1"} />
     </>

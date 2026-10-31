@@ -53,6 +53,13 @@ export async function POST(request: Request, ctx: RouteContext<"/api/seat/[token
         await redeemCredit(client, seat, app);
         return NextResponse.json({ ok: true });
       }
+      case "gesehen": {
+        // Einladung im Browser geöffnet (SeatSeen) – zählt als Reaktion, dann keine letzte Erinnerung per SMS
+        if (openInvite && !seat.viewed_at) {
+          await client.from("seats").update({ viewed_at: new Date().toISOString() }).eq("id", seat.id).is("viewed_at", null);
+        }
+        return NextResponse.json({ ok: true });
+      }
       case "decline": {
         return (await declineSeat(client, seat)) ? NextResponse.json({ ok: true }) : closed();
       }

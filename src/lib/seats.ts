@@ -262,9 +262,9 @@ export function lastCallDue(expiresAt: Date, now: Date) {
 
 /**
  * Letzte Erinnerung kurz vor Ablauf der Zusagefrist (Wunsch des Inhabers): eine SMS – oder Push an die Tisch6-App –
- * an alle, die noch nicht bezahlt haben, einmal je Platz (siehe lastCallDue). Nicht bei kurzen Fristen wie bei
- * Nachrückern (dort reicht die Erinnerung zur Halbzeit) und nicht, während jemand gerade bezahlt.
- * send: zum Testen austauschbar.
+ * einmal je Platz (siehe lastCallDue), aber nur an Gäste ohne jede Reaktion: Einladung nie im Browser geöffnet
+ * (viewed_at), nie mit dem Bezahlen begonnen und nicht abgesagt. Nicht bei kurzen Fristen wie bei Nachrückern –
+ * dort reicht die Erinnerung zur Halbzeit. send: zum Testen austauschbar.
  */
 export async function sendLastCalls(db: Db, now = new Date(), send = sendPushOrSms) {
   const open = must(
@@ -274,8 +274,8 @@ export async function sendLastCalls(db: Db, now = new Date(), send = sendPushOrS
   const due = open.filter((s) => {
     const expires = new Date(s.expires_at!);
     const total = expires.getTime() - new Date(s.created_at).getTime();
-    const paying = s.checkout_started_at && now.getTime() - new Date(s.checkout_started_at).getTime() < 35 * 60_000;
-    return total >= 24 * HOUR && !paying && lastCallDue(expires, now);
+    const reacted = Boolean(s.viewed_at || s.checkout_started_at);
+    return total >= 24 * HOUR && !reacted && lastCallDue(expires, now);
   });
   if (!due.length) return 0;
   const keys = due.flatMap((s) => [`last_call:${s.id}`, `last_call:${s.id}:push`]);
