@@ -202,7 +202,8 @@ export async function rejectAction(_: ActionResult, form: FormData) {
 export async function waitlistAction(_: ActionResult, form: FormData) {
   return run(async () => {
     const reason = String(form.get("reason") ?? "");
-    if (!(reason in WAITLIST_REASONS)) throw new AdminError("Bitte einen Grund wählen.");
+    // „Geschlechterverhältnis“ gibt es nicht mehr – der nächste Durchlauf würde die Person sofort wieder annehmen
+    if (!(reason in WAITLIST_REASONS) || reason === "balance") throw new AdminError("Bitte einen Grund wählen.");
     return waitlistApplicant(db(), await applicationFrom(form), reason as keyof typeof WAITLIST_REASONS);
   });
 }

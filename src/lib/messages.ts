@@ -185,10 +185,8 @@ export function acceptedMail(o: { name: string; fromWaitlist?: boolean; appToken
     subject: o.fromWaitlist ? "Gute Nachricht: Du bist bei Tisch6 dabei" : "Du bist dabei – willkommen bei Tisch6",
     title: o.fromWaitlist ? `Gute Nachricht, ${o.name}: Du bist dabei!` : `Willkommen am Tisch, ${o.name}!`,
     paragraphs: [
-      o.fromWaitlist
-        ? "Es ist so weit – du bist von der Warteliste nachgerückt."
-        : "Schön, dass du dabei bist. Deine Bewerbung hat uns überzeugt.",
-      "Wie es weitergeht: Unsere KI stellt jetzt einen Tisch mit fünf Menschen zusammen, die zu dir passen. Sobald er steht, bekommst du eine Einladung mit Datum und Lokal – an einem deiner Wunschtage.",
+      o.fromWaitlist ? "Es ist so weit – du bist jetzt dabei." : "Schön, dass du dabei bist. Deine Bewerbung hat uns überzeugt.",
+      "Bis dein Tisch zustande kommt, stehst du auf unserer Warteliste. Unsere KI stellt einen Tisch mit fünf Menschen zusammen, die zu dir passen – sobald er steht, bekommst du eine Einladung mit Datum und Lokal, an einem deiner Wunschtage.",
       "Bezahlt wird erst, wenn du eine Einladung annimmst.",
     ],
     cta: { label: "Mein Konto", url: accountUrl() },
@@ -307,7 +305,7 @@ export function replacementSms(o: { dinner: DinnerInfo; token: string }) {
 
 // Nachrichten nur an die Tisch6-App – zusätzlich zur E-Mail, nie als SMS
 
-export const ACCEPTED_PUSH = "Du bist dabei – willkommen bei Tisch6! Wir stellen jetzt deinen Tisch zusammen.";
+export const ACCEPTED_PUSH = "Du bist dabei – willkommen bei Tisch6! Bis dein Tisch zustande kommt, stehst du auf der Warteliste.";
 
 export function invitationPush(o: { dinner: DinnerInfo; deadline: Date }) {
   return `Du bist eingeladen: ${formatShortDate(o.dinner.startsAt)}, ${formatTime(o.dinner.startsAt)} Uhr. Bitte bis ${formatShortDate(o.deadline)}, ${formatTime(o.deadline)} Uhr zusagen.`;

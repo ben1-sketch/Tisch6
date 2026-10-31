@@ -151,9 +151,6 @@ export const CAMPAIGNS: Campaign[] = [
   },
 ];
 
-/** So viele Personen darf ein Geschlecht im aktiven Pool vorne liegen, bevor es auf die Warteliste geht */
-export const BALANCE_MARGIN = 4;
-
 /** Ab so vielen Nichterscheinen ohne Absage wird ein Profil gesperrt */
 export const NO_SHOW_LIMIT = 2;
 

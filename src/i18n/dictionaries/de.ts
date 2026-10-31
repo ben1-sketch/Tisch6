@@ -413,7 +413,7 @@ const de = {
     stage: {
       review: "Deine Bewerbung ist da. Wir prüfen sie gerade – innerhalb von 24 Stunden bekommst du eine Antwort.",
       waitlist: "Du stehst auf der Warteliste. Wir melden uns, sobald es passt.",
-      accepted: "Du bist dabei! Unsere KI stellt gerade einen Tisch für dich zusammen. Sobald er steht, bekommst du eine Nachricht.",
+      accepted: "Du bist dabei! Bis dein Tisch zustande kommt, stehst du auf der Warteliste. Sobald er steht, bekommst du eine Nachricht.",
       closed: "Danke für deine Bewerbung! Unsere Antwort hast du per E-Mail bekommen.",
     },
     installTitle: "Verpasse nichts – leg Tisch6 auf deinen Home-Bildschirm",

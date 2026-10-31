@@ -1,18 +1,15 @@
 import "server-only";
 import { z } from "zod";
 import { askStructured } from "./claude";
-import { BALANCE_MARGIN, TIMING } from "./config";
+import { TIMING } from "./config";
 import { type Application, type Db, type Notification, must } from "./db";
 import { eraseApplicant } from "./erase";
 import { acceptedMail, adminMail, minorMail, rejectedMail, unfinishedMail, waitlistMail } from "./messages";
 import { notifyAdmin, sendEmail } from "./notify";
-import { toPerson } from "./matching-core";
 import { extractProfile, type Profile } from "./onboarding";
-import { fitsOpenSeat } from "./seats";
 import { DAY, HOUR, viennaHour } from "./time";
 
 type Gender = "frau" | "mann";
-type Counts = Record<Gender, number>;
 
 const AssessmentSchema = z.object({
   serioes: z.boolean().describe("true, wenn die Bewerbung ernst gemeint und respektvoll ist"),
@@ -37,17 +34,6 @@ const otherGender = (g: Gender): Gender => (g === "frau" ? "mann" : "frau");
 function seatable(profile: Profile): profile is Profile & { geschlecht: Gender } {
   const g = profile.geschlecht;
   return (g === "frau" || g === "mann") && profile.sucht.includes(otherGender(g));
-}
-
-/** Aktiver Pool nach Geschlecht – Grundlage für das Verhältnis Frauen/Männer */
-async function poolCounts(db: Db): Promise<Counts> {
-  const rows = must(
-    await db.from("applications").select("gender:profile->>geschlecht").eq("status", "accepted"),
-    "Pool zählen",
-  ) as { gender: string | null }[];
-  const counts: Counts = { frau: 0, mann: 0 };
-  for (const r of rows) if (r.gender === "frau" || r.gender === "mann") counts[r.gender]++;
-  return counts;
 }
 
 async function accept(db: Db, app: Application, fromWaitlist: boolean, extra: Record<string, unknown> = {}) {
@@ -104,8 +90,12 @@ async function reject(db: Db, app: Application, extra: Record<string, unknown> =
   }
 }
 
-/** Bewertet eine Bewerbung: unter 18 → löschen, KI-Prüfung (angenommen oder abgelehnt), 3+3-Format, Geschlechterverhältnis. */
-async function evaluate(db: Db, app: Application, counts: Counts) {
+/**
+ * Bewertet eine Bewerbung: unter 18 → löschen, KI-Prüfung (angenommen oder abgelehnt), 3+3-Format.
+ * Wer passt, ist dabei – auch wenn gerade mehr Frauen als Männer im Pool sind: Bis der eigene Tisch
+ * zustande kommt, wartet die Person (Wunsch des Inhabers, 31.10.; früher Warteliste „Geschlechterverhältnis“).
+ */
+async function evaluate(db: Db, app: Application) {
   const profile = app.profile!;
 
   if (profile.unter_18 || (profile.alter !== null && profile.alter < 18)) {
@@ -154,22 +144,11 @@ async function evaluate(db: Db, app: Application, counts: Counts) {
     return;
   }
 
-  const g = profile.geschlecht;
-  if (counts[g] - counts[otherGender(g)] >= BALANCE_MARGIN && !(await fitsNow(db, app))) {
-    await waitlist(db, app, "balance", { evaluation: assessment });
-    return;
-  }
-  if (await accept(db, app, false, { evaluation: assessment })) counts[g]++;
+  await accept(db, app, false, { evaluation: assessment });
 }
 
-/** Ist an einem kommenden Tisch gerade ein Platz frei, auf den die Person passt? Dann zählt das Verhältnis nicht. */
-async function fitsNow(db: Db, app: Application) {
-  const person = toPerson(app);
-  return person ? fitsOpenSeat(db, person) : false;
-}
-
-/** Rückt Personen von der Warteliste nach, sobald das Verhältnis es zulässt (älteste Bewerbung zuerst). */
-async function promoteWaitlist(db: Db, counts: Counts) {
+/** Wer noch wegen des Geschlechterverhältnisses wartet (alte Regel oder vom Team gesetzt), ist dabei – älteste Bewerbung zuerst. */
+async function promoteWaitlist(db: Db) {
   const waiting = must(
     await db
       .from("applications")
@@ -181,12 +160,13 @@ async function promoteWaitlist(db: Db, counts: Counts) {
       .limit(50),
     "Warteliste laden",
   ) as Application[];
+  let promoted = 0;
   for (const app of waiting) {
     const g = app.profile?.geschlecht;
     if (g !== "frau" && g !== "mann") continue;
-    if (counts[g] - counts[otherGender(g)] >= BALANCE_MARGIN && !(await fitsNow(db, app))) continue;
-    if (await accept(db, app, true)) counts[g]++;
+    if (await accept(db, app, true)) promoted++;
   }
+  return promoted;
 }
 
 /**
@@ -220,10 +200,7 @@ export async function evaluateApplications(db: Db, deadline: number) {
   }
 
   // 2) Zuerst die Warteliste nachrücken lassen – wer länger wartet, kommt vor neuen Bewerbungen dran
-  const counts = await poolCounts(db);
-  const before = counts.frau + counts.mann;
-  await promoteWaitlist(db, counts);
-  result.promoted = counts.frau + counts.mann - before;
+  result.promoted = await promoteWaitlist(db);
 
   // 3) Neue Bewerbungen bewerten
   const due = must(
@@ -240,7 +217,7 @@ export async function evaluateApplications(db: Db, deadline: number) {
   for (const app of due) {
     if (Date.now() > deadline) break;
     try {
-      await evaluate(db, app, counts);
+      await evaluate(db, app);
       result.evaluated++;
     } catch (e) {
       console.error("Bewertung fehlgeschlagen", app.id, e);

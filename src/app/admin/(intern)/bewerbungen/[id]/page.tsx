@@ -201,12 +201,15 @@ export default async function ApplicationPage({ params }: PageProps<"/admin/bewe
               )}
               {active && (
                 <ActionForm action={waitlistAction} hidden={hidden} submit="Auf die Warteliste" confirm="Auf die Warteliste setzen? Die Person bekommt eine E-Mail.">
-                  <select name="reason" defaultValue={app.waitlist_reason ?? "balance"} className={field}>
-                    {Object.entries(WAITLIST_REASONS).map(([key, label]) => (
-                      <option key={key} value={key}>
-                        {label}
-                      </option>
-                    ))}
+                  <select name="reason" defaultValue={app.waitlist_reason === "review" ? "review" : "format"} className={field}>
+                    {/* „Geschlechterverhältnis“ gibt es nicht mehr – wer passt, ist dabei */}
+                    {Object.entries(WAITLIST_REASONS)
+                      .filter(([key]) => key !== "balance")
+                      .map(([key, label]) => (
+                        <option key={key} value={key}>
+                          {label}
+                        </option>
+                      ))}
                   </select>
                 </ActionForm>
               )}
