@@ -6,6 +6,7 @@ import { euro } from "@/lib/config";
 import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { fill } from "@/lib/text";
+import { markVisitor } from "@/lib/visitor";
 import { formatDate, formatDateTime } from "@/lib/time";
 import type { Dictionary } from "@/i18n/get-dictionary";
 import { InviteBox } from "./ApplyFlow";
@@ -44,6 +45,7 @@ export function Account({ lang, t, buddyT }: { lang: string; t: T; buddyT: Dicti
       setPhone(data.user.phone ? `+${data.user.phone}` : null);
       const json = await fetch("/api/account").then((r) => r.json()).catch(() => ({}));
       setOverview(json.application ?? null);
+      if (json.application && json.application.status !== "onboarding") markVisitor("beworben", undefined, true);
       setState("loggedIn");
     })();
   }, []);

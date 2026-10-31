@@ -142,6 +142,8 @@ const APP_STAGE: Partial<Record<ApplicationStatus, AppStage>> = { submitted: "re
 export type AppView = {
   token: string;
   firstName: string;
+  /** Team-Link (zum Testen) statt eines Gastes */
+  team: boolean;
   stage: AppStage | null;
   next: { token: string; status: SeatStatus; startsAt: string } | null;
 };
@@ -150,7 +152,7 @@ export type AppView = {
 export async function appView(db: Db, token: string): Promise<AppView | null> {
   const owner = await appOwner(db, token);
   if (!owner) return null;
-  if (!owner.id) return { token, firstName: owner.firstName, stage: null, next: null };
+  if (!owner.id) return { token, firstName: owner.firstName, team: true, stage: null, next: null };
   const { data } = await db
     .from("seats")
     .select("token, status, dinners!inner(starts_at)")
@@ -163,6 +165,7 @@ export async function appView(db: Db, token: string): Promise<AppView | null> {
   return {
     token,
     firstName: owner.firstName,
+    team: false,
     stage: (owner.status && APP_STAGE[owner.status]) ?? null,
     next: next ? { token: next.token, status: next.status, startsAt: next.dinners.starts_at } : null,
   };

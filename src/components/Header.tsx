@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Dictionary } from "@/i18n/get-dictionary";
-import { ApplyLink } from "./ApplyLink";
+import { HeaderCta } from "./HeaderCta";
 import { Logo } from "./Logo";
 
 export function Header({ lang, dict }: { lang: string; dict: Dictionary }) {
@@ -27,9 +27,10 @@ export function Header({ lang, dict }: { lang: string; dict: Dictionary }) {
           <Link href={`/${lang}/konto`} className={`hidden min-[440px]:inline ${linkClass}`}>
             {dict.nav.account}
           </Link>
-          <ApplyLink href={`/${lang}/bewerben`} className="btn btn-primary btn-sm ml-1 whitespace-nowrap sm:ml-2">
-            {dict.nav.apply}
-          </ApplyLink>
+          <HeaderCta
+            lang={lang}
+            labels={{ apply: dict.nav.apply, applied: dict.nav.applied, invited: dict.nav.invited, team: dict.nav.team }}
+          />
         </nav>
       </div>
     </header>

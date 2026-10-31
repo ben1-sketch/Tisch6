@@ -9,6 +9,7 @@ import { normalizePhone } from "@/lib/phone";
 import { instagramUrl } from "@/lib/site";
 import { SOURCES } from "@/lib/source";
 import type { Dictionary } from "@/i18n/get-dictionary";
+import { markVisitor } from "@/lib/visitor";
 
 type T = Dictionary["apply"];
 type Step = "loading" | "intro" | "phone" | "code" | "photo" | "chat" | "done";
@@ -52,6 +53,11 @@ export function ApplyFlow({ lang, t, invitedBy, campaign, resume = false }: { la
   useEffect(() => {
     window.scrollTo({ top: 0 });
   }, [step]);
+
+  // abgeschickt: oben steht ab jetzt „✓ Beworben“ statt „Jetzt bewerben“
+  useEffect(() => {
+    if (step === "done" && status !== "rejected") markVisitor("beworben", appToken ?? undefined, true);
+  }, [step, status, appToken]);
 
   function showApplication(app: Application) {
     setMessages(app.transcript);

@@ -4,6 +4,7 @@ import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { db } from "@/lib/db";
 import { seatView } from "@/lib/views";
+import { MarkVisitor } from "@/components/MarkVisitor";
 import { SeatPage } from "@/components/SeatPage";
 
 export const dynamic = "force-dynamic";
@@ -16,5 +17,11 @@ export default async function InvitationPage({ params, searchParams }: PageProps
   if (!view) notFound();
   const dict = await getDictionary(lang);
   const { bezahlt, melden } = await searchParams;
-  return <SeatPage view={view} t={dict.seat} lang={lang} paid={bezahlt === "1"} openReport={melden === "1"} />;
+  const active = ["invited", "offered", "confirmed"].includes(view.status) && view.dinnerStatus !== "cancelled";
+  return (
+    <>
+      <MarkVisitor status={active ? "eingeladen" : "beworben"} app={view.appToken} keep={!active} />
+      <SeatPage view={view} t={dict.seat} lang={lang} paid={bezahlt === "1"} openReport={melden === "1"} />
+    </>
+  );
 }

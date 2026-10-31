@@ -5,6 +5,7 @@ import { getDictionary } from "@/i18n/get-dictionary";
 import { db } from "@/lib/db";
 import { vapidKeys } from "@/lib/push";
 import { appView } from "@/lib/views";
+import { MarkVisitor } from "@/components/MarkVisitor";
 import { TischApp } from "@/components/TischApp";
 
 export const dynamic = "force-dynamic";
@@ -27,5 +28,10 @@ export default async function AppPage({ params }: PageProps<"/[lang]/app/[token]
   const view = await appView(client, token);
   if (!view) notFound();
   const [dict, keys] = await Promise.all([getDictionary(lang), vapidKeys(client)]);
-  return <TischApp view={view} t={dict.app} lang={lang} vapidKey={keys.publicKey} />;
+  return (
+    <>
+      <MarkVisitor status={view.team ? "team" : view.next ? "eingeladen" : "beworben"} app={view.token} />
+      <TischApp view={view} t={dict.app} lang={lang} vapidKey={keys.publicKey} />
+    </>
+  );
 }

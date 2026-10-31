@@ -14,6 +14,10 @@ const de = {
     faq: "FAQ",
     apply: "Jetzt bewerben",
     account: "Mein Konto",
+    /** statt „Jetzt bewerben“ für alle, die schon dabei sind */
+    applied: "Beworben",
+    invited: "Eingeladen",
+    team: "Team",
   },
   hero: {
     eyebrow: "Bewerbung offen",
