@@ -8,6 +8,8 @@ import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 
 export const ADMIN_COOKIE = "tisch6_admin";
 export const SESSION_HOURS = 12;
+/** „Auf diesem Gerät angemeldet bleiben“ – für die Admin-App am eigenen Handy */
+export const REMEMBER_DAYS = 30;
 export const MIN_PASSWORD_LENGTH = 12;
 
 export function passwordStatus(): "ok" | "missing" | "short" {
@@ -35,10 +37,10 @@ export function checkPassword(input: string) {
   return pw !== null && same(input, pw);
 }
 
-export function createSessionToken(now = Date.now()) {
+export function createSessionToken(now = Date.now(), hours = SESSION_HOURS) {
   const pw = password();
   if (!pw) throw new Error("ADMIN_PASSWORD fehlt");
-  const expires = now + SESSION_HOURS * 3600_000;
+  const expires = now + hours * 3600_000;
   const payload = `v1.${expires}`;
   return { value: `${payload}.${signature(payload, pw)}`, expires: new Date(expires) };
 }

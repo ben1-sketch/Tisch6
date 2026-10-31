@@ -5,7 +5,8 @@ import { Card, Chip, Empty, Notice, PageTitle, Stat, field } from "@/components/
 import { requireAdmin } from "@/lib/admin/auth";
 import { DINNER_STATUS, relative, when } from "@/lib/admin/format";
 import { PAYMENT_TEST } from "@/lib/admin/ops";
-import { teamAppToken } from "@/lib/push";
+import { teamAppToken, vapidKeys } from "@/lib/push";
+import { AdminAppCard } from "@/components/admin/AdminAppCard";
 import { FOUNDER, TABLE, euro } from "@/lib/config";
 import { type AdminLog, type DinnerStatus, db } from "@/lib/db";
 import { configuredSiteUrl } from "@/lib/site";
@@ -143,6 +144,7 @@ export default async function AdminHome() {
   const lastTest = paymentTest.data as TestRow | null;
   // vor dem Datenbank-Update gibt es app_secrets noch nicht – dann bleibt der Knopf weg
   const teamToken = await teamAppToken(db()).catch(() => null);
+  const vapidPublic = teamToken ? await vapidKeys(db()).then((k) => k.publicKey).catch(() => null) : null;
 
   // Herkunft der abgeschickten Bewerbungen: letzte 30 Tage und gesamt
   const submitted = rows.filter((a) => a.status !== "onboarding");
@@ -354,17 +356,20 @@ export default async function AdminHome() {
             </ActionForm>
           </Card>
 
-          <Card title="Tisch6-App testen">
-            <p className="text-sm text-mist">
-              Am Handy öffnen: Tisch6 auf den Home-Bildschirm legen, Benachrichtigungen einschalten und eine Probe-Nachricht schicken – genau wie
-              die Gäste. Der Link gehört dem Team, bitte nicht weitergeben.
-            </p>
-            {teamToken ? (
-              <a href={`/de/app/${teamToken}`} className="btn btn-primary mt-4 inline-block">
-                Team-App öffnen
-              </a>
+          <Card title="Tisch6 Admin aufs Handy">
+            {teamToken && vapidPublic ? (
+              <>
+                <AdminAppCard teamToken={teamToken} vapidKey={vapidPublic} />
+                <p className="mt-4 text-sm text-mist">
+                  So sehen Gäste ihre App:{" "}
+                  <a href={`/de/app/${teamToken}`} className="text-gold-300 hover:underline">
+                    Team-App öffnen
+                  </a>{" "}
+                  – der Link gehört dem Team, bitte nicht weitergeben.
+                </p>
+              </>
             ) : (
-              <p className="mt-3 text-sm text-amber-200">Erst nach dem Datenbank-Update (0012_web_app.sql) verfügbar.</p>
+              <p className="text-sm text-amber-200">Erst nach dem Datenbank-Update (0012_web_app.sql) verfügbar.</p>
             )}
           </Card>
 

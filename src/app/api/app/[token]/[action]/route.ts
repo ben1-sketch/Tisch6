@@ -3,7 +3,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { appManifest } from "@/lib/manifest";
 import { sendPush } from "@/lib/notify";
-import { removePushDevice, savePushDevice } from "@/lib/push";
+import { ADMIN_PUSH_ICON, removePushDevice, savePushDevice } from "@/lib/push";
 import { appOwner } from "@/lib/views";
 
 export const dynamic = "force-dynamic";
@@ -61,12 +61,15 @@ export async function POST(request: Request, ctx: RouteContext<"/api/app/[token]
       return NextResponse.json({ ok: true });
     }
     case "probe": {
+      // Admin-App (nur mit dem Team-Schlüssel): Probe mit Admin-Titel, Tippen öffnet den Adminbereich
+      const admin = owner.id === null && (body as { ziel?: unknown }).ziel === "admin";
       // höchstens eine Probe pro Minute
       const result = await sendPush(client, {
         applicationId: owner.id,
-        title: "Tisch6",
-        body: `Hallo ${owner.firstName}, so kommen Nachrichten von Tisch6 bei dir an. 🥂`,
-        url: `/de/app/${token}`,
+        title: admin ? "Tisch6 Admin" : "Tisch6",
+        body: admin ? "So kommen Hinweise aus dem Adminbereich bei dir an. ✅" : `Hallo ${owner.firstName}, so kommen Nachrichten von Tisch6 bei dir an. 🥂`,
+        url: admin ? "/admin" : `/de/app/${token}`,
+        icon: admin ? ADMIN_PUSH_ICON : undefined,
         kind: "push_test",
         dedupeKey: `push_test:${owner.id ?? "team"}:${Math.floor(Date.now() / 60_000)}`,
       });

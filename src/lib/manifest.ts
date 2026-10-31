@@ -24,3 +24,24 @@ export function appManifest(startUrl: string, id: string): MetadataRoute.Manifes
     ],
   };
 }
+
+/** Adminbereich als eigene App „Tisch6 Admin“ (goldenes Symbol) – startet direkt in der Übersicht. */
+export function adminManifest(): MetadataRoute.Manifest {
+  return {
+    id: "/admin",
+    name: "Tisch6 Admin",
+    short_name: "Tisch6 Admin",
+    start_url: "/admin",
+    scope: "/admin",
+    display: "standalone",
+    orientation: "portrait",
+    background_color: "#0b1120",
+    theme_color: "#0b1120",
+    lang: "de",
+    icons: [
+      { src: "/admin-icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
+      { src: "/admin-icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
+      { src: "/admin-icon-maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+    ],
+  };
+}

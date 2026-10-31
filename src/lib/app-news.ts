@@ -1,8 +1,9 @@
 import "server-only";
 import { TIMING } from "./config";
-import { type Application, type Db, type Seat, must } from "./db";
+import { type Application, type Db, type Notification, type Seat, must } from "./db";
 import { ACCEPTED_PUSH, appUrl, invitationPush, seatUrl } from "./messages";
-import { appPush } from "./notify";
+import { appPush, sendPush } from "./notify";
+import { ADMIN_PUSH_ICON, pushDevices } from "./push";
 import { dinnerInfo, loadDinner } from "./seats";
 import { HOUR, viennaHour } from "./time";
 
@@ -71,6 +72,58 @@ export async function sendAppNews(db: Db, now = new Date(), send = appPush) {
   for (const n of news) {
     if (sent.has(`${n.key}:push`)) continue;
     const result = await send(db, { applicationId: n.applicationId, body: await n.body(), url: n.url, kind: n.kind, dedupeKey: n.key });
+    if (result === "sent") gesendet++;
+  }
+  return { gesendet };
+}
+
+/**
+ * Hinweise ans Team (dieselben wie per E-Mail an ADMIN_EMAIL) zusätzlich als Nachricht an die Admin-App:
+ * von 8 bis 22 Uhr, was nachts kommt, am Morgen. Erst ab dem ersten eingeschalteten Team-Gerät, jeder Hinweis einmal.
+ */
+export async function sendAdminNews(db: Db, now = new Date(), send = sendPush) {
+  const to = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+  if (!to) return { skipped: "ADMIN_EMAIL fehlt" };
+  const hour = viennaHour(now);
+  if (hour < TIMING.adminFromHour || hour >= TIMING.adminToHour) return { skipped: "nachts" };
+
+  const devices = await pushDevices(db, null);
+  if (!devices.length) return { gesendet: 0 };
+  const firstDevice = Math.min(...devices.map((d) => new Date(d.created_at).getTime()));
+  const since = new Date(Math.max(now.getTime() - 24 * HOUR, firstDevice)).toISOString();
+
+  const rows = must(
+    await db
+      .from("notifications")
+      .select("id, kind, subject, recipient")
+      .eq("channel", "email")
+      .is("application_id", null)
+      .neq("kind", "test")
+      .gte("created_at", since)
+      .order("created_at"),
+    "Hinweise laden",
+  ) as Pick<Notification, "id" | "kind" | "subject" | "recipient">[];
+  const notes = rows.filter((r) => r.recipient.trim().toLowerCase() === to);
+  if (!notes.length) return { gesendet: 0 };
+
+  const key = (id: string) => `admin:${id}:push`;
+  const done = must(await db.from("notifications").select("dedupe_key").in("dedupe_key", notes.map((r) => key(r.id))), "Versand prüfen") as {
+    dedupe_key: string;
+  }[];
+  const sent = new Set(done.map((d) => d.dedupe_key));
+
+  let gesendet = 0;
+  for (const note of notes) {
+    if (sent.has(key(note.id))) continue;
+    const result = await send(db, {
+      applicationId: null,
+      title: "Tisch6 Admin",
+      body: (note.subject ?? "Neuer Hinweis").replace(/^\[Tisch6\]\s*/, ""),
+      url: "/admin",
+      kind: note.kind,
+      dedupeKey: key(note.id),
+      icon: ADMIN_PUSH_ICON,
+    });
     if (result === "sent") gesendet++;
   }
   return { gesendet };

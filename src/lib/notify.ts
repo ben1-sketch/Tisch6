@@ -146,7 +146,7 @@ export async function sendSms(
  */
 export async function sendPush(
   db: Db,
-  options: { applicationId: string | null; title: string; body: string; url: string; kind: string; dedupeKey?: string | null },
+  options: { applicationId: string | null; title: string; body: string; url: string; kind: string; dedupeKey?: string | null; icon?: string },
 ): Promise<SendResult | "none"> {
   const devices = await pushDevices(db, options.applicationId);
   if (!devices.length) return "none";
@@ -161,7 +161,7 @@ export async function sendPush(
   if (!id) return "duplicate";
 
   const { publicKey, privateKey } = await vapidKeys(db);
-  const payload = JSON.stringify({ title: options.title, body: options.body, url: options.url });
+  const payload = JSON.stringify({ title: options.title, body: options.body, url: options.url, ...(options.icon ? { icon: options.icon } : {}) });
   let delivered = 0;
   let lastError: string | null = null;
   for (const device of devices) {

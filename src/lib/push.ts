@@ -22,6 +22,8 @@ export type PushDevice = {
 export type PushSubscriptionJson = { endpoint: string; keys: { p256dh: string; auth: string } };
 
 export const VAPID_SUBJECT = "mailto:info@tisch6.at";
+/** Symbol der Nachrichten aus dem Adminbereich (goldene Admin-App) */
+export const ADMIN_PUSH_ICON = "/admin-icon-192.png";
 
 /** Geheimnis aus app_secrets – beim ersten Gebrauch erzeugt und danach nie mehr geändert. */
 async function secret(db: Db, name: string, create: () => string) {

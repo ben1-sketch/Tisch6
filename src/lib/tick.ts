@@ -1,5 +1,5 @@
 import "server-only";
-import { sendAppNews } from "./app-news";
+import { sendAdminNews, sendAppNews } from "./app-news";
 import { sendCampaigns } from "./campaigns";
 import type { Db } from "./db";
 import { TIMING } from "./config";
@@ -68,6 +68,8 @@ export async function runTick(client: Db, options: { matching?: "auto" | "force"
     await step("emailZustellung", () => checkEmailDelivery(client));
     // Twilio-Registrierungen ändern sich selten – einmal pro Stunde nachfragen genügt
     if (new Date().getUTCMinutes() < 10) await step("twilioRegistrierung", () => checkTwilioRegistrations(client));
+    // nach allen Schritten, die Hinweise ans Team erzeugen
+    await step("adminNachrichten", () => sendAdminNews(client));
     await step("aufraeumen", () => eraseRejected(client));
     await step("abgebrochen", () => eraseAbandoned(client));
     if (Date.now() < deadline - 20_000) await step("lernen", () => updateLearnings(client));

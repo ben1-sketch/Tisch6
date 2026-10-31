@@ -14,7 +14,7 @@ self.addEventListener("push", (event) => {
   event.waitUntil(
     self.registration.showNotification(data.title || "Tisch6", {
       body: data.body || "",
-      icon: "/app-icon-192.png",
+      icon: data.icon || "/app-icon-192.png",
       badge: "/app-badge-96.png",
       lang: "de",
       data: { url: data.url || "/de" },

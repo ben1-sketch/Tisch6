@@ -41,7 +41,7 @@ import {
   unblockApplicant,
   waitlistApplicant,
 } from "@/lib/admin/ops";
-import { checkPassword, createSessionToken, passwordStatus, safeAdminPath } from "@/lib/admin/session";
+import { REMEMBER_DAYS, SESSION_HOURS, checkPassword, createSessionToken, passwordStatus, safeAdminPath } from "@/lib/admin/session";
 import { describeTick } from "@/lib/admin/format";
 import type { ActionResult, LoginState } from "@/lib/admin/types";
 import { type Application, db } from "@/lib/db";
@@ -121,9 +121,10 @@ export async function login(_: LoginState, form: FormData): Promise<LoginState> 
     return { error: "Das Passwort stimmt nicht." };
   }
 
-  const { value, expires } = createSessionToken();
+  const remember = form.get("bleiben") === "1";
+  const { value, expires } = createSessionToken(Date.now(), remember ? REMEMBER_DAYS * 24 : SESSION_HOURS);
   (await cookies()).set(sessionCookie.name, value, { ...sessionCookie.options, expires });
-  if (client) await logAdmin(client, "Anmeldung");
+  if (client) await logAdmin(client, "Anmeldung", { detail: remember ? `angemeldet bleiben (${REMEMBER_DAYS} Tage)` : null });
   redirect(safeAdminPath(form.get("weiter")));
 }
 
