@@ -310,13 +310,15 @@ export function confirmedMail(o: { name: string; dinner: DinnerInfo; token: stri
   });
 }
 
-/** Hinweis auf die Tisch6-App für Gäste, die schon fix dabei sind */
-export function appInviteMail(o: { name: string; dinner: DinnerInfo; appToken: string }): EmailContent {
+/** Hinweis auf die Tisch6-App – mit Termin für Gäste, die schon fix dabei sind, sonst für alle anderen */
+export function appInviteMail(o: { name: string; dinner?: DinnerInfo; appToken: string }): EmailContent {
   return layout({
     subject: "Neu: Tisch6 als App auf deinem Handy",
     title: `Tisch6 jetzt als App, ${o.name}`,
     paragraphs: [
-      `Vor deinem Abend am ${formatDate(o.dinner.startsAt)}, bekommst du Erinnerungen und am Tag selbst die Infos zu eurem Tisch. Mit der Tisch6-App kommen sie als Nachricht direkt aufs Handy – ganz ohne App Store.`,
+      o.dinner
+        ? `Vor deinem Abend am ${formatDate(o.dinner.startsAt)}, bekommst du Erinnerungen und am Tag selbst die Infos zu eurem Tisch. Mit der Tisch6-App kommen sie als Nachricht direkt aufs Handy – ganz ohne App Store.`
+        : "Mit der Tisch6-App kommen wichtige Nachrichten direkt aufs Handy: zum Beispiel, wenn an einem Tisch ein Platz für dich frei wird – und vor deinem Abend die Erinnerungen. Ganz ohne App Store.",
     ],
     lists: [
       {
