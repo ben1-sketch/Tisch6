@@ -25,16 +25,20 @@ export const VAPID_SUBJECT = "mailto:info@tisch6.at";
 
 /** Geheimnis aus app_secrets – beim ersten Gebrauch erzeugt und danach nie mehr geändert. */
 async function secret(db: Db, name: string, create: () => string) {
-  const load = async () =>
-    must(await db.from("app_secrets").select("value").eq("name", name).maybeSingle(), "Geheimnis laden") as { value: string } | null;
-  let row = await load();
-  if (!row) {
-    // Laufen zwei Aufrufe gleichzeitig, gewinnt der erste – danach lesen alle denselben Wert
-    await db.from("app_secrets").upsert({ name, value: create() }, { onConflict: "name", ignoreDuplicates: true });
-    row = await load();
-  }
-  if (!row) throw new Error(`Geheimnis „${name}“ fehlt`);
-  return row.value;
+  const row = must(await db.from("app_secrets").select("value").eq("name", name).maybeSingle(), "Geheimnis laden") as { value: string } | null;
+  if (row) return row.value;
+  // Laufen zwei Aufrufe gleichzeitig, gewinnt der erste – der zweite bekommt hier nichts zurück und liest nach
+  const created = must(
+    await db.from("app_secrets").upsert({ name, value: create() }, { onConflict: "name", ignoreDuplicates: true }).select("value"),
+    "Geheimnis anlegen",
+  ) as { value: string }[];
+  if (created[0]) return created[0].value;
+  // bewusst eine andere Abfrage als oben: Next.js liefert gleiche Abfragen innerhalb einer Seite aus dem Zwischenspeicher
+  const again = must(await db.from("app_secrets").select("value, created_at").eq("name", name).maybeSingle(), "Geheimnis laden") as {
+    value: string;
+  } | null;
+  if (!again) throw new Error(`Geheimnis „${name}“ fehlt`);
+  return again.value;
 }
 
 /**
