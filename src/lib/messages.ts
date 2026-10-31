@@ -93,6 +93,8 @@ export const seatUrl = (token: string) => link(`/de/einladung/${token}`);
 export const feedbackUrl = (token: string) => link(`/de/wiedersehen/${token}`);
 export const rejoinUrl = (magicToken: string) => link(`/de/weiter/${magicToken}`);
 export const icsUrl = (token: string) => link(`/api/seat/${token}/ics`);
+/** Persönliche Tisch6-App (Web-App mit Benachrichtigungen) */
+export const appUrl = (magicToken: string) => link(`/de/app/${magicToken}`);
 const accountUrl = () => link("/de/konto");
 /** Aufrufe mit einem Klick abbestellen (signierter Link je Person, siehe lib/campaigns.ts) */
 export const optOutUrl = (token: string) => link(`/de/aufrufe/${token}`);
@@ -287,7 +289,7 @@ export function replacementSms(o: { dinner: DinnerInfo; token: string }) {
   return `Tisch6: Ein Platz ist frei geworden! ${formatShortDate(o.dinner.startsAt)}, ${formatTime(o.dinner.startsAt)} Uhr. Du hast ${TIMING.replacementHours} Std. Zeit zum Zusagen: ${seatUrl(o.token)}`;
 }
 
-export function confirmedMail(o: { name: string; dinner: DinnerInfo; token: string }): EmailContent {
+export function confirmedMail(o: { name: string; dinner: DinnerInfo; token: string; appToken: string }): EmailContent {
   const freeUntil = new Date(o.dinner.startsAt.getTime() - TIMING.freeCancelHoursBefore * 3600_000);
   return layout({
     subject: `Du bist dabei – ${formatDate(o.dinner.startsAt)}`,
@@ -301,6 +303,7 @@ export function confirmedMail(o: { name: string; dinner: DinnerInfo; token: stri
     cta: { label: "In den Kalender eintragen", url: icsUrl(o.token) },
     after: [
       "Vor dem Abend bekommst du Erinnerungen – und am Tag selbst eure Gesprächskarte mit Fragen für den Tisch.",
+      `Tipp: Hol dir Tisch6 als App aufs Handy – dann kommen die Erinnerungen als Nachricht: ${appUrl(o.appToken)}`,
       BILL_NOTE,
       `Falls etwas dazwischenkommt: Bis ${formatDateTime(freeUntil)} kannst du kostenlos absagen – über deine Einladung: ${seatUrl(o.token)}`,
     ],

@@ -18,8 +18,9 @@ import {
   reminder2hMail,
   reminder2hSms,
   reminder3dMail,
+  seatUrl,
 } from "./messages";
-import { notifyAdmin, sendEmail, sendSms } from "./notify";
+import { notifyAdmin, sendEmail, sendPushOrSms } from "./notify";
 import { dinnerInfo, loadApplication, loadDinner, movedSuffix } from "./seats";
 import type { Profile } from "./onboarding";
 import { DAY, HOUR, dateKey, viennaDate, viennaHour } from "./time";
@@ -168,9 +169,10 @@ export async function sendDayOf(db: Db, deadline: number) {
         applicationId: app.id,
       });
       if (emergency) {
-        await sendSms(db, {
+        await sendPushOrSms(db, {
           to: app.phone,
           body: emergencySms({ dinner: info, phone: emergency }),
+          url: seatUrl(seat.token),
           kind: "emergency",
           dedupeKey: `notfall:${seat.id}${suffix}`,
           applicationId: app.id,
@@ -212,7 +214,14 @@ export async function sendReminders(db: Db, deadline: number) {
       const base = { applicationId: app.id };
       if (left <= 2 * HOUR) {
         // zwei Stunden vorher: E-Mail und SMS mit Adresse, Reservierungsname und Tipp fürs Ankommen
-        await sendSms(db, { ...base, to: app.phone, body: reminder2hSms({ dinner: info }), kind: "reminder_2h", dedupeKey: `r2h_sms:${seat.id}${suffix}` });
+        await sendPushOrSms(db, {
+          ...base,
+          to: app.phone,
+          body: reminder2hSms({ dinner: info }),
+          url: seatUrl(seat.token),
+          kind: "reminder_2h",
+          dedupeKey: `r2h_sms:${seat.id}${suffix}`,
+        });
         await sendEmail(db, {
           ...base,
           to: app.email,

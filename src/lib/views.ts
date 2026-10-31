@@ -2,6 +2,7 @@ import "server-only";
 import { TIMING } from "./config";
 import { type Application, type ConversationCard, type Db, type DinnerStatus, type Feedback, type Seat, type SeatStatus, OPEN_SEAT, must } from "./db";
 import { tableSummary, type Gender } from "./matching-core";
+import { teamAppToken } from "./push";
 import { loadApplication, loadDinner, offerFor } from "./seats";
 import { stripe } from "./stripe";
 import { DAY, HOUR, dateKey, viennaDate } from "./time";
@@ -37,6 +38,8 @@ export type SeatView = {
   canReport: boolean;
   canFeedback: boolean;
   feedbackDone: boolean;
+  /** Schlüssel der persönlichen App-Seite (/de/app/…) */
+  appToken: string;
 };
 
 /** Alles, was die Einladungsseite braucht – und nur das, was die Person sehen darf. */
@@ -104,6 +107,47 @@ export async function seatView(db: Db, token: string): Promise<SeatView | null> 
     canReport: isGuest && now >= start - TIMING.reportFromHoursBefore * HOUR && now <= start + TIMING.reportUntilDaysAfter * DAY,
     canFeedback: seat.status === "attended" && now <= start + TIMING.reportUntilDaysAfter * DAY,
     feedbackDone: Boolean(feedback),
+    appToken: app.magic_token,
+  };
+}
+
+/** Wem ein App-Link gehört: einem Gast oder dem Tisch6-Team (id null). Gesperrte Profile bekommen keine App. */
+export type AppOwner = { id: string | null; firstName: string };
+
+export async function appOwner(db: Db, token: string): Promise<AppOwner | null> {
+  if (!TOKEN.test(token)) return null;
+  if (token === (await teamAppToken(db))) return { id: null, firstName: "Team" };
+  const app = (await db.from("applications").select("id, first_name, status").eq("magic_token", token).maybeSingle()).data as Pick<
+    Application,
+    "id" | "first_name" | "status"
+  > | null;
+  return app && app.status !== "blocked" ? { id: app.id, firstName: app.first_name } : null;
+}
+
+export type AppView = {
+  token: string;
+  firstName: string;
+  next: { token: string; status: SeatStatus; startsAt: string } | null;
+};
+
+/** Persönliche App-Seite: Vorname und der nächste Tisch – der Link aus der E-Mail ist der Schlüssel. */
+export async function appView(db: Db, token: string): Promise<AppView | null> {
+  const owner = await appOwner(db, token);
+  if (!owner) return null;
+  if (!owner.id) return { token, firstName: owner.firstName, next: null };
+  const { data } = await db
+    .from("seats")
+    .select("token, status, dinners!inner(starts_at)")
+    .eq("application_id", owner.id)
+    .in("status", OPEN_SEAT)
+    .gte("dinners.starts_at", new Date(Date.now() - 6 * HOUR).toISOString())
+    .order("created_at", { ascending: false })
+    .limit(1);
+  const next = (data?.[0] as unknown as { token: string; status: SeatStatus; dinners: { starts_at: string } } | undefined) ?? null;
+  return {
+    token,
+    firstName: owner.firstName,
+    next: next ? { token: next.token, status: next.status, startsAt: next.dinners.starts_at } : null,
   };
 }
 

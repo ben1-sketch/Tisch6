@@ -195,7 +195,7 @@ export type Notification = {
   id: string;
   created_at: string;
   application_id: string | null;
-  channel: "email" | "sms";
+  channel: "email" | "sms" | "push";
   kind: string;
   dedupe_key: string | null;
   recipient: string;

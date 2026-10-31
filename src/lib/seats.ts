@@ -41,9 +41,10 @@ import {
   replacementSms,
   reservationCancelledMail,
   reservationMail,
+  seatUrl,
   tableCompleteMail,
 } from "./messages";
-import { notifyAdmin, sendEmail, sendSms } from "./notify";
+import { notifyAdmin, sendEmail, sendPushOrSms } from "./notify";
 import { loadPool } from "./pool";
 import { refund } from "./stripe";
 import { HOUR, WEEKDAY_NAMES, hoursUntil, viennaDate, viennaHour, weekdayOf } from "./time";
@@ -168,9 +169,10 @@ export async function sendInvitation(
     applicationId: o.app.id,
   });
   if (o.seat.replacement) {
-    await sendSms(db, {
+    await sendPushOrSms(db, {
       to: o.app.phone,
       body: replacementSms({ dinner: info, token: o.seat.token }),
+      url: seatUrl(o.seat.token),
       kind: "replacement_offer",
       dedupeKey: `invite_sms:${o.seat.id}`,
       applicationId: o.app.id,
@@ -229,9 +231,10 @@ export async function remindOpenInvitations(db: Db, now = new Date()) {
       applicationId: app.id,
     });
     if (result === "duplicate" || result === "retry") continue;
-    await sendSms(db, {
+    await sendPushOrSms(db, {
       to: app.phone,
       body: inviteReminderSms({ dinner: info, deadline, token: seat.token }),
+      url: seatUrl(seat.token),
       kind: "invite_reminder",
       dedupeKey: `invite_reminder_sms:${seat.id}`,
       applicationId: app.id,
@@ -545,7 +548,7 @@ export async function confirmSeat(
   const { dinner, restaurant } = await loadDinner(db, seat.dinner_id);
   await sendEmail(db, {
     to: app.email,
-    content: confirmedMail({ name: app.first_name, dinner: dinnerInfo(dinner, restaurant), token: seat.token }),
+    content: confirmedMail({ name: app.first_name, dinner: dinnerInfo(dinner, restaurant), token: seat.token, appToken: app.magic_token }),
     kind: "seat_confirmed",
     dedupeKey: `confirmed:${seat.id}`,
     applicationId: app.id,
@@ -737,9 +740,10 @@ export async function closeDinner(
     });
     // SMS an alle, die sonst kommen würden – beim Absagen durch das Team an alle sechs
     if (wasConfirmed || o.reason === "team") {
-      await sendSms(db, {
+      await sendPushOrSms(db, {
         to: app.phone,
         body: dinnerCancelledSms({ dinner: info, wasConfirmed }),
+        url: seatUrl(seat.token),
         kind: "dinner_cancelled",
         dedupeKey: `dinner_cancelled_sms:${seat.id}`,
         applicationId: app.id,

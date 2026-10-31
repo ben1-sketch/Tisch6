@@ -14,6 +14,7 @@ const FILTERS = [
   { key: "protokolliert", label: "Nur protokolliert" },
   { key: "email", label: "E-Mails" },
   { key: "sms", label: "SMS" },
+  { key: "push", label: "Push (App)" },
 ] as const;
 type Filter = (typeof FILTERS)[number]["key"];
 
@@ -28,6 +29,7 @@ export default async function NotificationsPage({ searchParams }: PageProps<"/ad
   if (filter === "protokolliert") q = q.eq("status", "logged");
   if (filter === "email") q = q.eq("channel", "email");
   if (filter === "sms") q = q.eq("channel", "sms");
+  if (filter === "push") q = q.eq("channel", "push");
   const { data, error, count } = await q.order("created_at", { ascending: false }).range((page - 1) * PER_PAGE, page * PER_PAGE - 1);
   const rows = (data ?? []) as Notification[];
 
@@ -35,7 +37,7 @@ export default async function NotificationsPage({ searchParams }: PageProps<"/ad
     <>
       <PageTitle
         title="Versand"
-        sub="Jede E-Mail und SMS, die Tisch6 verschickt. „Nur protokolliert“ heißt: Resend bzw. Twilio ist noch nicht eingerichtet."
+        sub="Jede E-Mail, SMS und Push-Nachricht, die Tisch6 verschickt. Hat ein Gast in der App Benachrichtigungen an, kommt statt der SMS eine Push-Nachricht. „Nur protokolliert“ heißt: Resend bzw. Twilio ist noch nicht eingerichtet."
       />
       <Tabs active={filter} items={FILTERS.map((f) => ({ key: f.key, label: f.label, href: `/admin/versand?filter=${f.key}` }))} />
       {filter === "fehler" && <MarkFailuresSeen />}
@@ -48,7 +50,7 @@ export default async function NotificationsPage({ searchParams }: PageProps<"/ad
             <li key={n.id} className="glass flex flex-col gap-1 rounded-2xl p-3 text-sm sm:flex-row sm:items-center sm:justify-between">
               <div className="min-w-0">
                 <div className="truncate">
-                  <span className="text-mist">{n.channel === "sms" ? "SMS" : "E-Mail"} · </span>
+                  <span className="text-mist">{n.channel === "sms" ? "SMS" : n.channel === "push" ? "Push" : "E-Mail"} · </span>
                   {n.subject ?? n.kind}
                 </div>
                 <div className="truncate text-mist">

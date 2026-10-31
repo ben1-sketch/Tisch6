@@ -1,5 +1,7 @@
 import "server-only";
+import webpush, { WebPushError } from "web-push";
 import type { Db } from "./db";
+import { VAPID_SUBJECT, pushDevices, removePushDevice, vapidKeys } from "./push";
 
 /** headers: zusätzliche Kopfzeilen der E-Mail, z. B. List-Unsubscribe bei Aufrufen */
 export type EmailContent = { subject: string; html: string; text: string; headers?: Record<string, string> };
@@ -11,7 +13,7 @@ export type SendResult = "sent" | "logged" | "duplicate" | "failed" | "retry";
  */
 async function reserve(
   db: Db,
-  row: { channel: "email" | "sms"; kind: string; dedupe_key: string | null; recipient: string; subject?: string; application_id: string | null },
+  row: { channel: "email" | "sms" | "push"; kind: string; dedupe_key: string | null; recipient: string; subject?: string; application_id: string | null },
 ) {
   const { data, error } = await db.from("notifications").insert(row).select("id").single();
   if (error) {
@@ -135,6 +137,78 @@ export async function sendSms(
     console.error("Twilio nicht erreichbar", e);
     return finish(db, id, false, true, String(e));
   }
+}
+
+/**
+ * Push-Nachricht an alle Geräte, auf denen der Gast (applicationId null: das Team) in der Tisch6-App Benachrichtigungen eingeschaltet hat.
+ * "none": kein Gerät – dann wird auch nichts protokolliert. Antwortet ein Gerät mit 404/410, hat der Gast
+ * die Benachrichtigungen abgeschaltet oder die App gelöscht; der Eintrag wird dann entfernt.
+ */
+export async function sendPush(
+  db: Db,
+  options: { applicationId: string | null; title: string; body: string; url: string; kind: string; dedupeKey?: string | null },
+): Promise<SendResult | "none"> {
+  const devices = await pushDevices(db, options.applicationId);
+  if (!devices.length) return "none";
+  const id = await reserve(db, {
+    channel: "push",
+    kind: options.kind,
+    dedupe_key: options.dedupeKey ?? null,
+    recipient: devices.length === 1 ? "1 Gerät" : `${devices.length} Geräte`,
+    subject: options.body.slice(0, 200),
+    application_id: options.applicationId,
+  });
+  if (!id) return "duplicate";
+
+  const { publicKey, privateKey } = await vapidKeys(db);
+  const payload = JSON.stringify({ title: options.title, body: options.body, url: options.url });
+  let delivered = 0;
+  let lastError: string | null = null;
+  for (const device of devices) {
+    try {
+      await webpush.sendNotification({ endpoint: device.endpoint, keys: { p256dh: device.p256dh, auth: device.auth } }, payload, {
+        vapidDetails: { subject: VAPID_SUBJECT, publicKey, privateKey },
+        TTL: 12 * 3600,
+        urgency: "high",
+      });
+      delivered++;
+      await db.from("push_subscriptions").update({ last_sent_at: new Date().toISOString() }).eq("id", device.id);
+    } catch (e) {
+      const status = e instanceof WebPushError ? e.statusCode : null;
+      if (status === 404 || status === 410) await removePushDevice(db, device.endpoint);
+      else lastError = status ? `Push-Dienst antwortet mit ${status}` : String(e);
+    }
+  }
+  if (delivered) return finish(db, id, true, false, null);
+  return finish(db, id, false, false, lastError ?? "Kein Gerät mehr erreichbar – der Gast hat die Benachrichtigungen abgeschaltet.");
+}
+
+/** SMS-Text als Push: „Tisch6:“ steht schon als Titel da, und den Link öffnet ein Tippen auf die Nachricht. */
+function pushText(sms: string) {
+  return sms
+    .replace(/^Tisch6:\s*/, "")
+    .replace(/:?\s*https?:\/\/\S+$/, ".")
+    .trim();
+}
+
+/**
+ * Kurznachricht aufs Handy: als Push an die Tisch6-App, wenn der Gast sie eingeschaltet hat –
+ * sonst (oder wenn kein Gerät erreichbar ist) als SMS.
+ */
+export async function sendPushOrSms(
+  db: Db,
+  options: { to: string | null; body: string; url: string; kind: string; dedupeKey: string; applicationId: string },
+): Promise<SendResult> {
+  const push = await sendPush(db, {
+    applicationId: options.applicationId,
+    title: "Tisch6",
+    body: pushText(options.body),
+    url: options.url,
+    kind: options.kind,
+    dedupeKey: `${options.dedupeKey}:push`,
+  });
+  if (push === "sent" || push === "duplicate") return push;
+  return sendSms(db, options);
 }
 
 /** Interne Hinweise an das Tisch6-Team (ADMIN_EMAIL) */

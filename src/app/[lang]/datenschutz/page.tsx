@@ -5,7 +5,7 @@ export const metadata: Metadata = { title: "Datenschutzerklärung" };
 
 export default function Datenschutz() {
   return (
-    <LegalPage title="Datenschutzerklärung" updated="28. Oktober 2026">
+    <LegalPage title="Datenschutzerklärung" updated="31. Oktober 2026">
       <p>
         Der Schutz deiner Daten ist uns wichtig. Hier erklären wir, welche Daten Tisch6 verarbeitet, wofür und welche Rechte du hast. Wir verarbeiten
         personenbezogene Daten ausschließlich auf Grundlage der Datenschutz-Grundverordnung (DSGVO) und des österreichischen Datenschutzgesetzes (DSG).
@@ -33,6 +33,7 @@ export default function Datenschutz() {
         <li>Interne Vermerke des Tisch6-Teams, z. B. zur Prüfung einer Meldung, zu Gutschriften oder zu Absprachen mit dir. Eingriffe des Teams werden ohne Namen protokolliert.</li>
         <li>Zeitpunkt und Version deiner Einwilligungen.</li>
         <li>Technisch notwendige Daten (Login-Cookies zur Sitzungsverwaltung, Server-Protokolle mit IP-Adresse).</li>
+        <li>Freiwillig, wenn du in der Tisch6-App Benachrichtigungen einschaltest: die Push-Adresse deines Geräts (vergibt der Hersteller deines Browsers) und der Gerätetyp. Darüber schicken wir dir Einladungen, Erinnerungen und Infos zu deinem Tisch – dann statt per SMS. Du kannst die Benachrichtigungen in der App jederzeit ausschalten; beim Löschen deines Profils löschen wir auch diese Angaben.</li>
       </ul>
 
       <h2>3. Zwecke und Rechtsgrundlagen</h2>
@@ -82,6 +83,7 @@ export default function Datenschutz() {
           (USA; EU-US Data Privacy Framework bzw. Standardvertragsklauseln).
         </li>
         <li>Resend Inc. – Versand von E-Mails (USA; EU-US Data Privacy Framework bzw. Standardvertragsklauseln).</li>
+        <li>Push-Dienste der Browser-Hersteller (z. B. Apple, Google, Mozilla) – leiten Benachrichtigungen an dein Gerät weiter, wenn du sie in der Tisch6-App eingeschaltet hast. Die Nachrichten sind verschlüsselt; der Push-Dienst kann sie nicht lesen.</li>
         <li>Stripe Payments Europe Ltd. (Irland) – Zahlungsabwicklung. Karten- und Kontodaten gibst du direkt bei Stripe ein; wir erhalten sie nicht.</li>
         <li>Unsere Partnerlokale – erhalten für die Reservierung auf den Namen „Tisch6“ nur die Personenzahl und anonyme Hinweise für die Küche (z. B. „1× vegetarisch“), keine Namen.</li>
       </ul>

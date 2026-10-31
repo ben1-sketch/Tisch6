@@ -21,9 +21,10 @@ import {
   rejectedMail,
   reservationCancelledMail,
   seatRemovedMail,
+  seatUrl,
   waitlistMail,
 } from "../messages";
-import { type SendResult, notifyAdmin, sendEmail, sendSms } from "../notify";
+import { type SendResult, notifyAdmin, sendEmail, sendPushOrSms, sendSms } from "../notify";
 import { normalizePhone } from "../phone";
 import { checkoutExpiry } from "../payments";
 import {
@@ -399,7 +400,14 @@ export async function moveDinner(db: Db, dinnerId: string, local: string, restau
       dedupeKey: `moved:${seat.id}:${stamp}`,
       applicationId: app.id,
     });
-    await sendSms(db, { to: app.phone, body: dinnerMovedSms({ before, after }), kind: "dinner_moved", dedupeKey: `moved_sms:${seat.id}:${stamp}`, applicationId: app.id });
+    await sendPushOrSms(db, {
+      to: app.phone,
+      body: dinnerMovedSms({ before, after }),
+      url: seatUrl(seat.token),
+      kind: "dinner_moved",
+      dedupeKey: `moved_sms:${seat.id}:${stamp}`,
+      applicationId: app.id,
+    });
     people++;
   }
   await afterSeatChange(db, moved, target);

@@ -197,6 +197,16 @@ export function SeatPage({ view, t, lang, paid, openReport = false }: { view: Se
         </section>
       )}
 
+      {["invited", "offered", "confirmed"].includes(view.status) && (
+        <section className="rounded-3xl border border-white/10 p-6 sm:p-8">
+          <h2 className="font-display text-lg font-semibold">{t.appTitle}</h2>
+          <p className="mt-2 text-sm text-mist">{t.appText}</p>
+          <Link href={`/${lang}/app/${view.appToken}`} className={`${secondary} mt-4 block`}>
+            {t.appButton}
+          </Link>
+        </section>
+      )}
+
       {view.canCancel && (
         <section className="rounded-3xl border border-white/10 p-6 sm:p-8">
           <h2 className="font-display text-lg font-semibold">{t.cancelTitle}</h2>
