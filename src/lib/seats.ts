@@ -37,6 +37,7 @@ import {
   invitationMail,
   inviteReminderMail,
   inviteReminderSms,
+  lastCallSms,
   refundText,
   replacementSms,
   reservationCancelledMail,
@@ -47,7 +48,7 @@ import {
 import { notifyAdmin, sendEmail, sendPushOrSms } from "./notify";
 import { loadPool } from "./pool";
 import { refund } from "./stripe";
-import { HOUR, WEEKDAY_NAMES, hoursUntil, viennaDate, viennaHour, weekdayOf } from "./time";
+import { HOUR, WEEKDAY_NAMES, addDays, hoursUntil, viennaDate, viennaHour, viennaToUtc, weekdayOf } from "./time";
 
 // ---------------------------------------------------------------------------
 // Laden
@@ -240,6 +241,65 @@ export async function remindOpenInvitations(db: Db, now = new Date()) {
       applicationId: app.id,
     });
     sent++;
+  }
+  return sent;
+}
+
+/**
+ * Letzte Erinnerung fällig? Nur tagsüber, und sobald die Zusagefrist in höchstens lastCallHours endet. Endet sie vor
+ * 11 Uhr am nächsten Morgen (nachts oder ganz früh), schon am Abend davor ab lastCallEveningHour – sonst käme die
+ * Nachricht mitten in der Nacht oder zu knapp. Mindestens eine Stunde zum Bezahlen muss noch bleiben.
+ */
+export function lastCallDue(expiresAt: Date, now: Date) {
+  const hour = viennaHour(now);
+  if (hour < TIMING.daytimeFromHour || hour >= TIMING.daytimeToHour) return false;
+  const left = expiresAt.getTime() - now.getTime();
+  if (left < HOUR) return false;
+  if (left <= TIMING.lastCallHours * HOUR) return true;
+  const nextMorning = viennaToUtc(addDays(viennaDate(now), 1), `${TIMING.daytimeFromHour}:00`);
+  return hour >= TIMING.lastCallEveningHour && expiresAt.getTime() < nextMorning.getTime() + 2 * HOUR;
+}
+
+/**
+ * Letzte Erinnerung kurz vor Ablauf der Zusagefrist (Wunsch des Inhabers): eine SMS – oder Push an die Tisch6-App –
+ * an alle, die noch nicht bezahlt haben, einmal je Platz (siehe lastCallDue). Nicht bei kurzen Fristen wie bei
+ * Nachrückern (dort reicht die Erinnerung zur Halbzeit) und nicht, während jemand gerade bezahlt.
+ * send: zum Testen austauschbar.
+ */
+export async function sendLastCalls(db: Db, now = new Date(), send = sendPushOrSms) {
+  const open = must(
+    await db.from("seats").select("*").in("status", ["invited", "offered"]).gt("expires_at", now.toISOString()),
+    "Offene Einladungen laden",
+  ) as Seat[];
+  const due = open.filter((s) => {
+    const expires = new Date(s.expires_at!);
+    const total = expires.getTime() - new Date(s.created_at).getTime();
+    const paying = s.checkout_started_at && now.getTime() - new Date(s.checkout_started_at).getTime() < 35 * 60_000;
+    return total >= 24 * HOUR && !paying && lastCallDue(expires, now);
+  });
+  if (!due.length) return 0;
+  const keys = due.flatMap((s) => [`last_call:${s.id}`, `last_call:${s.id}:push`]);
+  const done = new Set(
+    (must(await db.from("notifications").select("dedupe_key").in("dedupe_key", keys), "Letzte Erinnerungen laden") as { dedupe_key: string }[]).map(
+      (n) => n.dedupe_key.replace(/:push$/, ""),
+    ),
+  );
+
+  let sent = 0;
+  for (const seat of due) {
+    if (done.has(`last_call:${seat.id}`)) continue;
+    const { dinner, restaurant } = await loadDinner(db, seat.dinner_id);
+    if (dinner.status !== "inviting" && dinner.status !== "confirmed") continue;
+    const app = await loadApplication(db, seat.application_id);
+    const result = await send(db, {
+      to: app.phone,
+      body: lastCallSms({ dinner: dinnerInfo(dinner, restaurant), deadline: new Date(seat.expires_at!), token: seat.token }),
+      url: seatUrl(seat.token),
+      kind: "invite_last_call",
+      dedupeKey: `last_call:${seat.id}`,
+      applicationId: app.id,
+    });
+    if (result === "sent") sent++;
   }
   return sent;
 }

@@ -6,7 +6,7 @@ import { TIMING } from "./config";
 import { afterDinners, prepareCards, sendDayOf, sendLebenszeichen, sendNudges, sendReminders, updateLearnings } from "./dinners";
 import { eraseAbandoned, eraseRejected, evaluateApplications, remindUnfinished } from "./evaluation";
 import { matchTables } from "./matching";
-import { decideDinners, expireSeats, fillGaps, remindOpenInvitations } from "./seats";
+import { decideDinners, expireSeats, fillGaps, remindOpenInvitations, sendLastCalls } from "./seats";
 import { checkEmailDelivery } from "./email-delivery";
 import { sendSmsAuftraege } from "./sms-auftraege";
 import { checkSmsDelivery } from "./sms-delivery";
@@ -53,6 +53,7 @@ export async function runTick(client: Db, options: { matching?: "auto" | "force"
     await step("entscheidung", () => decideDinners(client));
     await step("erinnerungen", () => sendReminders(client, deadline));
     await step("zusagen", () => remindOpenInvitations(client));
+    await step("letzteErinnerung", () => sendLastCalls(client));
     await step("smsAuftraege", () => sendSmsAuftraege(client));
     await step("amTag", () => sendDayOf(client, deadline));
     await step("nachDemDinner", () => afterDinners(client, deadline));

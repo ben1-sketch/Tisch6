@@ -69,6 +69,10 @@ export const TIMING = {
   /** Erinnerungen, die nicht eilen, nur tagsüber (Stunde in Wien, von–bis) */
   daytimeFromHour: 9,
   daytimeToHour: 20,
+  /** Letzte Erinnerung per SMS, wenn die Zusagefrist bald endet: tagsüber ab so vielen Stunden vorher */
+  lastCallHours: 6,
+  /** … endet die Frist nachts oder früh am Morgen (vor 11 Uhr), schon am Abend davor ab dieser Uhrzeit (Wien) */
+  lastCallEveningHour: 17,
   /** Bis so lange vorher ist eine Absage kostenlos (Stunden) */
   freeCancelHoursBefore: 48,
   /** Wiedersehen-Abfrage „am Tag danach“ (Stunden nach Beginn) */

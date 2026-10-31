@@ -299,6 +299,11 @@ export function inviteReminderSms(o: { dinner: DinnerInfo; deadline: Date; token
   return `Tisch6: Dein Platz am ${formatShortDate(o.dinner.startsAt)} um ${formatTime(o.dinner.startsAt)} Uhr ist noch für dich reserviert, fix aber erst mit der Zahlung. Bitte bis ${formatShortDate(o.deadline)}, ${formatTime(o.deadline)} Uhr zusagen: ${seatUrl(o.token)}`;
 }
 
+/** Letzte Erinnerung kurz vor Ablauf der Zusagefrist */
+export function lastCallSms(o: { dinner: DinnerInfo; deadline: Date; token: string }) {
+  return `Tisch6: Letzte Erinnerung! Dein Platz am ${formatShortDate(o.dinner.startsAt)} um ${formatTime(o.dinner.startsAt)} Uhr ist nur noch bis ${formatShortDate(o.deadline)}, ${formatTime(o.deadline)} Uhr für dich reserviert. Danach vergeben wir ihn weiter. Jetzt zusagen: ${seatUrl(o.token)}`;
+}
+
 export function replacementSms(o: { dinner: DinnerInfo; token: string }) {
   return `Tisch6: Ein Platz ist frei geworden! ${formatShortDate(o.dinner.startsAt)}, ${formatTime(o.dinner.startsAt)} Uhr. Du hast ${TIMING.replacementHours} Std. Zeit zum Zusagen: ${seatUrl(o.token)}`;
 }
