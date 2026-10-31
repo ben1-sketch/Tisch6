@@ -28,7 +28,7 @@ export async function POST(request: Request) {
   const admin = createAdminClient();
   const { data: app, error } = await admin
     .from("applications")
-    .select("status, first_name, email, transcript, user_turns, photo_path")
+    .select("status, first_name, email, magic_token, transcript, user_turns, photo_path")
     .eq("id", user.id)
     .maybeSingle();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -102,7 +102,7 @@ export async function POST(request: Request) {
       if (!minor) {
         await sendEmail(admin, {
           to: app.email,
-          content: receivedMail(app.first_name),
+          content: receivedMail({ name: app.first_name, appToken: app.magic_token }),
           kind: "received",
           dedupeKey: `received:${user.id}`,
           applicationId: user.id,

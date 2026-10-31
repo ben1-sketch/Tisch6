@@ -13,7 +13,7 @@ import type { Dictionary } from "@/i18n/get-dictionary";
 type T = Dictionary["apply"];
 type Step = "loading" | "intro" | "phone" | "code" | "photo" | "chat" | "done";
 type Msg = { role: "user" | "assistant"; content: string };
-type Application = { status: string; first_name: string; transcript: Msg[]; invite_code: string; photo_path: string | null };
+type Application = { status: string; first_name: string; transcript: Msg[]; invite_code: string; photo_path: string | null; magic_token: string };
 
 /** Ersetzt {platzhalter} in einem Text durch React-Elemente. */
 function fill(text: string, parts: Record<string, ReactNode>) {
@@ -45,6 +45,7 @@ export function ApplyFlow({ lang, t, invitedBy, campaign, resume = false }: { la
   const [status, setStatus] = useState("onboarding");
   const [loggedIn, setLoggedIn] = useState(false);
   const [ownInvite, setOwnInvite] = useState<string | null>(null);
+  const [appToken, setAppToken] = useState<string | null>(null);
   const emailSuggestion = emailTypo(form.email);
 
   // Bei jedem Schritt nach oben, damit Fortschritt und Überschrift sichtbar sind
@@ -56,6 +57,7 @@ export function ApplyFlow({ lang, t, invitedBy, campaign, resume = false }: { la
     setMessages(app.transcript);
     setStatus(app.status);
     setOwnInvite(app.invite_code);
+    setAppToken(app.magic_token);
     setStep(app.status !== "onboarding" ? "done" : app.photo_path ? "chat" : "photo");
   }
 
@@ -316,6 +318,15 @@ export function ApplyFlow({ lang, t, invitedBy, campaign, resume = false }: { la
             {status === "rejected" ? t.done.rejectedText : fill(t.done.text, { email: <strong className="text-cloud">{form.email || "deine E-Mail-Adresse"}</strong> })}
           </p>
           {status !== "rejected" && <p className="mt-3 text-sm text-gold-300">{t.done.spam}</p>}
+          {status !== "rejected" && appToken && (
+            <div className="mt-8 rounded-2xl border border-gold-400/30 p-6">
+              <h2 className="font-display text-xl font-semibold">{t.done.appTitle}</h2>
+              <p className="mt-2 text-mist">{t.done.appText}</p>
+              <Link href={`/${lang}/app/${appToken}`} className="btn btn-primary mt-4">
+                {t.done.appButton}
+              </Link>
+            </div>
+          )}
           {status !== "rejected" && ownInvite && <InviteBox t={t.buddy} lang={lang} code={ownInvite} />}
           {status !== "rejected" && (
             <a href={instagramUrl} target="_blank" rel="noopener noreferrer" className="mt-6 block text-gold-400 underline underline-offset-4 hover:text-gold-300">

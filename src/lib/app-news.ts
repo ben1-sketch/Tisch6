@@ -1,0 +1,77 @@
+import "server-only";
+import { TIMING } from "./config";
+import { type Application, type Db, type Seat, must } from "./db";
+import { ACCEPTED_PUSH, appUrl, invitationPush, seatUrl } from "./messages";
+import { appPush } from "./notify";
+import { dinnerInfo, loadDinner } from "./seats";
+import { HOUR, viennaHour } from "./time";
+
+/**
+ * Neuigkeiten zusätzlich als Nachricht an die Tisch6-App: „Du bist dabei“ und neue Einladungen.
+ * Nur tagsüber – die Tischplanung läuft nachts, ihre Einladungen kommen am Morgen aufs Handy.
+ * Nur an Gäste mit eingeschalteter App, jede Neuigkeit höchstens einmal (Doppelversand-Schutz).
+ */
+export async function sendAppNews(db: Db, now = new Date(), send = appPush) {
+  const hour = viennaHour(now);
+  if (hour < TIMING.daytimeFromHour || hour >= TIMING.daytimeToHour) return { skipped: "nachts" };
+
+  const devices = must(await db.from("push_subscriptions").select("application_id").not("application_id", "is", null), "Geräte laden") as {
+    application_id: string;
+  }[];
+  const ids = [...new Set(devices.map((d) => d.application_id))];
+  if (!ids.length) return { gesendet: 0 };
+  const since = new Date(now.getTime() - 24 * HOUR).toISOString();
+
+  type News = { key: string; applicationId: string; kind: string; body: () => Promise<string>; url: string };
+  const news: News[] = [];
+
+  // angenommen in den letzten 24 Stunden
+  const accepted = must(
+    await db.from("applications").select("id, magic_token").eq("status", "accepted").gte("accepted_at", since).in("id", ids),
+    "Zusagen laden",
+  ) as Pick<Application, "id" | "magic_token">[];
+  for (const app of accepted) {
+    news.push({ key: `accepted:${app.id}`, applicationId: app.id, kind: "accepted", body: async () => ACCEPTED_PUSH, url: appUrl(app.magic_token) });
+  }
+
+  // neue Einladungen (Nachrücker bekommen ihre Nachricht schon sofort, siehe sendInvitation)
+  const seats = must(
+    await db
+      .from("seats")
+      .select("*")
+      .eq("status", "invited")
+      .eq("replacement", false)
+      .gte("created_at", since)
+      .gt("expires_at", new Date(now.getTime() + HOUR).toISOString())
+      .in("application_id", ids),
+    "Einladungen laden",
+  ) as Seat[];
+  for (const seat of seats) {
+    news.push({
+      key: `invite:${seat.id}`,
+      applicationId: seat.application_id,
+      kind: "invitation",
+      body: async () => {
+        const { dinner, restaurant } = await loadDinner(db, seat.dinner_id);
+        return invitationPush({ dinner: dinnerInfo(dinner, restaurant), deadline: new Date(seat.expires_at!) });
+      },
+      url: seatUrl(seat.token),
+    });
+  }
+  if (!news.length) return { gesendet: 0 };
+
+  // schon verschickte überspringen
+  const done = must(
+    await db.from("notifications").select("dedupe_key").in("dedupe_key", news.map((n) => `${n.key}:push`)),
+    "Versand prüfen",
+  ) as { dedupe_key: string }[];
+  const sent = new Set(done.map((d) => d.dedupe_key));
+
+  let gesendet = 0;
+  for (const n of news) {
+    if (sent.has(`${n.key}:push`)) continue;
+    const result = await send(db, { applicationId: n.applicationId, body: await n.body(), url: n.url, kind: n.kind, dedupeKey: n.key });
+    if (result === "sent") gesendet++;
+  }
+  return { gesendet };
+}

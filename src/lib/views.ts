@@ -1,6 +1,17 @@
 import "server-only";
 import { TIMING } from "./config";
-import { type Application, type ConversationCard, type Db, type DinnerStatus, type Feedback, type Seat, type SeatStatus, OPEN_SEAT, must } from "./db";
+import {
+  type Application,
+  type ApplicationStatus,
+  type ConversationCard,
+  type Db,
+  type DinnerStatus,
+  type Feedback,
+  type Seat,
+  type SeatStatus,
+  OPEN_SEAT,
+  must,
+} from "./db";
 import { tableSummary, type Gender } from "./matching-core";
 import { teamAppToken } from "./push";
 import { loadApplication, loadDinner, offerFor } from "./seats";
@@ -112,29 +123,34 @@ export async function seatView(db: Db, token: string): Promise<SeatView | null> 
 }
 
 /** Wem ein App-Link gehört: einem Gast oder dem Tisch6-Team (id null). Gesperrte Profile bekommen keine App. */
-export type AppOwner = { id: string | null; firstName: string };
+export type AppOwner = { id: string | null; firstName: string; status: ApplicationStatus | null };
 
 export async function appOwner(db: Db, token: string): Promise<AppOwner | null> {
   if (!TOKEN.test(token)) return null;
-  if (token === (await teamAppToken(db))) return { id: null, firstName: "Team" };
+  if (token === (await teamAppToken(db))) return { id: null, firstName: "Team", status: null };
   const app = (await db.from("applications").select("id, first_name, status").eq("magic_token", token).maybeSingle()).data as Pick<
     Application,
     "id" | "first_name" | "status"
   > | null;
-  return app && app.status !== "blocked" ? { id: app.id, firstName: app.first_name } : null;
+  return app && app.status !== "blocked" ? { id: app.id, firstName: app.first_name, status: app.status } : null;
 }
+
+/** Stand der Bewerbung – zeigt die App, solange kein Tisch geplant ist */
+export type AppStage = "review" | "waitlist" | "accepted" | "closed";
+const APP_STAGE: Partial<Record<ApplicationStatus, AppStage>> = { submitted: "review", waitlist: "waitlist", accepted: "accepted", rejected: "closed" };
 
 export type AppView = {
   token: string;
   firstName: string;
+  stage: AppStage | null;
   next: { token: string; status: SeatStatus; startsAt: string } | null;
 };
 
-/** Persönliche App-Seite: Vorname und der nächste Tisch – der Link aus der E-Mail ist der Schlüssel. */
+/** Persönliche App-Seite: Vorname, Stand der Bewerbung und der nächste Tisch – der Link aus der E-Mail ist der Schlüssel. */
 export async function appView(db: Db, token: string): Promise<AppView | null> {
   const owner = await appOwner(db, token);
   if (!owner) return null;
-  if (!owner.id) return { token, firstName: owner.firstName, next: null };
+  if (!owner.id) return { token, firstName: owner.firstName, stage: null, next: null };
   const { data } = await db
     .from("seats")
     .select("token, status, dinners!inner(starts_at)")
@@ -147,6 +163,7 @@ export async function appView(db: Db, token: string): Promise<AppView | null> {
   return {
     token,
     firstName: owner.firstName,
+    stage: (owner.status && APP_STAGE[owner.status]) ?? null,
     next: next ? { token: next.token, status: next.status, startsAt: next.dinners.starts_at } : null,
   };
 }

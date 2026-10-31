@@ -1,4 +1,5 @@
 import "server-only";
+import { sendAppNews } from "./app-news";
 import { sendCampaigns } from "./campaigns";
 import type { Db } from "./db";
 import { TIMING } from "./config";
@@ -58,6 +59,7 @@ export async function runTick(client: Db, options: { matching?: "auto" | "force"
     await step("angefangen", () => remindUnfinished(client));
     await step("nachruecken", () => fillGaps(client));
     if (options.matching === "force" || isMatchingTime()) await step("matching", () => matchTables(client, deadline));
+    await step("appNachrichten", () => sendAppNews(client));
     await step("gespraechskarten", () => prepareCards(client, deadline));
     await step("lebenszeichen", () => sendLebenszeichen(client));
     await step("folgeeinladungen", () => sendNudges(client));

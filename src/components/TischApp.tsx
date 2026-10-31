@@ -27,7 +27,7 @@ function detect(): Env {
   return { standalone, ios, push };
 }
 
-/** Persönliche Tisch6-App: nächster Tisch, Installationshilfe und Benachrichtigungen an/aus. */
+/** Persönliche Tisch6-App: Stand der Bewerbung bzw. nächster Tisch, Installationshilfe und Benachrichtigungen an/aus. */
 export function TischApp({ view, t, lang, vapidKey }: { view: AppView; t: T; lang: string; vapidKey: string }) {
   const [env, setEnv] = useState<Env | null>(null);
   const [install, setInstall] = useState<InstallPrompt | null>(null);
@@ -111,6 +111,9 @@ export function TischApp({ view, t, lang, vapidKey }: { view: AppView; t: T; lan
       return t.testSent;
     });
 
+  // abgelehnt: nur noch der Stand – Installieren und Benachrichtigungen braucht es nicht mehr
+  const closed = view.stage === "closed";
+
   async function installNow() {
     if (!install) return;
     await install.prompt();
@@ -123,7 +126,7 @@ export function TischApp({ view, t, lang, vapidKey }: { view: AppView; t: T; lan
       <p className="mt-3 text-mist">{t.lead}</p>
 
       <section className="glass mt-8 rounded-3xl p-6">
-        <h2 className="text-sm text-mist">{t.nextTitle}</h2>
+        <h2 className="text-sm text-mist">{view.next ? t.nextTitle : t.statusTitle}</h2>
         {view.next ? (
           <>
             <p className="mt-1 font-display text-xl font-semibold">{formatDateTime(new Date(view.next.startsAt))}</p>
@@ -133,11 +136,11 @@ export function TischApp({ view, t, lang, vapidKey }: { view: AppView; t: T; lan
             </Link>
           </>
         ) : (
-          <p className="mt-1">{t.nextNone}</p>
+          <p className="mt-1">{view.stage ? t.stage[view.stage] : t.nextNone}</p>
         )}
       </section>
 
-      {env && !env.standalone && (
+      {env && !closed && !env.standalone && (
         <section className="mt-6 rounded-3xl border border-gold-400/30 p-6">
           <h2 className="font-display text-lg font-semibold">{t.installTitle}</h2>
           {env.ios ? (
@@ -156,7 +159,7 @@ export function TischApp({ view, t, lang, vapidKey }: { view: AppView; t: T; lan
         </section>
       )}
 
-      {env && (
+      {env && !closed && (
         <section className="glass mt-6 rounded-3xl p-6">
           <h2 className="font-display text-lg font-semibold">{t.pushTitle}</h2>
           {!env.push ? (
@@ -188,6 +191,11 @@ export function TischApp({ view, t, lang, vapidKey }: { view: AppView; t: T; lan
       )}
 
       <p className="mt-6 text-center text-xs text-mist/70">{t.emailNote}</p>
+      <p className="mt-3 text-center text-sm">
+        <Link href={`/${lang}/konto`} className="text-gold-400 underline underline-offset-4 hover:text-gold-300">
+          {t.account}
+        </Link>
+      </p>
     </div>
   );
 }

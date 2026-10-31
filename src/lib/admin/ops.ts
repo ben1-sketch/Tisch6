@@ -139,7 +139,7 @@ export async function acceptApplicant(db: Db, app: Application) {
   if (!data) throw stale();
   await sendEmail(db, {
     to: app.email,
-    content: acceptedMail(app.first_name, app.status === "waitlist"),
+    content: acceptedMail({ name: app.first_name, fromWaitlist: app.status === "waitlist", appToken: app.magic_token }),
     kind: "accepted",
     dedupeKey: `accepted:${app.id}`,
     applicationId: app.id,

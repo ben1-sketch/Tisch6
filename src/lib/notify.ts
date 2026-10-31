@@ -211,6 +211,23 @@ export async function sendPushOrSms(
   return sendSms(db, options);
 }
 
+/**
+ * Zusätzlich zur E-Mail eine Nachricht an die Tisch6-App – nur an eingeschaltete Geräte, nie als SMS.
+ * Ein Fehler hier hält den Ablauf nicht auf: Die E-Mail ist schon unterwegs.
+ * dedupeKey wie bei der E-Mail – „:push“ hängt diese Funktion an.
+ */
+export async function appPush(
+  db: Db,
+  o: { applicationId: string; body: string; url: string; kind: string; dedupeKey: string },
+): Promise<SendResult | "none"> {
+  try {
+    return await sendPush(db, { applicationId: o.applicationId, title: "Tisch6", body: o.body, url: o.url, kind: o.kind, dedupeKey: `${o.dedupeKey}:push` });
+  } catch (e) {
+    console.error("Nachricht an die App", e);
+    return "failed";
+  }
+}
+
 /** Interne Hinweise an das Tisch6-Team (ADMIN_EMAIL) */
 export async function notifyAdmin(db: Db, content: EmailContent, kind: string, dedupeKey?: string) {
   const to = process.env.ADMIN_EMAIL;

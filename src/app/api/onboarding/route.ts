@@ -8,7 +8,8 @@ import { SOURCE_KEYS } from "@/lib/source";
 
 export const dynamic = "force-dynamic";
 
-const STATE_COLUMNS = "status, first_name, transcript, user_turns, submitted_at, invite_code, buddy_id, photo_path";
+// magic_token: Schlüssel der eigenen Tisch6-App (Knopf nach dem Abschicken)
+const STATE_COLUMNS = "status, first_name, transcript, user_turns, submitted_at, invite_code, buddy_id, photo_path, magic_token";
 
 /** Aktueller Stand der eigenen Bewerbung (oder null). */
 export async function GET() {

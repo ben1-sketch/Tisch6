@@ -62,7 +62,7 @@ async function accept(db: Db, app: Application, fromWaitlist: boolean, extra: Re
   if (data) {
     await sendEmail(db, {
       to: app.email,
-      content: acceptedMail(app.first_name, fromWaitlist),
+      content: acceptedMail({ name: app.first_name, fromWaitlist, appToken: app.magic_token }),
       kind: "accepted",
       dedupeKey: `accepted:${app.id}`,
       applicationId: app.id,

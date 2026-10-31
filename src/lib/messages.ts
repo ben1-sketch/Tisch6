@@ -109,22 +109,38 @@ const resumeUrl = () => link("/de/bewerben?weiter=1");
 export const RESERVATION_NAME = "Tisch6";
 const INSTAGRAM_NOTE = "Folge uns auf Instagram (@tischsechs) – dort zeigen wir, wie die Abende ablaufen. Und kennst du Singles, die auch hin müssen? Schick ihnen deinen Einladungslink aus deinem Konto.";
 const BILL_NOTE = "Essen und Getränke zahlt ihr direkt im Lokal – jeder seine eigene Rechnung, also nur das, was er selbst bestellt hat.";
+/** Die Tisch6-App in einem Satz – in allen Nachrichten gleich */
+const APP_PITCH = "Verpasse nichts – leg Tisch6 als App auf deinen Home-Bildschirm.";
+/** App einrichten in drei Schritten (iPhone und Android) */
+const APP_STEPS = {
+  title: "So geht's – dauert eine Minute",
+  items: [
+    "Tippe unten auf den Knopf – am iPhone öffnest du den Link in Safari.",
+    "iPhone: auf „Teilen“ tippen und „Zum Home-Bildschirm“ wählen. Android: im Menü auf „App installieren“.",
+    "Öffne Tisch6 über das neue Symbol und schalte die Benachrichtigungen ein.",
+  ],
+};
 
 // ---------------------------------------------------------------------------
 // Bewerbung
 // ---------------------------------------------------------------------------
 
-export function receivedMail(name: string): EmailContent {
+/** Erste Nachricht nach der Bewerbung – mit dem Link zur eigenen Tisch6-App */
+export function receivedMail(o: { name: string; appToken: string }): EmailContent {
   return layout({
     subject: "Deine Bewerbung ist da",
-    title: `Danke, ${name} – deine Bewerbung ist da!`,
+    title: `Danke, ${o.name} – deine Bewerbung ist da!`,
     paragraphs: [
       "Schön, dass du dabei sein willst. Wir schauen uns deine Bewerbung jetzt an – innerhalb von 24 Stunden bekommst du eine Antwort per E-Mail.",
       "Wie es dann weitergeht: Unsere KI stellt einen Tisch mit fünf Menschen zusammen, die zu dir passen. Bezahlt wird erst, wenn dein Tisch steht.",
-      "Damit nichts verloren geht: Speichere hallo@tisch6.at in deinen Kontakten. Ist diese E-Mail im Spam-Ordner gelandet, tipp dort auf „Kein Spam“ – dann kommen auch deine Einladung und alle weiteren Infos sicher an.",
+      `${APP_PITCH} Dort hast du zusätzlich alles im Überblick – deine Bewerbung und deinen Tisch – und bekommst eine Nachricht aufs Handy, sobald sich etwas tut.`,
     ],
-    cta: { label: "Mein Konto", url: accountUrl() },
-    after: [INSTAGRAM_NOTE],
+    lists: [APP_STEPS],
+    cta: { label: "Tisch6-App einrichten", url: appUrl(o.appToken) },
+    after: [
+      "Damit nichts verloren geht: Speichere hallo@tisch6.at in deinen Kontakten. Ist diese E-Mail im Spam-Ordner gelandet, tipp dort auf „Kein Spam“ – dann kommen auch deine Einladung und alle weiteren Infos sicher an.",
+      INSTAGRAM_NOTE,
+    ],
   });
 }
 
@@ -164,19 +180,19 @@ export function rejectedMail(name: string): EmailContent {
   });
 }
 
-export function acceptedMail(name: string, fromWaitlist = false): EmailContent {
+export function acceptedMail(o: { name: string; fromWaitlist?: boolean; appToken: string }): EmailContent {
   return layout({
-    subject: fromWaitlist ? "Gute Nachricht: Du bist bei Tisch6 dabei" : "Du bist dabei – willkommen bei Tisch6",
-    title: fromWaitlist ? `Gute Nachricht, ${name}: Du bist dabei!` : `Willkommen am Tisch, ${name}!`,
+    subject: o.fromWaitlist ? "Gute Nachricht: Du bist bei Tisch6 dabei" : "Du bist dabei – willkommen bei Tisch6",
+    title: o.fromWaitlist ? `Gute Nachricht, ${o.name}: Du bist dabei!` : `Willkommen am Tisch, ${o.name}!`,
     paragraphs: [
-      fromWaitlist
+      o.fromWaitlist
         ? "Es ist so weit – du bist von der Warteliste nachgerückt."
         : "Schön, dass du dabei bist. Deine Bewerbung hat uns überzeugt.",
       "Wie es weitergeht: Unsere KI stellt jetzt einen Tisch mit fünf Menschen zusammen, die zu dir passen. Sobald er steht, bekommst du eine Einladung mit Datum und Lokal – an einem deiner Wunschtage.",
       "Bezahlt wird erst, wenn du eine Einladung annimmst.",
     ],
     cta: { label: "Mein Konto", url: accountUrl() },
-    after: [INSTAGRAM_NOTE],
+    after: [`${APP_PITCH} Dann kommt deine Einladung sofort als Nachricht aufs Handy: ${appUrl(o.appToken)}`, INSTAGRAM_NOTE],
   });
 }
 
@@ -289,6 +305,14 @@ export function replacementSms(o: { dinner: DinnerInfo; token: string }) {
   return `Tisch6: Ein Platz ist frei geworden! ${formatShortDate(o.dinner.startsAt)}, ${formatTime(o.dinner.startsAt)} Uhr. Du hast ${TIMING.replacementHours} Std. Zeit zum Zusagen: ${seatUrl(o.token)}`;
 }
 
+// Nachrichten nur an die Tisch6-App – zusätzlich zur E-Mail, nie als SMS
+
+export const ACCEPTED_PUSH = "Du bist dabei – willkommen bei Tisch6! Wir stellen jetzt deinen Tisch zusammen.";
+
+export function invitationPush(o: { dinner: DinnerInfo; deadline: Date }) {
+  return `Du bist eingeladen: ${formatShortDate(o.dinner.startsAt)}, ${formatTime(o.dinner.startsAt)} Uhr. Bitte bis ${formatShortDate(o.deadline)}, ${formatTime(o.deadline)} Uhr zusagen.`;
+}
+
 export function confirmedMail(o: { name: string; dinner: DinnerInfo; token: string; appToken: string }): EmailContent {
   const freeUntil = new Date(o.dinner.startsAt.getTime() - TIMING.freeCancelHoursBefore * 3600_000);
   return layout({
@@ -303,7 +327,7 @@ export function confirmedMail(o: { name: string; dinner: DinnerInfo; token: stri
     cta: { label: "In den Kalender eintragen", url: icsUrl(o.token) },
     after: [
       "Vor dem Abend bekommst du Erinnerungen – und am Tag selbst eure Gesprächskarte mit Fragen für den Tisch.",
-      `Tipp: Hol dir Tisch6 als App aufs Handy – dann kommen die Erinnerungen als Nachricht: ${appUrl(o.appToken)}`,
+      `${APP_PITCH} Dann kommen die Erinnerungen als Nachricht aufs Handy: ${appUrl(o.appToken)}`,
       BILL_NOTE,
       `Falls etwas dazwischenkommt: Bis ${formatDateTime(freeUntil)} kannst du kostenlos absagen – über deine Einladung: ${seatUrl(o.token)}`,
     ],
@@ -318,18 +342,9 @@ export function appInviteMail(o: { name: string; dinner?: DinnerInfo; appToken: 
     paragraphs: [
       o.dinner
         ? `Vor deinem Abend am ${formatDate(o.dinner.startsAt)}, bekommst du Erinnerungen und am Tag selbst die Infos zu eurem Tisch. Mit der Tisch6-App kommen sie als Nachricht direkt aufs Handy – ganz ohne App Store.`
-        : "Mit der Tisch6-App kommen wichtige Nachrichten direkt aufs Handy: zum Beispiel, wenn an einem Tisch ein Platz für dich frei wird – und vor deinem Abend die Erinnerungen. Ganz ohne App Store.",
+        : `${APP_PITCH} Dann kommen wichtige Nachrichten direkt aufs Handy: zum Beispiel deine Einladung, ein frei gewordener Platz – und vor deinem Abend die Erinnerungen. Ganz ohne App Store.`,
     ],
-    lists: [
-      {
-        title: "So geht's – dauert eine Minute",
-        items: [
-          "Tippe unten auf den Knopf – am iPhone öffnest du den Link in Safari.",
-          "iPhone: auf „Teilen“ tippen und „Zum Home-Bildschirm“ wählen. Android: im Menü auf „App installieren“.",
-          "Öffne Tisch6 über das neue Symbol und schalte die Benachrichtigungen ein.",
-        ],
-      },
-    ],
+    lists: [APP_STEPS],
     cta: { label: "Tisch6-App einrichten", url: appUrl(o.appToken) },
     after: ["E-Mails bekommst du weiterhin – die App ist eine Ergänzung."],
   });

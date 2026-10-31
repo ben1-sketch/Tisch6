@@ -254,6 +254,9 @@ const de = {
       rejectedText: "Tisch6 ist leider erst ab 18 Jahren. Wir freuen uns, wenn du später wiederkommst.",
       home: "Zur Startseite",
       instagram: "Folge uns auf Instagram: @tischsechs",
+      appTitle: "Verpasse nichts",
+      appText: "Leg Tisch6 als App auf deinen Home-Bildschirm. Dort hast du deine Bewerbung und deinen Tisch im Überblick – und bekommst eine Nachricht aufs Handy, sobald sich etwas tut.",
+      appButton: "Tisch6-App einrichten",
     },
     buddy: {
       title: "Dein Einladungslink",
@@ -389,8 +392,8 @@ const de = {
     reportThanks: "Danke, dass du es uns sagst. Wir kümmern uns vertraulich darum.",
     choose: "Bitte auswählen",
     error: "Da ist etwas schiefgelaufen. Bitte versuch es gleich nochmal.",
-    appTitle: "Tisch6 als App",
-    appText: "Erinnerungen und Infos zu deinem Tisch als Nachricht aufs Handy – ganz ohne App Store.",
+    appTitle: "Verpasse nichts",
+    appText: "Leg Tisch6 als App auf deinen Home-Bildschirm – dann kommen Erinnerungen und Infos zu deinem Tisch als Nachricht aufs Handy. Ganz ohne App Store.",
     appButton: "App einrichten",
   },
   app: {
@@ -402,7 +405,14 @@ const de = {
     nextOpen: "Deine Zusage fehlt noch.",
     nextButton: "Einladung öffnen",
     nextNone: "Gerade ist kein Tisch für dich geplant. Sobald es einen gibt, sagen wir dir Bescheid.",
-    installTitle: "Tisch6 auf den Home-Bildschirm",
+    statusTitle: "Dein Stand",
+    stage: {
+      review: "Deine Bewerbung ist da. Wir prüfen sie gerade – innerhalb von 24 Stunden bekommst du eine Antwort.",
+      waitlist: "Du stehst auf der Warteliste. Wir melden uns, sobald es passt.",
+      accepted: "Du bist dabei! Unsere KI stellt gerade einen Tisch für dich zusammen. Sobald er steht, bekommst du eine Nachricht.",
+      closed: "Danke für deine Bewerbung! Unsere Antwort hast du per E-Mail bekommen.",
+    },
+    installTitle: "Verpasse nichts – leg Tisch6 auf deinen Home-Bildschirm",
     installIos: [
       "Tippe in Safari unten auf „Teilen“ – das Viereck mit dem Pfeil nach oben.",
       "Wähle „Zum Home-Bildschirm“ und tippe auf „Hinzufügen“.",
@@ -411,7 +421,7 @@ const de = {
     installButton: "App installieren",
     installOther: "Tippe im Browser-Menü auf „App installieren“ oder „Zum Startbildschirm hinzufügen“.",
     pushTitle: "Benachrichtigungen",
-    pushWhy: "Einladungen, Erinnerungen vor dem Abend und wichtige Infos zu deinem Tisch – als Nachricht statt SMS.",
+    pushWhy: "Einladungen, frei gewordene Plätze, Erinnerungen vor dem Abend und wichtige Infos zu deinem Tisch – direkt als Nachricht aufs Handy.",
     pushEnable: "Benachrichtigungen einschalten",
     pushOn: "Benachrichtigungen sind an.",
     pushTest: "Probe-Nachricht schicken",
@@ -424,6 +434,7 @@ const de = {
     testSent: "Die Probe-Nachricht ist unterwegs.",
     error: "Das hat nicht geklappt. Bitte versuch es noch einmal.",
     emailNote: "E-Mails bekommst du wie bisher – die App ist eine Ergänzung.",
+    account: "Mein Konto",
   },
   feedback: {
     title: "Wie war dein Abend, {name}?",
