@@ -411,7 +411,7 @@ export function reminder3dMail(o: { name: string; dinner: DinnerInfo; token: str
 }
 
 /** Dresscode aller Abende – in den Erinnerungen kurz vorher (Wunsch des Inhabers) */
-const DRESS_CODE = "Dresscode: schick. Zieh dich so an wie für ein besonderes Dinner – das macht den Abend für alle am Tisch zu etwas Besonderem.";
+const DRESS_CODE = "Dresscode: Smart Casual – gepflegt und dem Anlass angemessen, so wie für ein schönes Abendessen in einem guten Lokal.";
 
 export function reminder1dMail(o: { name: string; dinner: DinnerInfo; token: string }): EmailContent {
   return layout({
@@ -439,7 +439,7 @@ export function reminder2hMail(o: { name: string; dinner: DinnerInfo; token: str
       ["Wo", o.dinner.restaurant],
       ["Adresse", o.dinner.address],
       ["Reserviert auf", RESERVATION_NAME],
-      ["Dresscode", "Schick"],
+      ["Dresscode", "Smart Casual"],
     ],
     after: [FIRST_ARRIVAL, "Schönen Abend!"],
     cta: { label: "Deine Einladung", url: seatUrl(o.token) },
@@ -447,7 +447,7 @@ export function reminder2hMail(o: { name: string; dinner: DinnerInfo; token: str
 }
 
 export function reminder2hSms(o: { dinner: DinnerInfo }) {
-  return `Tisch6: In 2 Std. geht's los! ${formatTime(o.dinner.startsAt)} Uhr, ${o.dinner.restaurant}, ${o.dinner.address}. Dresscode: schick. Reserviert auf ${RESERVATION_NAME} - als Erste/r da? Einfach nach ${RESERVATION_NAME} fragen und Platz nehmen.`;
+  return `Tisch6: In 2 Std. geht's los! ${formatTime(o.dinner.startsAt)} Uhr, ${o.dinner.restaurant}, ${o.dinner.address}. Dresscode: Smart Casual. Reserviert auf ${RESERVATION_NAME} - als Erste/r da? Einfach nach ${RESERVATION_NAME} fragen und Platz nehmen.`;
 }
 
 /** Am Tag des Tisches: Gesprächskarte (und Notfallnummer, falls hinterlegt) */
