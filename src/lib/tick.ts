@@ -8,6 +8,7 @@ import { eraseAbandoned, eraseRejected, evaluateApplications, remindUnfinished }
 import { matchTables } from "./matching";
 import { decideDinners, expireSeats, fillGaps, remindOpenInvitations } from "./seats";
 import { checkEmailDelivery } from "./email-delivery";
+import { sendSmsAuftraege } from "./sms-auftraege";
 import { checkSmsDelivery } from "./sms-delivery";
 import { checkTwilioRegistrations } from "./twilio-registration";
 import { viennaHour } from "./time";
@@ -52,6 +53,7 @@ export async function runTick(client: Db, options: { matching?: "auto" | "force"
     await step("entscheidung", () => decideDinners(client));
     await step("erinnerungen", () => sendReminders(client, deadline));
     await step("zusagen", () => remindOpenInvitations(client));
+    await step("smsAuftraege", () => sendSmsAuftraege(client));
     await step("amTag", () => sendDayOf(client, deadline));
     await step("nachDemDinner", () => afterDinners(client, deadline));
     // … dann alles, was die KI braucht
